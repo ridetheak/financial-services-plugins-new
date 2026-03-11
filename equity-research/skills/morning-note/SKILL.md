@@ -1,86 +1,86 @@
-# Morning Note
+# 早间笔记
 
-description: Draft concise morning meeting notes summarizing overnight developments, trade ideas, and key events for coverage stocks. Designed for the 7am morning meeting format — tight, opinionated, actionable. Triggers on "morning note", "morning meeting", "what happened overnight", "trade idea", "morning call prep", or "daily note".
+描述：草拟简洁的早间会议笔记，总结隔夜发展、交易创意和覆盖股票的关键事件。为 7 点早间会议格式设计 — 紧凑、有观点、可行动。触发条件："早间笔记"、"早间会议"、"隔夜发生了什么"、"交易创意"、"早间电话准备"或"每日笔记"。
 
-## Workflow
+## 工作流程
 
-### Step 1: Overnight Developments
+### 第 1 步：隔夜发展
 
-Scan for relevant events across coverage universe:
+扫描覆盖范围内的相关事件：
 
-**Earnings & Guidance**
-- Any coverage companies reporting overnight or pre-market?
-- Earnings surprises (beat/miss on revenue, EPS, key metrics)
-- Guidance changes (raised, lowered, maintained)
+**盈利和指导**
+- 任何覆盖公司隔夜或市前报告？
+- 盈利惊喜（收入、每股收益、关键指标超过或未达预期）
+- 指导变化（上调、下调、维持）
 
-**News & Events**
-- M&A announcements or rumors
-- Management changes
-- Product launches or regulatory decisions
-- Analyst upgrades/downgrades from competitors
-- Macro data or policy changes affecting the sector
+**新闻和事件**
+- M&A 公告或传言
+- 管理层变化
+- 产品发布或监管决定
+- 竞争对手分析师升级/降级
+- 影响部门的宏观数据或政策变化
 
-**Market Context**
-- Overnight futures / pre-market moves
-- Sector ETF performance
-- Relevant commodity or currency moves
-- Key economic data releases today
+**市场背景**
+- 隔夜期货/市前波动
+- 部门 ETF 表现
+- 相关商品或货币波动
+- 关键经济数据发布
 
-### Step 2: Morning Note Format
+### 第 2 步：早间笔记格式
 
-Keep it tight — a morning note should be readable in 2 minutes:
-
----
-
-**[Date] Morning Note — [Analyst Name]**
-**[Sector Coverage]**
-
-**Top Call: [Headline — the one thing PMs need to hear]**
-- 2-3 sentences on the key development and why it matters
-- Stock impact: price target, rating reiteration/change
-
-**Overnight/Pre-Market Developments**
-- [Company A]: One-line summary of earnings/news + our take
-- [Company B]: One-line summary + our take
-- [Sector/Macro]: Relevant sector-wide development
-
-**Key Events Today**
-- [Time]: [Company] earnings call
-- [Time]: Economic data release (expectations vs. our view)
-- [Time]: Conference or investor day
-
-**Trade Ideas** (if any)
-- [Long/Short] [Company]: 1-2 sentence thesis + catalyst
-- Risk: What would make this wrong
+保持紧凑 — 早间笔记应该在 2 分钟内可读：
 
 ---
 
-### Step 3: Quick Takes on Earnings
+**[日期] 早间笔记 — [分析师名称]**
+**[部门覆盖]**
 
-If a coverage company reported, provide a quick reaction:
+**主要观点：[标题 — 投资组合经理需要听到的一件事]**
+- 关键发展及其重要性的 2-3 句话
+- 股票影响：目标价格、评级重申/变化
 
-| Metric | Consensus | Actual | Beat/Miss |
-|--------|-----------|--------|-----------|
-| Revenue | | | |
-| EPS | | | |
-| [Key metric] | | | |
-| Guidance | | | |
+**隔夜/市前发展**
+- [公司 A]：盈利/新闻的单行摘要 + 我们的观点
+- [公司 B]：单行摘要 + 我们的观点
+- [部门/宏观]：相关部门范围的发展
 
-**Our Take**: 2-3 sentences — is this good or bad for the stock? Does it change our thesis?
+**今天的关键事件**
+- [时间]：[公司]盈利电话会议
+- [时间]：经济数据发布（预期vs我们的观点）
+- [时间]：会议或投资者日
 
-**Action**: Maintain / Upgrade / Downgrade rating? Adjust price target?
+**交易创意**（如有）
+- [多头/空头] [公司]：1-2 句论文 + 催化剂
+- 风险：什么会使这个创意错误
 
-### Step 4: Output
+---
 
-- Markdown text for email/Slack distribution
-- Word document if formal distribution is needed
-- Keep to 1 page max — PMs and traders won't read more
+### 第 3 步：盈利快速评论
 
-## Important Notes
+如果覆盖公司报告，提供快速反应：
 
-- Be opinionated — morning notes that just summarize news without a view are useless
-- Lead with the most important thing — don't bury the headline
-- "No news" is a valid morning note — say "nothing material overnight, maintaining positioning"
-- Distinguish between actionable events (earnings, M&A) and noise (minor analyst notes, non-events)
-- Time-stamp your takes — if you're writing at 6am, note that pre-market may change by open
-- If you're wrong, own it in the next morning note — credibility matters more than being right every time
+| 指标 | 一致预期 | 实际 | 超/未达预期 |
+|------|---------|------|-----------|
+| 收入 | | | |
+| 每股收益 | | | |
+| [关键指标] | | | |
+| 指导 | | | |
+
+**我们的观点**：2-3 句 — 这对股票好还是坏？它改变了我们的论文吗？
+
+**行动**：维持/升级/降级评级？调整目标价格？
+
+### 第 4 步：输出
+
+- 用于电子邮件/Slack 分发的 Markdown 文本
+- 如果需要正式分发，提供 Word 文档
+- 保持在 1 页以内 — 投资组合经理和交易员不会阅读更多
+
+## 重要说明
+
+- 有观点 — 只是总结新闻而没有观点的早间笔记没有用
+- 以最重要的事情开头 — 不要埋没标题
+- "没有新闻"是一个有效的早间笔记 — 说"隔夜没有重大新闻，维持定位"
+- 区分可行动事件（盈利、M&A）和噪音（次要分析师笔记、非事件）
+- 给你的评论加上时间戳 — 如果你在凌晨 6 点写作，请注明市前可能会在开盘时变化
+- 如果你错了，在下一份早间笔记中承认 — 可信度比每次都正确更重要

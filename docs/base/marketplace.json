@@ -1,0 +1,25 @@
+{
+  "plugins": [
+    {
+      "source": "investment-banking"
+    },
+    {
+      "source": "financial-analysis"
+    },
+    {
+      "source": "equity-research"
+    },
+    {
+      "source": "private-equity"
+    },
+    {
+      "source": "wealth-management"
+    },
+    {
+      "source": "partner-built/spglobal"
+    },
+    {
+      "source": "partner-built/lseg"
+    }
+  ]
+}

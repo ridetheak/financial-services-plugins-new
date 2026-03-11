@@ -1,92 +1,92 @@
-# Model Update
+# 模型更新
 
-description: Update financial models with new data — quarterly earnings, management guidance, macro changes, or revised assumptions. Adjusts estimates, recalculates valuation, and flags material changes. Use after earnings, guidance updates, or when assumptions need refreshing. Triggers on "update model", "plug earnings", "refresh estimates", "update numbers for [company]", "new guidance", or "revise estimates".
+描述：使用新数据更新财务模型 — 季度盈利、管理指导、宏观变化或修订假设。调整估计、重新计算估值并标记重大变化。盈利后、指导更新后或需要刷新假设时使用。触发条件："更新模型"、"插入盈利"、"刷新估计"、"[公司]的更新数字"、"新指导"或"修订估计"。
 
-## Workflow
+## 工作流程
 
-### Step 1: Identify What Changed
+### 第 1 步：识别发生的变化
 
-Determine the update trigger:
-- **Earnings release**: New quarterly actuals to plug in
-- **Guidance change**: Company updated forward outlook
-- **Estimate revision**: Analyst changing assumptions based on new data
-- **Macro update**: Interest rates, FX, commodity prices changed
-- **Event-driven**: M&A, restructuring, new product, management change
+确定更新触发因素：
+- **盈利发布**：新季度实际数据要插入
+- **指导变化**：公司更新了前向展望
+- **估计修订**：分析师根据新数据更改假设
+- **宏观更新**：利率、外汇、商品价格变化
+- **事件驱动**：M&A、重组、新产品、管理层变化
 
-### Step 2: Plug New Data
+### 第 2 步：插入新数据
 
-#### After Earnings
-Update the model with reported actuals:
+#### 盈利后
+使用报告的实际数据更新模型：
 
-| Line Item | Prior Estimate | Actual | Delta | Notes |
-|-----------|---------------|--------|-------|-------|
-| Revenue | | | | |
-| Gross Margin | | | | |
-| Operating Expenses | | | | |
+| 行项目 | 先前估计 | 实际 | 差异 | 备注 |
+|--------|---------|------|------|------|
+| 收入 | | | | |
+| 毛利率 | | | | |
+| 运营费用 | | | | |
 | EBITDA | | | | |
-| EPS | | | | |
-| [Key metric 1] | | | | |
-| [Key metric 2] | | | | |
+| 每股收益 | | | | |
+| [关键指标 1] | | | | |
+| [关键指标 2] | | | | |
 
-**Segment Detail** (if applicable):
-- Update each segment's revenue and margin
-- Note any segment mix shifts
+**细分详情**（如适用）：
+- 更新每个细分的收入和利润率
+- 注明任何细分混合变化
 
-**Balance Sheet / Cash Flow Updates**:
-- Cash and debt balances
-- Share count (buybacks, dilution)
-- Capex actual vs. estimate
-- Working capital changes
+**资产负债表/现金流更新**：
+- 现金和债务余额
+- 股份数（回购、稀释）
+- 资本支出实际vs估计
+- 营运资本变化
 
-### Step 3: Revise Forward Estimates
+### 第 3 步：修订前向估计
 
-Based on the new data, adjust forward estimates:
+根据新数据调整前向估计：
 
-| | Old FY Est | New FY Est | Change | Old Next FY | New Next FY | Change |
-|---|-----------|-----------|--------|------------|------------|--------|
-| Revenue | | | | | | |
+| | 旧财年估计 | 新财年估计 | 变化 | 旧次财年 | 新次财年 | 变化 |
+|---|----------|----------|------|---------|---------|------|
+| 收入 | | | | | | |
 | EBITDA | | | | | | |
-| EPS | | | | | | |
+| 每股收益 | | | | | | |
 
-**Key Assumption Changes:**
-- What assumptions are you changing and why?
-- Revenue growth rate: old → new (reason)
-- Margin assumption: old → new (reason)
-- Any new items (restructuring charges, one-time gains, etc.)
+**关键假设变化：**
+- 您改变了哪些假设及其原因？
+- 收入增长率：旧 → 新（原因）
+- 利润率假设：旧 → 新（原因）
+- 任何新项目（重组费用、一次性收益等）
 
-### Step 4: Valuation Impact
+### 第 4 步：估值影响
 
-Recalculate valuation with updated estimates:
+使用更新的估计重新计算估值：
 
-| Valuation Method | Prior | Updated | Change |
-|-----------------|-------|---------|--------|
-| DCF fair value | | | |
-| P/E (NTM EPS × target multiple) | | | |
-| EV/EBITDA (NTM EBITDA × target multiple) | | | |
-| **Price Target** | | | |
+| 估值方法 | 先前 | 更新 | 变化 |
+|---------|------|------|------|
+| DCF 公允价值 | | | |
+| P/E (NTM 每股收益 × 目标倍数) | | | |
+| EV/EBITDA (NTM EBITDA × 目标倍数) | | | |
+| **目标价格** | | | |
 
-### Step 5: Summary & Action
+### 第 5 步：总结和行动
 
-**Estimate Change Summary:**
-- One paragraph: what changed, why, and what it means for the stock
-- Is this a thesis-changing event or noise?
+**估计变化总结：**
+- 一段：发生了什么变化、为什么以及对股票意味着什么
+- 这是改变论文的事件还是噪音？
 
-**Rating / Price Target:**
-- Maintain or change rating?
-- New price target (if changed) with methodology
-- Upside/downside to current price
+**评级/目标价格：**
+- 维持或改变评级？
+- 新目标价格（如改变）及方法
+- 相对于当前价格的上升/下降空间
 
-### Step 6: Output
+### 第 6 步：输出
 
-- Updated Excel model (if user provides the existing model)
-- Estimate change summary (markdown or Word)
-- Updated price target derivation
+- 更新的 Excel 模型（如用户提供现有模型）
+- 估计变化摘要（Markdown 或 Word）
+- 更新的目标价格推导
 
-## Important Notes
+## 重要说明
 
-- Always reconcile your estimates to the company's reported figures before projecting forward
-- Note any non-recurring items and whether your estimates are GAAP or adjusted
-- Track your estimate revision history — it shows your analytical progression
-- If the quarter was noisy, separate signal from noise in your estimate changes
-- Check consensus after updating — how do your revised estimates compare to the Street?
-- Share count matters — dilution from stock comp, converts, or buybacks can materially affect EPS
+- 始终将估计与公司报告的数字对账，然后再向前预测
+- 注明您的估计是 GAAP 还是调整后的，以及任何非经常性项目
+- 跟踪估计修订历史 — 这显示了您的分析进展
+- 如果季度有噪音，在估计变化中将信号与噪音分离
+- 更新后检查一致预期 — 您修订的估计与华尔街相比如何？
+- 股份数很重要 — 股票补偿、转换或回购的稀释会显著影响每股收益

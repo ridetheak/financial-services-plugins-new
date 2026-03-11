@@ -1,8 +1,8 @@
 ---
-description: Build a pre-earnings preview with scenarios
-argument-hint: "[company ticker]"
+description: 使用情景构建盈利前瞻
+argument-hint: "[公司股票代码]"
 ---
 
-Load the `earnings-preview` skill and build a pre-earnings analysis with consensus estimates, key metrics to watch, and bull/base/bear scenarios.
+加载`盈利前瞻`技能，使用一致预期、关键指标需要关注和牛/基础/熊情景构建盈利前分析。
 
-If a ticker is provided, use it. Otherwise ask the user which company is reporting.
+如果提供了股票代码，使用它。否则要求用户哪家公司报告。

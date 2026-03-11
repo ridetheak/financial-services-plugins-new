@@ -1,0 +1,122 @@
+{
+  "mcpServers": {
+    "====================": "====================",
+    "现有的本地MCP服务器": "保持不变",
+    "====================": "====================",
+
+    "skill-seeker": {
+      "command": "python3",
+      "args": [
+        "/Users/fengzhi/Downloads/git/skill/Skill_Seekers/skill_seeker_mcp/server.py"
+      ],
+      "cwd": "/Users/fengzhi/Downloads/git/skill/Skill_Seekers"
+    },
+    "weather_mcp": {
+      "command": "python3",
+      "args": ["/Users/fengzhi/Downloads/git/claude_code_sdk/claude-agent-toolkit/bug_fix/samples/weather_mcp.py"]
+    },
+
+    "====================": "====================",
+    "金融数据MCP服务器（需要API密钥）": "以下是需要配置的",
+    "====================": "====================",
+
+    "daloopa": {
+      "type": "http",
+      "url": "https://mcp.daloopa.com/server/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_DALOOPA_API_KEY_HERE",
+        "Content-Type": "application/json"
+      }
+    },
+
+    "morningstar": {
+      "type": "http",
+      "url": "https://mcp.morningstar.com/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_MORNINGSTAR_API_KEY_HERE",
+        "Content-Type": "application/json"
+      }
+    },
+
+    "sp-global": {
+      "type": "http",
+      "url": "https://kfinance.kensho.com/integrations/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_SPGLOBAL_API_KEY_HERE",
+        "Content-Type": "application/json"
+      }
+    },
+
+    "factset": {
+      "type": "http",
+      "url": "https://mcp.factset.com/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_FACTSET_API_KEY_HERE",
+        "Content-Type": "application/json"
+      }
+    },
+
+    "moodys": {
+      "type": "http",
+      "url": "https://api.moodys.com/genai-ready-data/m1/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_MOODYS_API_KEY_HERE",
+        "Content-Type": "application/json"
+      }
+    },
+
+    "mtnewswire": {
+      "type": "http",
+      "url": "https://vast-mcp.blueskyapi.com/mtnewswires",
+      "headers": {
+        "Authorization": "Bearer YOUR_MTNEWWIRE_API_KEY_HERE",
+        "Content-Type": "application/json"
+      }
+    },
+
+    "aiera": {
+      "type": "http",
+      "url": "https://mcp-pub.aiera.com",
+      "headers": {
+        "Authorization": "Bearer YOUR_AIERA_API_KEY_HERE",
+        "Content-Type": "application/json"
+      }
+    },
+
+    "lseg": {
+      "type": "http",
+      "url": "https://api.analytics.lseg.com/lfa/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_LSEG_API_KEY_HERE",
+        "Content-Type": "application/json"
+      }
+    },
+
+    "pitchbook": {
+      "type": "http",
+      "url": "https://premium.mcp.pitchbook.com/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_PITCHBOOK_API_KEY_HERE",
+        "Content-Type": "application/json"
+      }
+    },
+
+    "chronograph": {
+      "type": "http",
+      "url": "https://ai.chronograph.pe/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_CHRONOGRAPH_API_KEY_HERE",
+        "Content-Type": "application/json"
+      }
+    },
+
+    "egnyte": {
+      "type": "http",
+      "url": "https://mcp-server.egnyte.com/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_EGNYTE_API_KEY_HERE",
+        "Content-Type": "application/json"
+      }
+    }
+  }
+}

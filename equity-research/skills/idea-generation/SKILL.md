@@ -1,111 +1,111 @@
-# Idea Generation
+# 创意生成
 
-description: Systematic stock screening and investment idea sourcing. Combines quantitative screens, thematic research, and pattern recognition to surface new long and short ideas. Use when looking for new ideas, running screens, or conducting thematic sweeps. Triggers on "idea generation", "stock screen", "find ideas", "what looks interesting", "screen for", "new ideas", or "pitch me something".
+描述：系统性股票筛选和投资创意寻源。结合定量筛选、主题研究和模式识别，以发现新的多头和空头创意。寻找新创意、运行筛选或进行主题扫描时使用。触发条件："创意生成"、"股票筛选"、"寻找创意"、"什么看起来有趣"、"筛选"、"新创意"或"给我推荐什么"。
 
-## Workflow
+## 工作流程
 
-### Step 1: Define Search Criteria
+### 第 1 步：定义搜索标准
 
-Ask the user for parameters:
-- **Direction**: Long ideas, short ideas, or both
-- **Market cap**: Large, mid, small, micro
-- **Sector**: Specific sector or cross-sector
-- **Style**: Value, growth, quality, special situation, event-driven
-- **Geography**: US, international, global
-- **Theme**: Any specific thematic angle (AI, reshoring, aging demographics, etc.)
+向用户要求参数：
+- **方向**：多头创意、空头创意或两者
+- **市值**：大盘股、中盘股、小盘股、微盘股
+- **部门**：特定部门或跨部门
+- **风格**：价值、增长、质量、特殊情况、事件驱动
+- **地理位置**：美国、国际、全球
+- **主题**：任何特定的主题角度（人工智能、回岸、老龄化人口等）
 
-### Step 2: Quantitative Screens
+### 第 2 步：定量筛选
 
-Run screens based on the style:
+根据风格运行筛选：
 
-**Value Screen**
-- P/E below sector median
-- EV/EBITDA below historical average
-- Free cash flow yield >5%
-- Price/book below 1.5x
-- Insider buying in last 90 days
-- Dividend yield above market average
+**价值筛选**
+- P/E 低于部门中值
+- EV/EBITDA 低于历史平均水平
+- 自由现金流收益率 >5%
+- 价格/账面价值低于 1.5x
+- 过去 90 天内的内部人员买入
+- 股息收益率高于市场平均水平
 
-**Growth Screen**
-- Revenue growth >15% YoY
-- Earnings growth >20% YoY
-- Revenue acceleration (growth rate increasing)
-- Expanding margins
-- High return on invested capital (>15%)
-- Strong net retention (>110% for SaaS)
+**增长筛选**
+- 收入同比增长 >15%
+- 盈利同比增长 >20%
+- 收入加速（增长率上升）
+- 扩大的利润率
+- 高投资资本回报率（>15%）
+- 强劲的净保留率（SaaS >110%）
 
-**Quality Screen**
-- Consistent revenue growth (5+ years)
-- Stable or expanding margins
-- ROE >15%
-- Low debt/equity
-- High free cash flow conversion
-- Insider ownership >5%
+**质量筛选**
+- 一致的收入增长（5+ 年）
+- 稳定或扩大的利润率
+- 净资产收益率 >15%
+- 低债务/股本比率
+- 高自由现金流转化率
+- 内部人员所有权 >5%
 
-**Short Screen**
-- Declining revenue or decelerating growth
-- Margin compression
-- Rising receivables / inventory vs. sales
-- Insider selling
-- Valuation premium to peers without justification
-- High short interest with deteriorating fundamentals
-- Accounting red flags (auditor changes, restatements)
+**空头筛选**
+- 收入下降或增长减速
+- 利润率压缩
+- 应收账款/库存相对销售额上升
+- 内部人员卖出
+- 估值溢价相对于同行而没有合理解释
+- 空头兴趣高但基本面恶化
+- 会计红旗（审计师更换、重述）
 
-**Special Situation Screen**
-- Recent IPOs / SPACs with lockup expirations
-- Spin-offs in last 12 months
-- Companies emerging from restructuring
-- Activist involvement
-- Management changes at underperforming companies
+**特殊情况筛选**
+- 最近的 IPO/SPAC，锁定期即将到期
+- 过去 12 个月内的分拆
+- 从重组中复苏的公司
+- 激进股东参与
+- 表现不佳公司的管理层变化
 
-### Step 3: Thematic Sweep
+### 第 3 步：主题扫描
 
-For thematic ideas, research the theme and identify beneficiaries:
+对于主题创意，研究主题并识别受益者：
 
-1. Define the thesis (e.g., "AI infrastructure spending accelerates through 2026")
-2. Map the value chain — who benefits directly vs. indirectly?
-3. Identify pure-play vs. diversified exposure
-4. Assess which names are already "priced in" vs. under-appreciated
-5. Look for second-order beneficiaries that the market hasn't connected to the theme
+1. 定义论文（例如，"2026 年及以后人工智能基础设施支出加速"）
+2. 绘制价值链 — 谁直接获益，谁间接获益？
+3. 识别纯玩和多元化敞口
+4. 评估哪些名称已"价格化"vs低估
+5. 寻找市场尚未连接到主题的二阶受益者
 
-### Step 4: Idea Presentation
+### 第 4 步：创意呈现
 
-For each idea that passes the screen, present:
+对于通过筛选的每个创意，展示：
 
-**[Company Name] — [Long/Short] — [One-Line Thesis]**
+**[公司名称] — [多头/空头] — [一句论文]**
 
-| Metric | Value | vs. Peers |
-|--------|-------|-----------|
-| Market cap | | |
+| 指标 | 价值 | vs 同行 |
+|------|------|--------|
+| 市值 | | |
 | EV/EBITDA (NTM) | | |
 | P/E (NTM) | | |
-| Revenue growth | | |
-| EBITDA margin | | |
-| FCF yield | | |
+| 收入增长 | | |
+| EBITDA 利润率 | | |
+| 自由现金流收益率 | | |
 
-**Thesis (3-5 bullets):**
-- Why this is mispriced
-- What the market is missing
-- Catalyst to realize value
+**论文（3-5 条要点）：**
+- 为什么被错误定价
+- 市场遗漏的是什么
+- 实现价值的催化剂
 
-**Key Risks:**
-- What would make this wrong
+**关键风险：**
+- 什么会使这个创意错误
 
-**Suggested Next Steps:**
-- Build full model? Deep-dive diligence? Expert call?
+**建议的后续步骤：**
+- 构建完整模型？深入尽职调查？专家电话？
 
-### Step 5: Output
+### 第 5 步：输出
 
-- Shortlist of 5-10 ideas with one-page summaries
-- Screening criteria and methodology documented
-- Comparison table across all ideas
-- Prioritized list: which ideas to research first
+- 5-10 个创意的简称列表，附带单页摘要
+- 已记录的筛选标准和方法
+- 所有创意的比较表
+- 优先列表：优先研究哪些创意
 
-## Important Notes
+## 重要说明
 
-- Screens surface candidates, not conclusions — every screen output needs fundamental work
-- The best ideas often come from intersections (e.g., quality company at value price due to temporary headwind)
-- Avoid crowded trades — check ownership data, short interest, and how many analysts cover the name
-- Contrarian ideas need a catalyst — being early without a catalyst is the same as being wrong
-- Track idea hit rates over time — which screens and approaches produce the best ideas?
-- Short ideas need higher conviction — timing is harder and risk is asymmetric
+- 筛选会产生候选，不是结论 — 每个筛选输出都需要基本面工作
+- 最好的创意通常来自交叉点（例如，质量公司以价值价格出现，因为短期逆风）
+- 避免拥挤的交易 — 检查所有权数据、空头兴趣和有多少分析师覆盖该名称
+- 对立创意需要更高的确信度 — 时机更难，风险不对称
+- 跟踪创意成功率随时间的变化 — 哪些筛选和方法会产生最好的创意？
+- 空头创意需要更高的确信度 — 时机较难，风险不对称
