@@ -43,6 +43,10 @@
     "egnyte": {
       "type": "http",
       "url": "https://mcp-server.egnyte.com/mcp"
+    },
+    "openbb": {
+      "type": "http",
+      "url": "http://127.0.0.1:60200/mcp"
     }
   }
 }
