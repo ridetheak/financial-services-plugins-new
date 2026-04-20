@@ -1,41 +1,111 @@
 """
 Equity Price API Server
-Exposes: GET /api/v1/equity/price/quote?symbol=<TICKER>
+Exposes:
+  GET /api/v1/equity/price/quote?symbol=<TICKER>
+  GET /api/v1/equity/price/quotes?symbols=AAPL,MSFT,...
 Runs on: https://127.0.0.1:6901
 
 Live data providers (priority order, set via env var):
-  POLYGON_API_KEY      -> polygon.io  (https://polygon.io/dashboard)
-  FINNHUB_API_KEY      -> finnhub.io  (https://finnhub.io/register)
-  ALPHA_VANTAGE_API_KEY-> alphavantage.co (https://www.alphavantage.co/support/#api-key)
+  POLYGON_API_KEY       -> polygon.io  (https://polygon.io/dashboard)
+  FINNHUB_API_KEY       -> finnhub.io  (https://finnhub.io/register)
+  ALPHA_VANTAGE_API_KEY -> alphavantage.co (https://www.alphavantage.co/support/#api-key)
+  USE_YAHOO_FINANCE=1   -> yahoo finance (dev-only, no key, fragile)
 
 Falls back to mock data when no key is configured.
 """
 
+import json
+import logging
 import math
 import os
+import re
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 import requests
+from cachetools import TTLCache
 from fastapi import FastAPI, Query, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
+# ---------------------------------------------------------------------------
+# Logging – structured JSON lines for audit trail
+# ---------------------------------------------------------------------------
+
+class _JsonFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        payload = {
+            "ts": datetime.now(tz=timezone.utc).isoformat(),
+            "level": record.levelname,
+            "msg": record.getMessage(),
+        }
+        if hasattr(record, "extra"):
+            payload.update(record.extra)
+        return json.dumps(payload)
+
+_handler = logging.StreamHandler()
+_handler.setFormatter(_JsonFormatter())
+logger = logging.getLogger("equity_api")
+logger.addHandler(_handler)
+logger.setLevel(logging.INFO)
+logger.propagate = False
+
+# ---------------------------------------------------------------------------
+# App + CORS
+# ---------------------------------------------------------------------------
+
 app = FastAPI(title="Equity Price API", version="1.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=os.environ.get("CORS_ORIGINS", "*").split(","),
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
 
 CERTS_DIR = Path(__file__).parent / "certs"
 _HTTP = requests.Session()
 _HTTP.headers.update({"User-Agent": "equity-price-api/1.0"})
 
+_QUOTE_CACHE: TTLCache = TTLCache(maxsize=2000, ttl=3)
+_REF_CACHE:   TTLCache = TTLCache(maxsize=2000, ttl=3600)   # company name/meta rarely changes
+
+_SYMBOL_RE = re.compile(r"^[A-Z0-9.\-]{1,10}$")
+
+
+def _validate(symbol: str) -> str:
+    s = symbol.upper().strip()
+    if not _SYMBOL_RE.match(s):
+        raise HTTPException(400, f"Invalid symbol format: '{symbol}'")
+    return s
+
 
 # ---------------------------------------------------------------------------
-# Live provider implementations
+# Live providers
 # ---------------------------------------------------------------------------
+
+def _polygon_name(symbol: str) -> Optional[str]:
+    if symbol in _REF_CACHE:
+        return _REF_CACHE[symbol]
+    key = os.environ["POLYGON_API_KEY"]
+    try:
+        r = _HTTP.get(
+            f"https://api.polygon.io/v3/reference/tickers/{symbol}",
+            params={"apiKey": key},
+            timeout=5,
+        )
+        name = r.json().get("results", {}).get("name") if r.ok else None
+    except Exception:
+        name = None
+    _REF_CACHE[symbol] = name
+    return name
+
 
 def _fetch_polygon(symbol: str) -> dict:
     key = os.environ["POLYGON_API_KEY"]
-    url = f"https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/{symbol.upper()}"
+    url = f"https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/{symbol}"
     r = _HTTP.get(url, params={"apiKey": key}, timeout=8)
     if r.status_code == 404:
         raise HTTPException(404, f"Symbol '{symbol}' not found")
@@ -43,21 +113,23 @@ def _fetch_polygon(symbol: str) -> dict:
         raise HTTPException(403, "Invalid Polygon API key")
     r.raise_for_status()
     snap = r.json().get("ticker", {})
-    day = snap.get("day", {})
+    day  = snap.get("day", {})
     prev = snap.get("prevDay", {})
     last_trade = snap.get("lastTrade", {})
-    price = last_trade.get("p") or day.get("c")
+    price      = last_trade.get("p") or day.get("c")
     prev_close = prev.get("c")
+    change     = round(price - prev_close, 4) if price is not None and prev_close is not None else None
+    change_pct = round(change / prev_close * 100, 4) if change is not None and prev_close not in (None, 0) else None
     return {
-        "symbol": symbol.upper(),
-        "name": None,
-        "exchange": snap.get("ticker", symbol.upper()),
+        "symbol": symbol,
+        "name": _polygon_name(symbol),
+        "exchange": snap.get("ticker", symbol),
         "instrument_type": "EQUITY",
         "currency": "USD",
         "price": price,
         "previous_close": prev_close,
-        "change": round(price - prev_close, 4) if price and prev_close else None,
-        "change_percent": round((price - prev_close) / prev_close * 100, 4) if price and prev_close else None,
+        "change": change,
+        "change_percent": change_pct,
         "day_high": day.get("h"),
         "day_low": day.get("l"),
         "volume": day.get("v"),
@@ -68,41 +140,83 @@ def _fetch_polygon(symbol: str) -> dict:
     }
 
 
+def _fetch_polygon_batch(symbols: list[str]) -> list[dict]:
+    key = os.environ["POLYGON_API_KEY"]
+    joined = ",".join(symbols)
+    r = _HTTP.get(
+        "https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers",
+        params={"tickers": joined, "apiKey": key},
+        timeout=10,
+    )
+    r.raise_for_status()
+    results = {}
+    for snap in r.json().get("tickers", []):
+        sym  = snap.get("ticker", "")
+        day  = snap.get("day", {})
+        prev = snap.get("prevDay", {})
+        last_trade = snap.get("lastTrade", {})
+        price      = last_trade.get("p") or day.get("c")
+        prev_close = prev.get("c")
+        change     = round(price - prev_close, 4) if price is not None and prev_close is not None else None
+        change_pct = round(change / prev_close * 100, 4) if change is not None and prev_close not in (None, 0) else None
+        results[sym] = {
+            "symbol": sym,
+            "name": _polygon_name(sym),
+            "exchange": sym,
+            "instrument_type": "EQUITY",
+            "currency": "USD",
+            "price": price,
+            "previous_close": prev_close,
+            "change": change,
+            "change_percent": change_pct,
+            "day_high": day.get("h"),
+            "day_low": day.get("l"),
+            "volume": day.get("v"),
+            "fifty_two_week_high": None,
+            "fifty_two_week_low": None,
+            "market_cap": None,
+            "data_source": "polygon",
+        }
+    return [results.get(s) or {"symbol": s, "error": "not found"} for s in symbols]
+
+
 def _fetch_finnhub(symbol: str) -> dict:
     key = os.environ["FINNHUB_API_KEY"]
     r = _HTTP.get(
         "https://finnhub.io/api/v1/quote",
-        params={"symbol": symbol.upper(), "token": key},
+        params={"symbol": symbol, "token": key},
         timeout=8,
     )
     r.raise_for_status()
     d = r.json()
     if d.get("c") == 0:
         raise HTTPException(404, f"Symbol '{symbol}' not found")
-    price = d["c"]
+    price      = d["c"]
     prev_close = d["pc"]
-    # Fetch profile for name/exchange
+    change     = round(price - prev_close, 4)
+    change_pct = round(d.get("dp", 0), 4)
     prof = _HTTP.get(
         "https://finnhub.io/api/v1/stock/profile2",
-        params={"symbol": symbol.upper(), "token": key},
+        params={"symbol": symbol, "token": key},
         timeout=8,
     ).json()
+    raw_mc = prof.get("marketCapitalization")
     return {
-        "symbol": symbol.upper(),
+        "symbol": symbol,
         "name": prof.get("name"),
         "exchange": prof.get("exchange"),
         "instrument_type": "EQUITY",
         "currency": prof.get("currency", "USD"),
         "price": price,
         "previous_close": prev_close,
-        "change": round(price - prev_close, 4),
-        "change_percent": round(d.get("dp", 0), 4),
+        "change": change,
+        "change_percent": change_pct,
         "day_high": d.get("h"),
         "day_low": d.get("l"),
         "volume": None,
         "fifty_two_week_high": None,
         "fifty_two_week_low": None,
-        "market_cap": prof.get("marketCapitalization"),
+        "market_cap": int(raw_mc * 1_000_000) if raw_mc is not None else None,  # Finnhub returns millions
         "data_source": "finnhub",
     }
 
@@ -111,7 +225,7 @@ def _fetch_alpha_vantage(symbol: str) -> dict:
     key = os.environ["ALPHA_VANTAGE_API_KEY"]
     r = _HTTP.get(
         "https://www.alphavantage.co/query",
-        params={"function": "GLOBAL_QUOTE", "symbol": symbol.upper(), "apikey": key},
+        params={"function": "GLOBAL_QUOTE", "symbol": symbol, "apikey": key},
         timeout=10,
     )
     r.raise_for_status()
@@ -121,10 +235,10 @@ def _fetch_alpha_vantage(symbol: str) -> dict:
     gq = d.get("Global Quote", {})
     if not gq or not gq.get("05. price"):
         raise HTTPException(404, f"Symbol '{symbol}' not found")
-    price = float(gq["05. price"])
+    price      = float(gq["05. price"])
     prev_close = float(gq["08. previous close"])
     return {
-        "symbol": symbol.upper(),
+        "symbol": symbol,
         "name": None,
         "exchange": None,
         "instrument_type": "EQUITY",
@@ -144,44 +258,36 @@ def _fetch_alpha_vantage(symbol: str) -> dict:
 
 
 def _fetch_yahoo(symbol: str) -> dict:
-    """Yahoo Finance – no API key required; uses cookie + crumb auth."""
-    sym = symbol.upper()
-
-    # Step 1: get session cookie
-    consent = _HTTP.get(
+    """Yahoo Finance – dev-only; no API key but fragile crumb auth."""
+    _HTTP.get(
         "https://fc.yahoo.com/",
         headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
         timeout=8,
     )
-
-    # Step 2: get crumb
-    crumb_resp = _HTTP.get(
+    crumb = _HTTP.get(
         "https://query2.finance.yahoo.com/v1/test/getcrumb",
         headers={"User-Agent": "Mozilla/5.0"},
         timeout=8,
-    )
-    crumb = crumb_resp.text.strip()
-
-    # Step 3: fetch quote
+    ).text.strip()
     r = _HTTP.get(
-        f"https://query2.finance.yahoo.com/v8/finance/chart/{sym}",
+        f"https://query2.finance.yahoo.com/v8/finance/chart/{symbol}",
         params={"interval": "1d", "range": "1d", "crumb": crumb},
         headers={"User-Agent": "Mozilla/5.0"},
         timeout=8,
     )
     if r.status_code == 404:
-        raise HTTPException(404, f"Symbol '{sym}' not found")
+        raise HTTPException(404, f"Symbol '{symbol}' not found")
     r.raise_for_status()
     result = r.json().get("chart", {}).get("result")
     if not result:
-        raise HTTPException(404, f"No data returned for '{sym}'")
-    meta = result[0]["meta"]
-    price = meta.get("regularMarketPrice")
+        raise HTTPException(404, f"No data returned for '{symbol}'")
+    meta       = result[0]["meta"]
+    price      = meta.get("regularMarketPrice")
     prev_close = meta.get("chartPreviousClose") or meta.get("previousClose")
-    change = round(price - prev_close, 4) if price and prev_close else None
-    change_pct = round(change / prev_close * 100, 4) if change and prev_close else None
+    change     = round(price - prev_close, 4) if price is not None and prev_close is not None else None
+    change_pct = round(change / prev_close * 100, 4) if change is not None and prev_close not in (None, 0) else None
     return {
-        "symbol": sym,
+        "symbol": symbol,
         "name": None,
         "exchange": meta.get("exchangeName"),
         "instrument_type": meta.get("instrumentType", "EQUITY"),
@@ -229,19 +335,18 @@ _MOCK: dict[str, dict] = {
 
 
 def _fetch_mock(symbol: str) -> dict:
-    key = symbol.upper()
-    if key not in _MOCK:
+    if symbol not in _MOCK:
         raise HTTPException(
             404,
-            f"Symbol '{symbol}' not found in mock data. Supported: {', '.join(sorted(_MOCK))}",
+            f"Symbol '{symbol}' not found. Supported: {', '.join(sorted(_MOCK))}",
         )
-    eq = _MOCK[key]
-    seed = hash(key + str(int(time.time() // 300))) & 0xFFFF
+    eq    = _MOCK[symbol]
+    seed  = hash(symbol + str(int(time.time() // 300))) & 0xFFFF
     price = round(eq["price"] * (1 + math.sin(seed) * 0.003), 2)
-    prev = eq["prev"]
+    prev  = eq["prev"]
     change = round(price - prev, 4)
     return {
-        "symbol": key,
+        "symbol": symbol,
         "name": eq["name"],
         "exchange": eq["exch"],
         "instrument_type": "EQUITY",
@@ -264,34 +369,29 @@ def _fetch_mock(symbol: str) -> dict:
 # Provider selection
 # ---------------------------------------------------------------------------
 
-_PROVIDERS = [
+_PROVIDERS: list[tuple[str, Callable[[str], dict]]] = [
     ("POLYGON_API_KEY",       _fetch_polygon),
     ("FINNHUB_API_KEY",       _fetch_finnhub),
     ("ALPHA_VANTAGE_API_KEY", _fetch_alpha_vantage),
 ]
 
 
-def _active_provider() -> Optional[tuple[str, callable]]:
+def _active_provider() -> Optional[tuple[str, Callable[[str], dict]]]:
     for env_key, fn in _PROVIDERS:
         if os.environ.get(env_key):
             return env_key, fn
-    # Yahoo Finance needs no key but requires working network
     if os.environ.get("USE_YAHOO_FINANCE", "").lower() in ("1", "true", "yes"):
         return "USE_YAHOO_FINANCE", _fetch_yahoo
     return None
 
 
-# ---------------------------------------------------------------------------
-# Endpoints
-# ---------------------------------------------------------------------------
-
-@app.get("/api/v1/equity/price/quote")
-def get_equity_quote(symbol: str = Query(..., description="Stock ticker symbol, e.g. AAPL")):
+def _get_quote(symbol: str) -> dict:
+    if symbol in _QUOTE_CACHE:
+        return _QUOTE_CACHE[symbol]
     provider = _active_provider()
-    now = datetime.now(tz=timezone.utc)
-
+    t0 = time.perf_counter()
     if provider:
-        env_key, fetch_fn = provider
+        _, fetch_fn = provider
         try:
             data = fetch_fn(symbol)
         except HTTPException:
@@ -300,10 +400,53 @@ def get_equity_quote(symbol: str = Query(..., description="Stock ticker symbol, 
             raise HTTPException(502, f"Data provider error: {exc}") from exc
     else:
         data = _fetch_mock(symbol)
-
-    data["quote_time"] = now.isoformat()
-    data["retrieved_at"] = now.isoformat()
+    latency_ms = round((time.perf_counter() - t0) * 1000, 1)
+    logger.info("quote", extra={"symbol": symbol, "source": data["data_source"], "latency_ms": latency_ms})
+    _QUOTE_CACHE[symbol] = data
     return data
+
+
+# ---------------------------------------------------------------------------
+# Endpoints
+# ---------------------------------------------------------------------------
+
+@app.get("/api/v1/equity/price/quote")
+def get_equity_quote(symbol: str = Query(..., description="Ticker symbol, e.g. AAPL")):
+    sym  = _validate(symbol)
+    now  = datetime.now(tz=timezone.utc).isoformat()
+    data = {**_get_quote(sym), "quote_time": now, "retrieved_at": now}
+    return data
+
+
+@app.get("/api/v1/equity/price/quotes")
+def get_equity_quotes(symbols: str = Query(..., description="Comma-separated tickers, e.g. AAPL,MSFT,NVDA")):
+    syms = [_validate(s) for s in symbols.split(",") if s.strip()]
+    if not syms:
+        raise HTTPException(400, "No valid symbols provided")
+    if len(syms) > 50:
+        raise HTTPException(400, "Maximum 50 symbols per request")
+
+    now = datetime.now(tz=timezone.utc).isoformat()
+
+    # For Polygon, use native batch endpoint for uncached symbols
+    uncached = [s for s in syms if s not in _QUOTE_CACHE]
+    provider = _active_provider()
+    if uncached and provider and provider[0] == "POLYGON_API_KEY" and len(uncached) > 1:
+        try:
+            batch = _fetch_polygon_batch(uncached)
+            for item in batch:
+                if "error" not in item:
+                    _QUOTE_CACHE[item["symbol"]] = item
+        except Exception:
+            pass  # fall through to per-symbol fetches below
+
+    results = []
+    for sym in syms:
+        try:
+            results.append({**_get_quote(sym), "quote_time": now, "retrieved_at": now})
+        except HTTPException as e:
+            results.append({"symbol": sym, "error": e.detail})
+    return {"quotes": results, "count": len(results), "retrieved_at": now}
 
 
 @app.get("/health")
@@ -317,8 +460,8 @@ def health():
 
 
 if __name__ == "__main__":
-    cert = str(CERTS_DIR / "cert.pem")
-    key  = str(CERTS_DIR / "key.pem")
+    cert   = str(CERTS_DIR / "cert.pem")
+    key    = str(CERTS_DIR / "key.pem")
     active = _active_provider()
     print(f"Data source: {active[0] if active else 'mock (set POLYGON_API_KEY, FINNHUB_API_KEY, or ALPHA_VANTAGE_API_KEY for live data)'}")
     uvicorn.run(
@@ -327,5 +470,5 @@ if __name__ == "__main__":
         port=6901,
         ssl_certfile=cert,
         ssl_keyfile=key,
-        log_level="info",
+        log_level="warning",  # app-level logging handles request logs
     )
