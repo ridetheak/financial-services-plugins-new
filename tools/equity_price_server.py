@@ -25,6 +25,9 @@ from pathlib import Path
 from typing import Callable, Optional
 
 import requests
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).parent.parent / ".env")
 from cachetools import TTLCache
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
