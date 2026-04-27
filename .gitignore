@@ -30,6 +30,8 @@ target/
 .env.*.local
 *.key
 *.pem
+.mcp.local.json
+.mcp.*.local.json
 
 # Testing
 coverage/
