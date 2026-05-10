@@ -28,10 +28,6 @@
       "type": "http",
       "url": "https://mcp-pub.aiera.com"
     },
-    "lseg": {
-      "type": "http",
-      "url": "https://api.analytics.lseg.com/lfa/mcp"
-    },
     "pitchbook": {
       "type": "http",
       "url": "https://premium.mcp.pitchbook.com/mcp"

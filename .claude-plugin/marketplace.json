@@ -30,11 +30,6 @@
       "description": "Wealth management and financial advisory tools: client reviews, financial planning, portfolio analysis, and client reporting"
     },
     {
-      "name": "lseg",
-      "source": "./partner-built/lseg",
-      "description": "Price bonds, analyze yield curves, evaluate FX carry trades, value options, and build macro dashboards using LSEG financial data and analytics."
-    },
-    {
       "name": "sp-global",
       "source": "./partner-built/spglobal",
       "description": "S&P Global - Financial data and analytics skills including company tearsheets, earnings previews, and transaction summaries"

@@ -30,7 +30,7 @@ Start with **financial analysis** — the core plugin that provides shared model
 
 | Plugin | Type | How it helps | Connectors |
 |--------|------|-------------|------------|
-| **[financial analysis](./financial-analysis)** | Core (install first) | Build comps, DCF models, LBO models, and 3-statement financials. QC presentations and create reusable PPT templates. Provides the shared foundation and all data connectors. | Daloopa, Morningstar, S&P Global, FactSet, Moody's, MT Newswires, Aiera, LSEG, PitchBook, Chronograph, Egnyte |
+| **[financial analysis](./financial-analysis)** | Core (install first) | Build comps, DCF models, LBO models, and 3-statement financials. QC presentations and create reusable PPT templates. Provides the shared foundation and all data connectors. | Daloopa, Morningstar, S&P Global, FactSet, Moody's, MT Newswires, Aiera, PitchBook, Chronograph, Egnyte |
 | **[investment banking](./investment-banking)** | Add-on | Draft CIMs, teasers, and process letters. Build buyer lists, run merger models, create strip profiles, and track live deals through milestones. | — |
 | **[equity research](./equity-research)** | Add-on | Write earnings updates and initiating coverage reports. Maintain investment theses, track catalysts, draft morning notes, and screen for new ideas. | — |
 | **[private equity](./private-equity)** | Add-on | Source and screen deals, run due diligence checklists, analyze unit economics and returns, draft IC memos, and monitor portfolio company KPIs. | — |
@@ -46,7 +46,6 @@ These plugins are built and maintained by our data partners, bringing their fina
 
 | Plugin | Partner | How it helps |
 |--------|---------|-------------|
-| **[LSEG](./partner-built/lseg)** | [LSEG](https://www.lseg.com/) | Price bonds, analyze yield curves, evaluate FX carry trades, value options, and build macro dashboards using LSEG financial data and analytics. 8 commands covering fixed income, FX, equities, and macro. |
 | **[S&P Global](./partner-built/spglobal)** | [S&P Global](https://www.spglobal.com/) | Generate company tearsheets, earnings previews, and funding digests powered by S&P Capital IQ data. Supports multiple audience types (equity research, IB/M&A, corp dev, sales). |
 
 ## Getting Started
@@ -114,7 +113,6 @@ All connectors are centralized in the **financial analysis** core plugin and sha
 | [Moody's](https://www.moodys.com/) | `https://api.moodys.com/genai-ready-data/m1/mcp` |
 | [MT Newswires](https://www.mtnewswires.com/) | `https://vast-mcp.blueskyapi.com/mtnewswires` |
 | [Aiera](https://www.aiera.com/) | `https://mcp-pub.aiera.com` |
-| [LSEG](https://www.lseg.com/) | `https://api.analytics.lseg.com/lfa/mcp` |
 | [PitchBook](https://pitchbook.com/) | `https://premium.mcp.pitchbook.com/mcp` |
 | [Chronograph](https://www.chronograph.pe/) | `https://ai.chronograph.pe/mcp` |
 | [Egnyte](https://www.egnyte.com/) | `https://mcp-server.egnyte.com/mcp` |
