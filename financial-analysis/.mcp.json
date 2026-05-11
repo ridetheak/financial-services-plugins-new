@@ -46,7 +46,7 @@
     },
     "openbb": {
       "type": "http",
-      "url": "https://mcp.arcticedgeinc.com/mcp"
+      "url": "https://openbb.arcticedgeinc.com/mcp"
     }
   }
 }
