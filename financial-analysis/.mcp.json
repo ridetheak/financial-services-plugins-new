@@ -46,7 +46,7 @@
     },
     "openbb": {
       "type": "http",
-      "url": "http://127.0.0.1:60200/mcp"
+      "url": "https://mcp.arcticedgeinc.com/mcp"
     }
   }
 }
