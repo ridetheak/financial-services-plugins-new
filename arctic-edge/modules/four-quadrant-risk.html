@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arctic Edge — Four-Quadrant Risk Framework</title>
+<!--
+  Arctic Edge — Module 2: Four-Quadrant Risk Framework
+  Terminal surface: section-risk-4q
+  Input contract: one writer per quadrant (see PRODUCERS below)
+  Compute: per-quadrant assembly + collapse guard (no single proprietary score)
+  Output artifact: four-quadrant-risk/v1 JSON
+  Compliance: each quadrant must stay independently auditable + plain-language
+-->
+<style>
+:root{
+  --arctic-800:#1C2B35;--glacier-700:#1F5D74;--glacier-500:#4494B0;
+  --paper-0:#FFFFFF;--paper-2:#F4F8FA;--paper-3:#ECF2F5;
+  --ink-900:#0A1219;--ink-700:#243845;--ink-500:#5A6C77;--ink-400:#7D8D96;
+  --border-1:#DCE4E8;--border-2:#C7D2D8;
+  --ok-500:#1F9D6B;--ok-100:#DCEFE2;--warn-500:#D77A1A;--warn-100:#FCE8D2;
+  --risk-500:#B64841;--risk-100:#F4DEDB;--info-500:#3F74A1;--info-100:#DEE9F3;
+  --font-sans:"Inter Tight",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--paper-2);color:var(--ink-900);font-size:13px;line-height:1.45;padding:24px;}
+.module{max-width:920px;margin:0 auto;background:var(--paper-0);border:1px solid var(--border-1);border-radius:8px;overflow:hidden;}
+.module-head{background:var(--arctic-800);color:#fff;padding:14px 20px;}
+.module-head h1{font-size:15px;font-weight:600;}
+.module-head p{font-size:11px;color:#9EC5D8;margin-top:2px;}
+.module-body{padding:20px;}
+.note{font-size:11px;color:var(--ink-500);background:var(--paper-3);border:1px solid var(--border-1);
+  border-radius:5px;padding:9px 12px;margin-bottom:16px;}
+.quad-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.quad{border:1px solid var(--border-1);border-radius:7px;overflow:hidden;}
+.quad-head{padding:9px 13px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-1);}
+.quad-head h2{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+.quad-producer{font-size:10px;font-family:var(--font-mono);color:var(--ink-400);}
+.quad-body{padding:13px;}
+.rating-row{display:flex;gap:6px;margin-bottom:10px;}
+.rating{flex:1;text-align:center;font-size:11px;font-weight:600;padding:5px 0;border-radius:4px;
+  border:1px solid var(--border-2);cursor:pointer;background:var(--paper-0);color:var(--ink-500);}
+.rating.sel-low{background:var(--ok-100);border-color:var(--ok-500);color:var(--ok-500);}
+.rating.sel-mod{background:var(--warn-100);border-color:var(--warn-500);color:var(--warn-500);}
+.rating.sel-high{background:var(--risk-100);border-color:var(--risk-500);color:var(--risk-500);}
+label{font-size:11px;font-weight:500;color:var(--ink-500);display:block;margin-bottom:3px;}
+textarea{width:100%;font-family:var(--font-sans);font-size:12px;padding:7px 9px;border:1px solid var(--border-2);
+  border-radius:5px;min-height:60px;resize:vertical;}
+textarea:focus{outline:none;border-color:var(--glacier-500);box-shadow:0 0 0 3px rgba(68,148,176,.18);}
+.btn{font-family:var(--font-sans);font-size:12px;font-weight:500;padding:7px 14px;border-radius:5px;
+  border:1px solid var(--border-2);background:var(--paper-0);color:var(--ink-700);cursor:pointer;}
+.btn:hover{background:var(--paper-3);}
+.btn.primary{background:var(--glacier-700);border-color:var(--glacier-700);color:#fff;}
+.btn-row{display:flex;gap:8px;margin-top:16px;}
+.status{font-size:12px;padding:8px 12px;border-radius:5px;margin-top:12px;display:none;}
+.status.show{display:block;}
+.status.ok{background:var(--ok-100);color:#167A52;border:1px solid var(--ok-500);}
+.status.err{background:var(--risk-100);color:#8A2F2A;border:1px solid var(--risk-500);}
+.output{margin-top:14px;background:var(--ink-900);color:#C8D6DC;border-radius:6px;padding:14px;
+  font-family:var(--font-mono);font-size:11px;white-space:pre;overflow-x:auto;display:none;}
+.output.show{display:block;}
+</style>
+</head>
+<body>
+<div class="module">
+  <div class="module-head">
+    <h1>Four-Quadrant Risk Framework</h1>
+    <p>Arctic Edge Phase 1, Module 2 — four independent risk views, never collapsed</p>
+  </div>
+  <div class="module-body">
+    <div class="note">
+      Each quadrant is documented and rated independently and stays auditable in plain language.
+      The framework deliberately produces <strong>no single proprietary risk score</strong> — a
+      collapse guard blocks assembly if a combined score is ever introduced.
+    </div>
+    <div class="quad-grid" id="quadGrid"></div>
+    <div class="btn-row">
+      <button class="btn primary" onclick="assemble()">Assemble Four-Quadrant Risk</button>
+      <button class="btn" onclick="document.getElementById('output').classList.toggle('show')">Toggle JSON</button>
+    </div>
+    <div id="status" class="status"></div>
+    <div id="output" class="output"></div>
+  </div>
+</div>
+
+<script>
+// ── four-quadrant-risk/v1 contract ──────────────────────────────
+// Four independent quadrants. Exactly one producer writes each.
+// Phase 1: Portfolio Risk is fed by Module 3; the rest are advisor-entered
+// until their producer modules ship (Behavioral = Phase 2, Suitability = Phase 2).
+const QUADRANTS = [
+  {key:"portfolioRisk",  label:"Portfolio Risk",   producer:"portfolio-risk-analyzer (M3)"},
+  {key:"valuationRisk",  label:"Valuation Risk",   producer:"advisor entry"},
+  {key:"behavioralRisk", label:"Behavioral Risk",  producer:"advisor entry (telemetry: Phase 2)"},
+  {key:"suitabilityOverlay",label:"Suitability Overlay",producer:"advisor entry (bridge: Phase 2)"},
+];
+const RATINGS=[["low","Low","sel-low"],["moderate","Moderate","sel-mod"],["high","High","sel-high"]];
+const state={};
+
+function renderQuadrants(){
+  const grid=document.getElementById("quadGrid");
+  grid.innerHTML=QUADRANTS.map(q=>{
+    state[q.key]={rating:null,rationale:""};
+    return `<div class="quad">
+      <div class="quad-head">
+        <h2>${q.label}</h2><span class="quad-producer">${q.producer}</span>
+      </div>
+      <div class="quad-body">
+        <div class="rating-row" data-quad="${q.key}">
+          ${RATINGS.map(r=>`<button class="rating" data-rating="${r[0]}" data-cls="${r[2]}"
+            onclick="setRating('${q.key}','${r[0]}','${r[2]}')">${r[1]}</button>`).join("")}
+        </div>
+        <label>Plain-language rationale</label>
+        <textarea data-quad="${q.key}" oninput="state['${q.key}'].rationale=this.value"
+          placeholder="Why this rating — explainable to client and compliance"></textarea>
+      </div>
+    </div>`;
+  }).join("");
+}
+function setRating(key,rating,cls){
+  state[key].rating=rating;
+  const row=document.querySelector(`.rating-row[data-quad="${key}"]`);
+  row.querySelectorAll(".rating").forEach(b=>{
+    b.className="rating"+(b.dataset.rating===rating?" "+cls:"");
+  });
+}
+
+// Collapse guard: the contract must never carry a single combined score.
+function collapseGuard(rec){
+  const banned=["overallScore","compositeScore","riskScore","totalRisk"];
+  return banned.filter(k=>k in rec);
+}
+
+function assemble(){
+  const missing=QUADRANTS.filter(q=>!state[q.key].rating).map(q=>q.label);
+  if(missing.length){
+    showStatus("Each quadrant needs a rating before assembly — missing: "+missing.join(", "),false);
+    return;
+  }
+  const noRationale=QUADRANTS.filter(q=>!state[q.key].rationale.trim()).map(q=>q.label);
+  if(noRationale.length){
+    showStatus("Each quadrant needs a plain-language rationale — missing: "+noRationale.join(", "),false);
+    return;
+  }
+  const rec={contract:"four-quadrant-risk/v1",assembledAt:new Date().toISOString(),quadrants:{}};
+  QUADRANTS.forEach(q=>{
+    rec.quadrants[q.key]={
+      label:q.label,producer:q.producer,
+      rating:state[q.key].rating,rationale:state[q.key].rationale.trim(),
+    };
+  });
+  const collapsed=collapseGuard(rec);
+  if(collapsed.length){
+    showStatus("Collapse guard tripped — combined score fields not allowed: "+collapsed.join(", "),false);
+    return;
+  }
+  showStatus("Four-Quadrant Risk assembled. Four independent views, no collapsed score.",true);
+  const o=document.getElementById("output");
+  o.textContent=JSON.stringify(rec,null,2);
+  o.classList.add("show");
+  window.fourQuadrantRisk=rec; // hand-off for downstream modules
+}
+function showStatus(msg,ok){
+  const s=document.getElementById("status");
+  s.textContent=msg;s.className="status show "+(ok?"ok":"err");
+}
+renderQuadrants();
+</script>
+</body>
+</html>

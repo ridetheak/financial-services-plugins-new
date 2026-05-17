@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arctic Edge — Workstation</title>
+<!--
+  Arctic Edge — Module 10: Workstation
+  The integration surface. A multi-tab shell that hosts Modules 1-9, each as a
+  self-contained module loaded in its own frame. This is the "integrate last"
+  module from FRAMEWORK.md — it does not duplicate module logic, it composes it.
+  Deeper embedding into the legacy ae_terminal.html prototype is a follow-on.
+-->
+<style>
+:root{
+  --arctic-900:#0E1A22;--arctic-800:#1C2B35;--arctic-700:#243845;
+  --glacier-700:#1F5D74;--glacier-500:#4494B0;--arctic-300:#9EC5D8;
+  --paper-2:#F4F8FA;--paper-3:#ECF2F5;
+  --ink-500:#5A6C77;--ink-400:#7D8D96;--border-1:#DCE4E8;
+  --warn-500:#D77A1A;
+  --font-sans:"Inter Tight",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font-sans);background:var(--paper-2);color:#0A1219;font-size:13px;display:flex;flex-direction:column;}
+.topbar{height:46px;background:var(--arctic-900);color:#fff;display:flex;align-items:center;
+  padding:0 16px;gap:12px;flex-shrink:0;}
+.brand{font-size:14px;font-weight:600;letter-spacing:-.01em;}
+.brand span{color:var(--glacier-500);font-weight:400;}
+.brand-sub{font-size:10px;color:var(--arctic-300);font-family:var(--font-mono);}
+.tabbar{display:flex;gap:1px;background:var(--arctic-800);padding:0 8px;flex-shrink:0;overflow-x:auto;}
+.tab{padding:8px 12px;font-size:11px;font-weight:500;letter-spacing:.03em;color:var(--arctic-300);
+  background:none;border:none;cursor:pointer;font-family:var(--font-sans);white-space:nowrap;
+  border-bottom:2px solid transparent;}
+.tab:hover{color:#fff;}
+.tab.active{color:#fff;border-bottom-color:var(--glacier-500);}
+.tab .num{font-family:var(--font-mono);color:var(--ink-400);margin-right:4px;}
+.tab.active .num{color:var(--glacier-500);}
+.tab .reg{color:var(--warn-500);font-size:9px;margin-left:3px;}
+.stage{flex:1;position:relative;background:var(--paper-2);}
+iframe{width:100%;height:100%;border:none;display:none;}
+iframe.active{display:block;}
+.overview{display:none;padding:28px;max-width:880px;margin:0 auto;overflow:auto;height:100%;}
+.overview.active{display:block;}
+.overview h1{font-size:18px;margin-bottom:4px;}
+.overview .lede{color:var(--ink-500);font-size:12px;margin-bottom:18px;}
+.flow{border:1px solid var(--border-1);border-radius:8px;background:#fff;padding:16px 18px;margin-bottom:14px;}
+.flow h2{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--glacier-700);margin-bottom:8px;}
+.mlist{display:grid;gap:6px;}
+.mrow{display:flex;gap:10px;align-items:baseline;font-size:12px;padding:5px 0;border-bottom:1px solid var(--paper-3);}
+.mrow .mn{font-family:var(--font-mono);color:var(--ink-400);width:28px;}
+.mrow .mname{font-weight:600;width:230px;}
+.mrow .mdesc{color:var(--ink-500);flex:1;}
+.mrow .mreg{color:var(--warn-500);font-size:10px;font-weight:600;}
+.statusline{font-size:10px;color:var(--ink-400);font-family:var(--font-mono);margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <span class="brand">Arctic<span>Edge</span></span>
+  <span class="brand-sub">Workstation · Phase 1</span>
+</div>
+<div class="tabbar" id="tabbar"></div>
+<div class="stage" id="stage">
+  <div class="overview active" id="overview">
+    <h1>Arctic Edge Workstation</h1>
+    <div class="lede">Module 10 — the integration surface. Hosts Phase 1 Modules 1–9, each a
+      self-contained unit built to the framework's module-wrapper contract.</div>
+    <div class="flow">
+      <h2>Phase 1 Modules</h2>
+      <div class="mlist" id="mlist"></div>
+      <div class="statusline" id="statusline"></div>
+    </div>
+    <div class="flow">
+      <h2>Data flow</h2>
+      <div style="font-size:12px;color:var(--ink-500);line-height:1.7">
+        IPS Module produces the <code>ips-record</code> consumed by the Reg BI Note Generator,
+        Note Completeness Auditor, and Audit Trail. The Portfolio Risk Analyzer writes
+        Quadrant 1 of the Four-Quadrant Risk Framework. Modules exchange data only through
+        the shared contracts defined in <code>FRAMEWORK.md</code> — never through each other's internals.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const MODULES=[
+  {n:1,name:"IPS Module",file:"modules/ips-module.html",
+   desc:"Investment Policy Statement capture — the foundation contract."},
+  {n:2,name:"Four-Quadrant Risk",file:"modules/four-quadrant-risk.html",
+   desc:"Four independent risk views; collapse guard blocks any single score."},
+  {n:3,name:"Portfolio Risk Analyzer",file:"modules/portfolio-risk-analyzer.html",
+   desc:"VaR, vol, beta, Sharpe, drawdown, risk contributions. Feeds Quadrant 1."},
+  {n:4,name:"Trade Thesis Library",file:"modules/trade-thesis-library.html",
+   desc:"Timestamped, searchable thesis archive with outcome close-out."},
+  {n:5,name:"Audit Trail",file:"modules/audit-trail.html",
+   desc:"Append-only solicited/unsolicited recommendation log."},
+  {n:6,name:"Reg BI Note Generator",file:"modules/reg-bi-note-generator.html",
+   desc:"Trade notes structured to Reg BI & CFP Standards.",reg:true},
+  {n:7,name:"Note Completeness Auditor",file:"modules/note-completeness-auditor.html",
+   desc:"Affirmative, non-blocking Reg BI pre-submission check.",reg:true},
+  {n:8,name:"Equity Tearsheet Generator",file:"modules/equity-tearsheet-generator.html",
+   desc:"One-page security tearsheet with standard disclosure language."},
+  {n:9,name:"Concentration X-Ray",file:"modules/concentration-xray.html",
+   desc:"Look-through single-name exposure across a household."},
+];
+
+const tabbar=document.getElementById("tabbar");
+const stage=document.getElementById("stage");
+
+// Overview tab
+const ovTab=document.createElement("button");
+ovTab.className="tab active";ovTab.textContent="Overview";
+ovTab.onclick=()=>activate("overview");
+tabbar.appendChild(ovTab);
+
+const frames={};
+MODULES.forEach(m=>{
+  const tab=document.createElement("button");
+  tab.className="tab";
+  tab.innerHTML=`<span class="num">${m.n}</span>${m.name}${m.reg?'<span class="reg">REG</span>':''}`;
+  tab.onclick=()=>activate("m"+m.n);
+  tabbar.appendChild(tab);
+  m._tab=tab;
+
+  const fr=document.createElement("iframe");
+  fr.dataset.key="m"+m.n;
+  fr.dataset.src=m.file; // lazy-load on first activation
+  stage.appendChild(fr);
+  frames["m"+m.n]=fr;
+});
+MODULES[0+0]; // noop
+
+function activate(key){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById("overview").classList.remove("active");
+  Object.values(frames).forEach(f=>f.classList.remove("active"));
+  if(key==="overview"){
+    ovTab.classList.add("active");
+    document.getElementById("overview").classList.add("active");
+    return;
+  }
+  const m=MODULES.find(x=>"m"+x.n===key);
+  m._tab.classList.add("active");
+  const fr=frames[key];
+  if(!fr.src) fr.src=fr.dataset.src;
+  fr.classList.add("active");
+}
+
+// Overview module list
+document.getElementById("mlist").innerHTML=MODULES.map(m=>`
+  <div class="mrow">
+    <span class="mn">${m.n}</span>
+    <span class="mname">${m.name}${m.reg?' <span class="mreg">REG</span>':''}</span>
+    <span class="mdesc">${m.desc}</span>
+  </div>`).join("");
+document.getElementById("statusline").textContent=
+  "Phase 1: 9 modules built + this Workstation shell (Module 10). REG = regulated work product, "+
+  "pending compliance sign-off. Module sources under arctic-edge/modules/.";
+</script>
+</body>
+</html>
