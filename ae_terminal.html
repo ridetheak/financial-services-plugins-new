@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArcticEdge | Christopher Granger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --arctic-900:#0E1A22;--arctic-800:#1C2B35;--arctic-700:#243845;--arctic-600:#2E4F63;
+  --arctic-500:#436B82;--arctic-400:#6AACCA;--arctic-300:#9EC5D8;--arctic-200:#C8D6DC;
+  --arctic-100:#E8F0F4;--arctic-050:#F4F8FA;--arctic-025:#FAFCFD;
+  --ink-900:#0A1219;--ink-800:#14212B;--ink-700:#243845;--ink-600:#415460;
+  --ink-500:#5A6C77;--ink-400:#7D8D96;--ink-300:#A6B3BA;--ink-200:#CBD4D8;--ink-100:#E4EAED;
+  --paper-0:#FFFFFF;--paper-1:#FAFCFD;--paper-2:#F4F8FA;--paper-3:#ECF2F5;--paper-4:#E4EBEF;
+  --glacier-700:#1F5D74;--glacier-600:#2E7A95;--glacier-500:#4494B0;--glacier-400:#6AACCA;--glacier-100:#DCEBF0;
+  --ok-700:#167A52;--ok-500:#1F9D6B;--ok-100:#DCEFE2;
+  --warn-700:#9E5714;--warn-500:#D77A1A;--warn-100:#FCE8D2;
+  --risk-700:#8A2F2A;--risk-500:#B64841;--risk-100:#F4DEDB;
+  --info-700:#274D70;--info-500:#3F74A1;--info-100:#DEE9F3;
+  --bg-canvas:var(--paper-1);--bg-surface:var(--paper-0);--bg-sunken:var(--paper-2);
+  --fg-1:var(--ink-900);--fg-2:var(--ink-700);--fg-3:var(--ink-500);--fg-4:var(--ink-400);
+  --fg-accent:var(--glacier-700);--fg-link:var(--arctic-600);
+  --border-1:#DCE4E8;--border-2:#C7D2D8;--border-3:var(--arctic-700);
+  --font-display:"Source Serif 4",Georgia,serif;
+  --font-sans:"Inter Tight",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --shadow-1:0 1px 0 rgba(20,33,43,.04),0 2px 4px rgba(20,33,43,.08);
+  --shadow-2:0 2px 0 rgba(20,33,43,.04),0 8px 16px -4px rgba(20,33,43,.14);
+  --shadow-3:0 3px 0 rgba(20,33,43,.04),0 20px 36px -10px rgba(20,33,43,.24);
+  --ring-focus:0 0 0 3px rgba(106,172,202,.35);
+  --dur-1:120ms;--dur-2:180ms;--dur-3:260ms;
+  --ease-standard:cubic-bezier(.2,0,.2,1);
+}
+
+body{
+  font-family:var(--font-sans);
+  background:var(--bg-canvas);
+  color:var(--fg-1);
+  font-size:13px;
+  line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+
+/* ── Liquid Glass mixin ─────────────────────────────────────── */
+.glass{
+  background:rgba(255,255,255,0.62);
+  backdrop-filter:blur(20px) saturate(1.6);
+  -webkit-backdrop-filter:blur(20px) saturate(1.6);
+  border:1px solid rgba(255,255,255,0.82);
+  box-shadow:0 1px 0 rgba(20,33,43,.03),0 4px 16px -4px rgba(20,33,43,.10),inset 0 1px 0 rgba(255,255,255,0.9);
+}
+.glass-dark{
+  background:rgba(28,43,53,0.88);
+  backdrop-filter:blur(20px) saturate(1.4);
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border:1px solid rgba(106,172,202,0.18);
+  box-shadow:0 2px 24px rgba(14,26,34,.35);
+}
+
+/* ── Background ─────────────────────────────────────────────── */
+.bg-layer{
+  position:fixed;inset:0;z-index:-1;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(106,172,202,.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 100%, rgba(67,107,130,.12) 0%, transparent 60%),
+    linear-gradient(160deg, #E8F0F4 0%, #F4F8FA 40%, #FAFCFD 100%);
+}
+
+/* ── Top bar ────────────────────────────────────────────────── */
+.topbar{
+  height:48px;padding:0 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:200;
+  background:rgba(255,255,255,0.72);
+  backdrop-filter:blur(24px) saturate(1.8);
+  -webkit-backdrop-filter:blur(24px) saturate(1.8);
+  border-bottom:1px solid var(--border-1);
+  box-shadow:0 1px 0 rgba(20,33,43,.05);
+}
+.brand{
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.brand-wordmark{
+  font-family:var(--font-display);
+  font-size:14px;font-weight:500;
+  color:var(--arctic-800);
+  letter-spacing:-.01em;
+}
+.brand-wordmark span{color:var(--glacier-500);font-weight:400;}
+.brand-divider{width:1px;height:20px;background:var(--border-1);margin:0 4px;}
+
+.nav-tabs{display:flex;gap:1px;overflow-x:auto;scrollbar-width:none;}
+.nav-tabs::-webkit-scrollbar{display:none;}
+.nav-tab{
+  padding:5px 12px;border-radius:5px;cursor:pointer;
+  color:var(--fg-3);font-size:11px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;
+  border:none;background:none;font-family:var(--font-sans);
+  white-space:nowrap;transition:all var(--dur-1) var(--ease-standard);
+}
+.nav-tab:hover{color:var(--fg-1);background:var(--paper-3);}
+.nav-tab.active{
+  color:var(--glacier-700);
+  background:rgba(68,148,176,.10);
+}
+
+.status-bar{display:flex;align-items:center;gap:12px;font-size:10px;flex-shrink:0;}
+.status-dot{width:6px;height:6px;border-radius:50%;display:inline-block;animation:pulse 2s infinite;}
+.status-dot.g{background:var(--ok-500);}
+.status-dot.y{background:var(--warn-500);}
+.status-dot.r{background:var(--risk-500);}
+.status-label{color:var(--fg-4);font-size:10px;font-family:var(--font-mono);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Layout ─────────────────────────────────────────────────── */
+.workspace{display:grid;grid-template-columns:208px 1fr;min-height:calc(100vh - 48px);}
+.sidebar{
+  border-right:1px solid var(--border-1);
+  padding:10px 0;overflow-y:auto;
+  max-height:calc(100vh - 48px);
+  background:rgba(250,252,253,0.8);
+}
+.main-content{
+  padding:14px;overflow-y:auto;
+  max-height:calc(100vh - 48px);
+}
+
+/* ── Sidebar ────────────────────────────────────────────────── */
+.sidebar-label{
+  font-size:9px;letter-spacing:.14em;color:var(--fg-4);text-transform:uppercase;
+  padding:4px 14px 4px;margin-top:10px;font-weight:600;
+}
+.sidebar-item{
+  padding:6px 14px;cursor:pointer;display:flex;align-items:center;gap:7px;
+  color:var(--fg-3);font-size:11px;font-weight:500;
+  transition:all var(--dur-1) var(--ease-standard);
+  border-left:2px solid transparent;
+}
+.sidebar-item:hover{color:var(--fg-1);background:var(--paper-3);}
+.sidebar-item.active{color:var(--glacier-700);background:rgba(68,148,176,.08);border-left-color:var(--glacier-500);}
+
+.ticker-form{padding:10px 10px 4px;}
+.ticker-input{
+  width:100%;background:var(--bg-surface);
+  border:1px solid var(--border-2);border-radius:5px;
+  padding:7px 10px;color:var(--fg-1);font-family:var(--font-mono);
+  font-size:11px;letter-spacing:.06em;outline:none;
+  transition:border-color var(--dur-1);
+  box-shadow:var(--shadow-1);
+}
+.ticker-input:focus{border-color:var(--glacier-500);box-shadow:var(--ring-focus);}
+.ticker-input::placeholder{color:var(--fg-4);}
+.ticker-btn{
+  width:100%;margin-top:6px;
+  background:var(--glacier-700);border:1px solid var(--glacier-600);
+  border-radius:5px;color:#fff;padding:7px;cursor:pointer;
+  font-family:var(--font-sans);font-size:10px;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;
+  transition:background var(--dur-1);
+}
+.ticker-btn:hover{background:var(--glacier-600);}
+
+.wl-item{
+  padding:5px 14px;cursor:pointer;display:flex;justify-content:space-between;
+  font-size:10px;color:var(--fg-3);transition:all var(--dur-1);font-family:var(--font-mono);
+}
+.wl-item:hover{background:var(--paper-3);color:var(--fg-1);}
+.wl-t{color:var(--arctic-700);font-weight:600;}
+
+/* ── Panels ─────────────────────────────────────────────────── */
+.panel{
+  background:rgba(255,255,255,0.65);
+  backdrop-filter:blur(16px) saturate(1.5);
+  -webkit-backdrop-filter:blur(16px) saturate(1.5);
+  border:1px solid rgba(220,228,232,0.8);
+  border-radius:8px;margin-bottom:12px;overflow:hidden;
+  box-shadow:0 1px 0 rgba(20,33,43,.03),0 4px 12px -4px rgba(20,33,43,.08),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.ph{
+  padding:9px 14px;border-bottom:1px solid rgba(220,228,232,0.6);
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(255,255,255,0.5);
+}
+.pt{
+  font-size:9px;letter-spacing:.12em;color:var(--fg-4);text-transform:uppercase;font-weight:600;
+  display:flex;align-items:center;gap:6px;
+}
+.pb{padding:12px 14px;}
+
+/* ── Security header ────────────────────────────────────────── */
+.sec-header{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;margin-bottom:12px;}
+.sec-name{font-family:var(--font-display);font-size:20px;color:var(--fg-1);font-weight:400;line-height:1.1;}
+.sec-badge{
+  font-size:10px;font-weight:600;color:var(--glacier-700);font-family:var(--font-mono);
+  background:var(--glacier-100);border:1px solid rgba(68,148,176,.25);
+  border-radius:3px;padding:2px 7px;display:inline-block;margin-top:4px;letter-spacing:.06em;
+}
+.sec-price{font-family:var(--font-mono);font-size:28px;color:var(--fg-1);font-weight:500;text-align:right;}
+.sec-chg{font-size:12px;text-align:right;margin-top:2px;font-family:var(--font-mono);}
+.sec-time{font-size:9px;color:var(--fg-4);text-align:right;margin-top:3px;font-family:var(--font-mono);}
+
+/* ── Metrics grid ───────────────────────────────────────────── */
+.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+.mc{
+  background:rgba(244,248,250,0.8);border:1px solid var(--border-1);
+  border-radius:5px;padding:8px 10px;
+}
+.ml{font-size:9px;color:var(--fg-4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;font-weight:600;}
+.mv{font-size:13px;color:var(--fg-1);font-weight:500;font-family:var(--font-mono);}
+
+/* ── Color semantics ────────────────────────────────────────── */
+.pos{color:var(--ok-700);}
+.neg{color:var(--risk-500);}
+.warn-c{color:var(--warn-700);}
+
+/* ── Chart ──────────────────────────────────────────────────── */
+.chart-area{position:relative;height:160px;}
+
+/* ── AI output ──────────────────────────────────────────────── */
+.ai-out{
+  background:rgba(244,248,250,0.7);
+  border:1px solid var(--border-1);border-radius:5px;
+  padding:12px;font-size:11px;line-height:1.75;color:var(--fg-2);min-height:70px;
+}
+.ai-sl{font-size:9px;letter-spacing:.12em;color:var(--glacier-700);text-transform:uppercase;margin-bottom:3px;font-weight:600;}
+.ai-sec{margin-bottom:8px;}
+
+/* ── Badge chips ────────────────────────────────────────────── */
+.ds-b{display:inline-block;font-size:9px;letter-spacing:.06em;padding:1px 6px;border-radius:3px;margin-left:5px;font-weight:600;}
+.ds-b.live{background:var(--ok-100);color:var(--ok-700);border:1px solid rgba(31,157,107,.2);}
+.ds-b.srch{background:var(--warn-100);color:var(--warn-700);border:1px solid rgba(215,122,26,.2);}
+.ds-b.man{background:var(--paper-3);color:var(--fg-4);border:1px solid var(--border-1);}
+.ds-b.off{background:var(--risk-100);color:var(--risk-700);border:1px solid rgba(182,72,65,.2);}
+
+/* ── Compliance ─────────────────────────────────────────────── */
+.comp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.cc{border-radius:5px;padding:9px 10px;border:1px solid;}
+.cc.pass{background:var(--ok-100);border-color:rgba(31,157,107,.25);}
+.cc.warn{background:var(--warn-100);border-color:rgba(215,122,26,.25);}
+.cc.fail{background:var(--risk-100);border-color:rgba(182,72,65,.25);}
+.cc.na{background:var(--paper-3);border-color:var(--border-1);}
+.clab{font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;font-weight:600;}
+.cc.pass .clab{color:var(--ok-700);}
+.cc.warn .clab{color:var(--warn-700);}
+.cc.fail .clab{color:var(--risk-700);}
+.cc.na .clab{color:var(--fg-4);}
+.cv{font-size:11px;color:var(--fg-2);}
+
+.rb-bar{background:var(--paper-3);border-radius:3px;height:5px;margin:6px 0;overflow:hidden;}
+.rb-fill{height:100%;border-radius:3px;transition:width .5s var(--ease-standard);}
+.rb-fill.high{background:var(--ok-500);}
+.rb-fill.med{background:var(--warn-500);}
+.rb-fill.low{background:var(--risk-500);}
+
+.fl-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:6px 0;border-bottom:1px solid var(--border-1);font-size:11px;color:var(--fg-2);
+}
+.fl-item:last-child{border-bottom:none;}
+.fd{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.fd.pass{background:var(--ok-500);}
+.fd.warn{background:var(--warn-500);}
+.fd.fail{background:var(--risk-500);}
+
+/* ── Score ──────────────────────────────────────────────────── */
+.score-num{font-family:var(--font-mono);font-size:36px;font-weight:600;text-align:center;padding:8px 0 2px;}
+.score-sub{font-size:9px;color:var(--fg-4);letter-spacing:.12em;text-transform:uppercase;text-align:center;font-weight:600;}
+
+/* ── Forms ──────────────────────────────────────────────────── */
+.rf{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fl{font-size:9px;color:var(--fg-4);letter-spacing:.1em;text-transform:uppercase;font-weight:600;}
+.fc{
+  background:var(--bg-surface);border:1px solid var(--border-2);border-radius:4px;
+  padding:7px 9px;color:var(--fg-1);font-family:var(--font-sans);font-size:11px;
+  outline:none;transition:border-color var(--dur-1),box-shadow var(--dur-1);
+}
+.fc:focus{border-color:var(--glacier-500);box-shadow:var(--ring-focus);}
+.fc option{background:var(--bg-surface);}
+textarea.fc{resize:vertical;}
+
+/* ── Buttons ────────────────────────────────────────────────── */
+.rb{
+  grid-column:1/-1;background:var(--glacier-700);border:1px solid var(--glacier-600);
+  border-radius:5px;color:#fff;padding:9px;cursor:pointer;
+  font-family:var(--font-sans);font-size:10px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;transition:background var(--dur-1);
+}
+.rb:hover{background:var(--glacier-600);}
+.eb{
+  background:var(--bg-surface);border:1px solid var(--border-2);border-radius:4px;
+  color:var(--fg-3);padding:5px 10px;cursor:pointer;font-family:var(--font-sans);
+  font-size:9px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
+  transition:all var(--dur-1);
+}
+.eb:hover{color:var(--fg-1);border-color:var(--arctic-400);background:var(--paper-2);}
+
+/* ── News ───────────────────────────────────────────────────── */
+.ni{padding:7px 0;border-bottom:1px solid var(--border-1);}
+.ni:last-child{border-bottom:none;}
+.nh{font-size:11px;color:var(--fg-2);line-height:1.5;}
+.nm{font-size:9px;color:var(--fg-4);margin-top:2px;font-family:var(--font-mono);}
+.ns{display:inline-block;font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;margin-right:4px;}
+.ns.pos{background:var(--ok-100);color:var(--ok-700);}
+.ns.neg{background:var(--risk-100);color:var(--risk-700);}
+.ns.neu{background:var(--paper-3);color:var(--fg-4);}
+
+/* ── Peer table ─────────────────────────────────────────────── */
+.pt-table{width:100%;border-collapse:collapse;font-size:11px;font-family:var(--font-mono);}
+.pt-table th{
+  color:var(--fg-4);font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;
+  padding:5px 6px;text-align:right;border-bottom:1px solid var(--border-1);font-family:var(--font-sans);
+}
+.pt-table th:first-child{text-align:left;}
+.pt-table td{padding:5px 6px;text-align:right;color:var(--fg-2);border-bottom:1px solid rgba(220,228,232,.5);}
+.pt-table td:first-child{text-align:left;color:var(--glacier-700);font-weight:600;}
+.pt-table tr.hl td{color:var(--fg-1);background:rgba(106,172,202,.08);}
+
+/* ── WMI / Client Review ────────────────────────────────────── */
+.wm-issue-row{display:grid;grid-template-columns:160px 1fr 80px 70px 80px;gap:8px;align-items:start;padding:6px 0;border-bottom:1px solid var(--border-1);font-size:11px;}
+.wm-issue-row:last-child{border-bottom:none;}
+.wm-cat-label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:10px 0 4px;color:var(--glacier-700);font-weight:600;margin-top:2px;border-top:1px solid var(--border-1);}
+.wm-col-head{font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:5px 0;border-bottom:1px solid var(--border-1);color:var(--fg-4);font-weight:600;}
+.wm-cols{display:grid;grid-template-columns:160px 1fr 80px 70px 80px;gap:8px;padding:0 0 6px;}
+.wm-issue-name{color:var(--fg-2);font-size:11px;padding-top:4px;}
+.wm-ta{background:var(--bg-surface);border:1px solid var(--border-1);border-radius:3px;padding:4px 7px;color:var(--fg-1);font-family:var(--font-sans);font-size:10px;width:100%;resize:none;outline:none;min-height:38px;}
+.wm-ta:focus{border-color:var(--glacier-500);}
+.wm-sel{background:var(--bg-surface);border:1px solid var(--border-1);border-radius:3px;padding:4px 5px;color:var(--fg-1);font-family:var(--font-sans);font-size:9px;width:100%;outline:none;}
+
+/* ── 13 WMI ─────────────────────────────────────────────────── */
+.wmi-row{display:grid;grid-template-columns:180px 80px 1fr 100px;gap:8px;align-items:start;padding:7px 0;border-bottom:1px solid var(--border-1);font-size:11px;}
+.wmi-row:last-child{border-bottom:none;}
+.wmi-issue{color:var(--fg-2);font-size:11px;font-weight:500;}
+.priority-badge{display:inline-block;font-size:8px;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:.07em;font-weight:600;}
+.priority-badge.high{background:var(--risk-100);color:var(--risk-700);border:1px solid rgba(182,72,65,.25);}
+.priority-badge.med{background:var(--warn-100);color:var(--warn-700);border:1px solid rgba(215,122,26,.25);}
+.priority-badge.low{background:var(--info-100);color:var(--info-700);border:1px solid rgba(63,116,161,.25);}
+.priority-badge.none{background:var(--paper-3);color:var(--fg-4);border:1px solid var(--border-1);}
+
+/* ── Asset grid ─────────────────────────────────────────────── */
+.ag-table{width:100%;border-collapse:collapse;font-size:10px;}
+.ag-table th{background:var(--paper-2);color:var(--fg-4);font-size:8px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;padding:6px 5px;text-align:center;border:1px solid var(--border-1);}
+.ag-table th:first-child{text-align:left;}
+.ag-table td{padding:5px;border:1px solid rgba(220,228,232,.5);text-align:center;color:var(--fg-4);}
+.ag-table td:first-child{text-align:left;color:var(--fg-2);}
+.ag-table input{background:transparent;border:none;color:var(--glacier-700);font-family:var(--font-mono);font-size:9px;width:70px;text-align:center;outline:none;padding:2px;}
+.ag-table tr:hover td{background:rgba(106,172,202,.05);}
+
+/* ── Prompt cards ───────────────────────────────────────────── */
+.prompt-card{
+  background:var(--bg-surface);border:1px solid var(--border-1);border-radius:6px;
+  padding:10px 12px;margin-bottom:8px;cursor:pointer;
+  transition:all var(--dur-1) var(--ease-standard);
+  box-shadow:var(--shadow-1);
+}
+.prompt-card:hover{border-color:var(--arctic-400);box-shadow:var(--shadow-2);transform:translateY(-1px);}
+.prompt-title{font-size:11px;color:var(--glacier-700);margin-bottom:3px;font-weight:600;}
+.prompt-desc{font-size:10px;color:var(--fg-3);line-height:1.65;}
+.prompt-tag{display:inline-block;font-size:8px;padding:1px 5px;background:var(--glacier-100);color:var(--glacier-700);border-radius:3px;margin-right:3px;margin-top:3px;font-weight:600;}
+
+/* ── Exp bar ────────────────────────────────────────────────── */
+.exp-bar{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+
+/* ── Sub-tabs ───────────────────────────────────────────────── */
+.sub-tabs{display:flex;gap:2px;flex-wrap:wrap;}
+.st{
+  padding:4px 10px;font-size:9px;letter-spacing:.05em;font-weight:500;
+  color:var(--fg-3);border:1px solid var(--border-1);border-radius:3px;
+  cursor:pointer;background:none;font-family:var(--font-sans);transition:all var(--dur-1);
+  text-transform:uppercase;
+}
+.st.active{color:var(--glacier-700);background:var(--glacier-100);border-color:rgba(68,148,176,.3);}
+.st:hover:not(.active){color:var(--fg-1);background:var(--paper-3);}
+
+/* ── Layout helpers ─────────────────────────────────────────── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.section{display:none;}
+.section.active{display:block;}
+
+/* ── Modal ──────────────────────────────────────────────────── */
+#paste-modal{
+  display:none;position:fixed;inset:0;z-index:999;
+  background:rgba(14,26,34,.4);
+  backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;
+}
+.modal-box{
+  background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(220,228,232,.9);
+  border-radius:10px;width:540px;padding:20px;
+  box-shadow:var(--shadow-3);
+}
+.modal-title{font-size:10px;color:var(--glacier-700);letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-bottom:12px;}
+
+/* ── Spinner ────────────────────────────────────────────────── */
+.spinner{display:inline-block;width:11px;height:11px;border:2px solid var(--border-1);border-top-color:var(--glacier-500);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px;}
+
+/* ── AI cursor ──────────────────────────────────────────────── */
+.ai-cursor::after{content:'▋';animation:blink .8s infinite;color:var(--glacier-500);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── FP card ─────────────────────────────────────────────────── */
+.fp-info-card{background:rgba(244,248,250,0.7);border:1px solid var(--border-1);border-radius:5px;padding:10px 12px;}
+
+/* ── Directory card ─────────────────────────────────────────── */
+.dir-card{background:var(--bg-surface);border:1px solid var(--border-1);border-radius:6px;padding:10px 12px;box-shadow:var(--shadow-1);}
+.dir-name{font-size:12px;color:var(--fg-1);font-weight:500;}
+.dir-role{font-size:10px;color:var(--glacier-600);margin-top:2px;}
+
+/* ── AEG mark SVG ───────────────────────────────────────────── */
+.aeg-mark svg{display:block;}
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+
+<!-- Top Bar -->
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:0">
+    <div class="brand">
+      <div class="aeg-mark">
+        <svg viewBox="0 0 400 400" width="28" height="28" aria-label="ArcticEdge">
+          <rect x="220" y="60" width="160" height="160" rx="16" fill="#1C2B35" fill-opacity=".9"/>
+          <rect x="196" y="84" width="160" height="160" rx="16" fill="#2E4F63" fill-opacity=".74"/>
+          <rect x="172" y="108" width="160" height="160" rx="16" fill="#6AACCA" fill-opacity=".56"/>
+          <rect x="148" y="132" width="160" height="160" rx="16" fill="#E8F0F4" fill-opacity=".82"/>
+          <circle cx="160" cy="144" r="12" fill="#C8D6DC"/>
+        </svg>
+      </div>
+      <div class="brand-wordmark">Arctic<span>Edge</span></div>
+      <div class="brand-divider"></div>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="sw('research',this)">Research</button>
+      <button class="nav-tab" onclick="sw('compliance',this)">Reg BI</button>
+      <button class="nav-tab" onclick="sw('recmemo',this)">Rec Memo</button>
+      <button class="nav-tab" onclick="sw('client-review',this)">Client Review</button>
+      <button class="nav-tab" onclick="sw('wmi',this)">13 WMI</button>
+      <button class="nav-tab" onclick="sw('asset-grid',this)">Asset Grid</button>
+      <button class="nav-tab" onclick="sw('fp-workflow',this)">FP Workflow</button>
+      <button class="nav-tab" onclick="sw('portfolio',this)">Portfolio</button>
+      <button class="nav-tab" onclick="sw('prompts',this)">AI Prompts</button>
+    </div>
+  </div>
+  <div class="status-bar">
+    <span><span class="status-dot g"></span> <span class="status-label">OpenBB</span></span>
+    <span><span class="status-dot y"></span> <span class="status-label">LSEG</span></span>
+    <span><span class="status-dot r"></span> <span class="status-label">Cap IQ</span></span>
+    <span style="color:var(--fg-4);font-size:10px;font-family:var(--font-mono)" id="clock"></span>
+  </div>
+</div>
+
+<!-- Workspace -->
+<div class="workspace">
+  <div class="sidebar">
+    <div class="ticker-form">
+      <input class="ticker-input" id="tickerIn" type="text" placeholder="TICKER / CUSIP" maxlength="20">
+      <button class="ticker-btn" onclick="runResearch()">▶ Analyze</button>
+    </div>
+    <div class="sidebar-label">Watchlist</div>
+    <div id="watchlist-items"></div>
+    <div class="sidebar-label">Data Sources</div>
+    <div class="sidebar-item active">
+      <span style="width:7px;height:7px;border-radius:50%;background:var(--ok-500);flex-shrink:0;display:inline-block"></span>
+      OpenBB <span class="ds-b live">Live</span>
+    </div>
+    <div class="sidebar-item">
+      <span style="width:7px;height:7px;border-radius:50%;background:var(--warn-500);flex-shrink:0;display:inline-block"></span>
+      LSEG <span class="ds-b srch">Partial</span>
+    </div>
+    <div class="sidebar-item">
+      <span style="width:7px;height:7px;border-radius:50%;background:var(--risk-500);flex-shrink:0;display:inline-block"></span>
+      Cap IQ <span class="ds-b man">Paste</span>
+    </div>
+    <div class="sidebar-item">
+      <span style="width:7px;height:7px;border-radius:50%;background:var(--fg-4);flex-shrink:0;display:inline-block"></span>
+      CFRA <span class="ds-b man">Paste</span>
+    </div>
+    <div class="sidebar-label">Quick Links</div>
+    <div class="sidebar-item" onclick="sw('client-review',null)">▶ Client Review Form</div>
+    <div class="sidebar-item" onclick="sw('wmi',null)">▶ 13 WMI Tracker</div>
+    <div class="sidebar-item" onclick="sw('asset-grid',null)">▶ Asset Grid</div>
+    <div class="sidebar-item" onclick="sw('fp-workflow',null)">▶ FP Engagement</div>
+    <div class="sidebar-item" onclick="openModal('capiq')">↓ Paste Cap IQ</div>
+    <div class="sidebar-item" onclick="openModal('cfra')">↓ Paste CFRA</div>
+  </div>
+
+  <div class="main-content">
+
+    <!-- RESEARCH -->
+    <div class="section active" id="section-research">
+      <div class="panel">
+        <div class="pb">
+          <div class="sec-header">
+            <div>
+              <div class="sec-name" id="sn">NVIDIA Corporation</div>
+              <div style="margin-top:5px">
+                <span class="sec-badge" id="sec-sym">NVDA</span>
+                <span style="font-size:10px;color:var(--fg-4);margin-left:8px" id="sec-meta">NASDAQ · Semiconductors</span>
+              </div>
+            </div>
+            <div>
+              <div class="sec-price" id="sp">$201.68</div>
+              <div class="sec-chg pos" id="sc">+$3.33 (+1.68%)</div>
+              <div class="sec-time" id="sec-time">Live · OpenBB</div>
+            </div>
+          </div>
+          <div class="mg" id="metrics-grid">
+            <div class="mc"><div class="ml">Bid / Ask</div><div class="mv">201.49 / 201.83</div></div>
+            <div class="mc"><div class="ml">Day Range</div><div class="mv" style="font-size:11px">199.27–201.70</div></div>
+            <div class="mc"><div class="ml">52W Range</div><div class="mv" style="font-size:11px">95.04–212.19</div></div>
+            <div class="mc"><div class="ml">Volume</div><div class="mv">153.7M</div></div>
+            <div class="mc"><div class="ml">50D MA</div><div class="mv pos">182.75</div></div>
+            <div class="mc"><div class="ml">200D MA</div><div class="mv pos">181.53</div></div>
+            <div class="mc"><div class="ml">vs 50D MA</div><div class="mv pos">+10.4%</div></div>
+            <div class="mc"><div class="ml">vs 200D MA</div><div class="mv pos">+11.1%</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="panel">
+            <div class="ph">
+              <span class="pt">Price Chart</span>
+              <div class="sub-tabs">
+                <button class="st active" onclick="bldChart('1M',this)">1M</button>
+                <button class="st" onclick="bldChart('3M',this)">3M</button>
+                <button class="st" onclick="bldChart('1Y',this)">1Y</button>
+              </div>
+            </div>
+            <div class="pb"><div class="chart-area"><canvas id="priceChart"></canvas></div></div>
+          </div>
+          <div class="panel">
+            <div class="ph"><span class="pt">Peer Comparison</span></div>
+            <div class="pb">
+              <table class="pt-table">
+                <thead><tr><th>Ticker</th><th>Price</th><th>P/E</th><th>Rev Gr</th><th>Margin</th><th>YTD</th></tr></thead>
+                <tbody>
+                  <tr class="hl"><td>NVDA</td><td>$202</td><td>62x</td><td class="pos">+122%</td><td>55%</td><td class="pos">+72%</td></tr>
+                  <tr><td>AMD</td><td>$163</td><td>41x</td><td class="pos">+10%</td><td>5%</td><td class="neg">-28%</td></tr>
+                  <tr><td>INTC</td><td>$31</td><td>—</td><td class="neg">-14%</td><td class="neg">-4%</td><td class="neg">-38%</td></tr>
+                  <tr><td>QCOM</td><td>$160</td><td>16x</td><td class="pos">+7%</td><td>28%</td><td class="neg">-9%</td></tr>
+                  <tr><td>AVGO</td><td>$1,324</td><td>30x</td><td class="pos">+51%</td><td>38%</td><td class="pos">+28%</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <div class="ph">
+              <span class="pt">AI Investment Thesis <span class="ds-b live">Claude</span></span>
+              <button class="eb" onclick="genThesis()">▶ Regen</button>
+            </div>
+            <div class="pb">
+              <div class="ai-out" id="thesis-out">
+                <div class="ai-sec"><div class="ai-sl">Bull Case</div>Dominant AI infrastructure play. H100/H200 GPU monopoly with Blackwell ramp adding TAM. CUDA ecosystem creates defensible switching costs across enterprise, cloud, and sovereign AI.</div>
+                <div class="ai-sec"><div class="ai-sl">Bear Case</div>Valuation pricing multi-year perfection at 60x+. AMD MI300X gaining inference traction. Export restrictions on China sales. Potential AI capex cyclicality.</div>
+                <div class="ai-sec"><div class="ai-sl">Suitability</div>High-beta growth equity. Appropriate for aggressive growth profiles. Size carefully relative to total semiconductor exposure.</div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="ph"><span class="pt">News &amp; Sentiment <span class="ds-b srch">Live</span></span></div>
+            <div class="pb">
+              <div class="ni"><div class="nh"><span class="ns pos">POS</span>Nvidia unveils Blackwell Ultra GPU at GTC 2026</div><div class="nm">Reuters · 2h</div></div>
+              <div class="ni"><div class="nh"><span class="ns pos">POS</span>Data center revenue beats; guidance raised for Q2 FY2026</div><div class="nm">Bloomberg · 4h</div></div>
+              <div class="ni"><div class="nh"><span class="ns neg">NEG</span>Commerce Dept expands H20 chip export restrictions</div><div class="nm">WSJ · 6h</div></div>
+              <div class="ni"><div class="nh"><span class="ns neu">NEU</span>Jensen Huang keynote at developer conference; CUDA update</div><div class="nm">CNBC · 8h</div></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="ph"><span class="pt">External Data Import</span></div>
+            <div class="pb">
+              <div style="display:flex;gap:6px;margin-bottom:8px">
+                <button class="eb" style="flex:1" onclick="openModal('capiq')">↓ Cap IQ</button>
+                <button class="eb" style="flex:1" onclick="openModal('cfra')">↓ CFRA</button>
+                <button class="eb" style="flex:1" onclick="openModal('openbb')">↓ OpenBB</button>
+              </div>
+              <div id="import-status" style="font-size:10px;color:var(--fg-4)">No external data imported.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="exp-bar">
+        <button class="eb" onclick="alert('Wire to tearsheet pipeline.')">↓ Export Tearsheet PDF</button>
+        <button class="eb" onclick="alert('Wire to PDF export.')">↓ Research Memo</button>
+        <button class="eb" onclick="copyEl('thesis-out')">Copy Thesis</button>
+      </div>
+    </div>
+
+    <!-- REG BI -->
+    <div class="section" id="section-compliance">
+      <div class="two-col" style="margin-bottom:12px">
+        <div class="panel">
+          <div class="ph"><span class="pt">Client Profile</span></div>
+          <div class="pb">
+            <div class="rf">
+              <div class="fg"><div class="fl">Age</div><input class="fc" id="c-age" type="number" value="55"></div>
+              <div class="fg"><div class="fl">Risk Tolerance</div><select class="fc" id="c-risk"><option>Conservative</option><option selected>Moderate</option><option>Aggressive</option></select></div>
+              <div class="fg"><div class="fl">Objective</div><select class="fc" id="c-obj"><option>Capital Preservation</option><option selected>Growth &amp; Income</option><option>Aggressive Growth</option><option>Speculation</option></select></div>
+              <div class="fg"><div class="fl">Time Horizon</div><select class="fc" id="c-hor"><option>Short (&lt;3yr)</option><option selected>Medium (3-10yr)</option><option>Long (10yr+)</option></select></div>
+              <div class="fg"><div class="fl">Liquid Net Worth</div><select class="fc" id="c-nw"><option>&lt;$100K</option><option>$100K–$500K</option><option selected>$500K–$2M</option><option>$2M–$10M</option><option>$10M+</option></select></div>
+              <div class="fg"><div class="fl">Accredited?</div><select class="fc" id="c-acc"><option selected>Yes</option><option>No</option></select></div>
+              <div class="fg" style="grid-column:1/-1"><div class="fl">Security Being Recommended</div><input class="fc" id="c-sec" value="NVDA" style="width:100%"></div>
+              <button class="rb" onclick="runComp()">▶ Run Reg BI / Fiduciary Check</button>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ph"><span class="pt">Fiduciary Score</span></div>
+          <div class="pb">
+            <div class="score-num pos" id="fid-score">84</div>
+            <div class="score-sub">Fiduciary Compliance Score</div>
+            <div class="rb-bar"><div class="rb-fill high" id="fid-bar" style="width:84%"></div></div>
+            <div style="font-size:10px;color:var(--fg-3);text-align:center;margin-top:6px" id="fid-verdict">PASSES — Consistent with client best interest under Reg BI.</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span class="pt">Reg BI Checklist <span class="ds-b live">Claude Analysis</span></span></div>
+        <div class="pb">
+          <div class="comp-grid" id="comp-grid">
+            <div class="cc pass"><div class="clab">Care Obligation</div><div class="cv">Reasonable basis established</div></div>
+            <div class="cc pass"><div class="clab">Disclosure (Form CRS)</div><div class="cv">Conflicts disclosed</div></div>
+            <div class="cc warn"><div class="clab">Conflict of Interest</div><div class="cv">Verify comp structure</div></div>
+            <div class="cc pass"><div class="clab">Risk Alignment</div><div class="cv">Moderate — review sizing</div></div>
+            <div class="cc pass"><div class="clab">Suitability (FINRA)</div><div class="cv">Profile match: Growth</div></div>
+            <div class="cc pass"><div class="clab">Fiduciary Duty</div><div class="cv">Best interest standard met</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-top:12px">
+        <div class="panel">
+          <div class="ph"><span class="pt">AI Compliance Flags</span></div>
+          <div class="pb" id="comp-flags">
+            <div class="fl-item"><span class="fd pass"></span>Age 55 + medium horizon supports growth equity at moderate sizing.</div>
+            <div class="fl-item"><span class="fd warn"></span>Beta 1.68 — position sizing disclosure required; recommend max 5–8% of portfolio.</div>
+            <div class="fl-item"><span class="fd warn"></span>Confirm no principal trading or proprietary interest before placement.</div>
+            <div class="fl-item"><span class="fd pass"></span>Accredited status removes liquidity/complexity concerns.</div>
+            <div class="fl-item"><span class="fd pass"></span>No concentration risk if part of diversified equity sleeve.</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ph"><span class="pt">Auto-Generated Disclosure</span></div>
+          <div class="pb">
+            <div class="ai-out" id="disclosure-text" style="font-size:10px;line-height:1.85">This recommendation was made in accordance with Regulation Best Interest (Reg BI) and applicable fiduciary standards. The security recommended (NVDA) was selected based on the client's stated investment objective (Growth &amp; Income), moderate risk tolerance, medium time horizon (3–10 years), and liquid net worth of $500K–$2M. Known material conflicts have been disclosed in the firm's Form CRS. The advisor has determined that this recommendation is in the client's best interest at the time of the recommendation. Past performance is not indicative of future results.</div>
+            <div class="exp-bar">
+              <button class="eb" onclick="copyEl('disclosure-text')">Copy Disclosure</button>
+              <button class="eb" onclick="alert('Wire to PDF pipeline.')">↓ Export Compliance Doc</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REC MEMO -->
+    <div class="section" id="section-recmemo">
+      <div class="two-col">
+        <div class="panel">
+          <div class="ph"><span class="pt">Recommendation Parameters</span></div>
+          <div class="pb">
+            <div class="rf">
+              <div class="fg"><div class="fl">Security</div><input class="fc" id="rm-sec" value="NVDA"></div>
+              <div class="fg"><div class="fl">Action</div><select class="fc" id="rm-act"><option>Buy</option><option>Sell</option><option>Hold</option><option>Reduce</option><option>Accumulate</option></select></div>
+              <div class="fg"><div class="fl">Target Allocation</div><input class="fc" id="rm-alloc" placeholder="5% of portfolio"></div>
+              <div class="fg"><div class="fl">Horizon</div><select class="fc" id="rm-hor"><option>Short (&lt;1yr)</option><option selected>Medium (1–3yr)</option><option>Long (3yr+)</option></select></div>
+              <div class="fg" style="grid-column:1/-1"><div class="fl">Client Name (optional)</div><input class="fc" id="rm-client" placeholder="Leave blank for generic memo" style="width:100%"></div>
+              <div class="fg" style="grid-column:1/-1"><div class="fl">Investment Rationale (AI will supplement)</div><textarea class="fc" id="rm-rat" rows="3" placeholder="Your thesis or leave blank..."></textarea></div>
+              <button class="rb" onclick="genMemo()">▶ Generate Recommendation Memo</button>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ph">
+            <span class="pt">Generated Memo <span class="ds-b live">Claude</span></span>
+            <div style="display:flex;gap:5px">
+              <button class="eb" onclick="copyEl('rm-out')">Copy</button>
+              <button class="eb" onclick="alert('Wire to PDF.')">↓ PDF</button>
+            </div>
+          </div>
+          <div class="pb">
+            <div class="ai-out" id="rm-out" style="font-size:10px;line-height:1.9">
+              <span style="color:var(--glacier-700);font-size:9px;letter-spacing:.12em;font-weight:600;text-transform:uppercase">Investment Recommendation Memorandum</span><br>
+              <span style="color:var(--fg-4)">Christopher Granger | Registered Investment Advisor | <span id="memo-dt"></span></span><br><br>
+              <strong>SECURITY:</strong> NVIDIA Corporation (NVDA)<br>
+              <strong>ACTION:</strong> BUY &nbsp;·&nbsp; <strong>ALLOCATION:</strong> 5–8% of equity sleeve<br>
+              <strong>HORIZON:</strong> Medium (1–3 years)<br><br>
+              <span style="color:var(--glacier-700);font-size:9px;letter-spacing:.1em;font-weight:600;text-transform:uppercase">Investment Thesis</span><br>
+              NVDA remains the dominant AI training infrastructure provider. Blackwell GPU architecture extends the performance-per-watt moat; CUDA ecosystem creates defensible switching costs across enterprise, cloud, and sovereign AI. Multi-year hyperscaler commitments improve revenue visibility.<br><br>
+              <span style="color:var(--glacier-700);font-size:9px;letter-spacing:.1em;font-weight:600;text-transform:uppercase">Key Risks</span><br>
+              Export control expansion; AMD inference competition; AI capex cyclicality; valuation concentration.<br><br>
+              <span style="color:var(--glacier-700);font-size:9px;letter-spacing:.1em;font-weight:600;text-transform:uppercase">Reg BI Status</span><br>
+              <span class="pos">✓</span> Fiduciary reviewed &nbsp;<span class="pos">✓</span> Suitability confirmed &nbsp;<span class="warn-c">⚠</span> Sizing disclosure req'd
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENT REVIEW -->
+    <div class="section" id="section-client-review">
+      <div class="two-col" style="margin-bottom:12px">
+        <div class="panel">
+          <div class="ph"><span class="pt">Client Review — Header</span></div>
+          <div class="pb">
+            <div class="rf">
+              <div class="fg"><div class="fl">Client Name</div><input class="fc" id="cr-name" placeholder="Client Name" style="width:100%"></div>
+              <div class="fg"><div class="fl">Date of Meeting</div><input class="fc" id="cr-date" type="date" style="width:100%"></div>
+              <div class="fg"><div class="fl">Location</div><input class="fc" id="cr-loc" placeholder="e.g. Anchorage / Teams" style="width:100%"></div>
+              <div class="fg"><div class="fl">AUM</div><input class="fc" id="cr-aum" placeholder="$0,000,000" style="width:100%"></div>
+              <div class="fg"><div class="fl">Tier</div><select class="fc" id="cr-tier"><option>Tier 1</option><option selected>Tier 2</option><option>Tier 3</option><option>Tier 4</option></select></div>
+              <div class="fg"><div class="fl">Client Loyalty</div><select class="fc" id="cr-loyalty"><option selected>Strong</option><option>Moderate</option><option>Weak</option><option>Very Weak</option><option>Inherited</option></select></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ph"><span class="pt">Review Context &amp; Topics</span></div>
+          <div class="pb">
+            <div class="fl" style="margin-bottom:6px">Context for Review</div>
+            <select class="fc" id="cr-context" style="width:100%;margin-bottom:10px">
+              <option>Scheduled Meeting — Annual</option><option>Scheduled Meeting — Bi-Yearly</option>
+              <option>Scheduled Meeting — Quarterly</option><option>Trigger Driven — Client Related</option>
+              <option>Trigger Driven — Market Event</option><option>Trigger Driven — Portfolio Related</option>
+              <option>Trigger Driven — New Offering</option><option>Other</option>
+            </select>
+            <div class="fl" style="margin-bottom:6px">Review Topics</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;font-size:11px;color:var(--fg-2)">
+              <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox"> Investment Performance</label>
+              <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox"> Asset Allocation</label>
+              <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox"> Portfolio Status</label>
+              <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox"> Advisory Capabilities</label>
+              <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox"> 13 WMI Issues</label>
+              <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox"> Estate Planning</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph">
+          <span class="pt">Wealth Issues / Opportunities — 26 Item Checklist</span>
+          <button class="eb" onclick="exportCR()">↓ Export Review Form</button>
+        </div>
+        <div class="pb">
+          <div class="wm-cols">
+            <div class="wm-col-head">Issue</div>
+            <div class="wm-col-head">Actions Planned / Taken</div>
+            <div class="wm-col-head">Involve Others?</div>
+            <div class="wm-col-head">Resolved?</div>
+            <div class="wm-col-head">Next Steps</div>
+          </div>
+          <div id="cr-issues"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 13 WMI -->
+    <div class="section" id="section-wmi">
+      <div class="panel">
+        <div class="ph">
+          <span class="pt">13 Wealth Management Issues Tracker</span>
+          <button class="eb" onclick="exportWMI()">↓ Export</button>
+        </div>
+        <div class="pb">
+          <div style="display:grid;grid-template-columns:180px 80px 1fr 100px;gap:8px;padding-bottom:6px;border-bottom:1px solid var(--border-1)">
+            <div class="fl">Issue</div><div class="fl">Priority</div><div class="fl">Action Planned / Taken</div><div class="fl">Date Discussed</div>
+          </div>
+          <div id="wmi-rows"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASSET GRID -->
+    <div class="section" id="section-asset-grid">
+      <div class="panel">
+        <div class="ph">
+          <span class="pt">Asset Gathering Opportunity Grid</span>
+          <button class="eb" onclick="addAgRow()">+ Add Client</button>
+        </div>
+        <div class="pb" style="overflow-x:auto">
+          <table class="ag-table" id="ag-table">
+            <thead>
+              <tr>
+                <th style="min-width:120px">Client</th>
+                <th>Personal</th><th>IRAs</th><th>Other Ret.</th><th>Lending</th>
+                <th>Estate</th><th>Trusts</th><th>529/Custodial</th>
+                <th>Fin. Planning</th><th>Corp 401k</th><th>Inv. Banking</th>
+                <th>ACATs</th><th>Biz Partners</th><th>CPA Ref.</th><th>DCA</th>
+              </tr>
+            </thead>
+            <tbody id="ag-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FP WORKFLOW -->
+    <div class="section" id="section-fp-workflow">
+      <div class="three-col" style="margin-bottom:12px">
+        <div class="panel">
+          <div class="ph"><span class="pt">Step 1 — Plan Type</span></div>
+          <div class="pb">
+            <select class="fc" id="fp-type" style="width:100%;margin-bottom:8px">
+              <option>Charged Financial Plan</option>
+              <option selected>Non-Charged Financial Plan</option>
+              <option>Plan Update / Existing Plan Review</option>
+            </select>
+            <div class="fp-info-card" style="font-size:10px;color:var(--fg-3);line-height:1.7">Non-Charged: used to support advisory conversions, prospecting, or value-added client reviews. No fee agreement required.</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ph"><span class="pt">Step 2 — Gather Info</span></div>
+          <div class="pb">
+            <select class="fc" id="fp-gather" style="width:100%;margin-bottom:8px"><option>Planning Team–Led</option><option selected>Advisor-Led</option><option>Hybrid</option></select>
+            <div class="fl" style="margin-bottom:4px">Required</div>
+            <div style="font-size:10px;color:var(--fg-3);line-height:1.7;margin-bottom:8px">Name · Birthdates · Employment &amp; Income · Basic Retirement Living Expense</div>
+            <div class="fl" style="margin-bottom:4px">Essential</div>
+            <div style="font-size:10px;color:var(--fg-3);line-height:1.7">Social Security · Assets &amp; Additions · Liabilities · Additional Expenses</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ph"><span class="pt">Step 3 — Submit</span></div>
+          <div class="pb">
+            <div style="font-size:10px;color:var(--fg-3);line-height:1.8;margin-bottom:8px">Email to: <span style="color:var(--glacier-600)">financialplanning@wedbush.com</span></div>
+            <div style="font-size:10px;color:var(--fg-2);line-height:2">
+              ☐ Completed Client Planning Profile<br>
+              ☐ Signed Fee Agreement (charged only)<br>
+              ☐ Account / mortgage / insurance statements<br>
+              ☐ Plan scenarios to model
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="three-col" style="margin-bottom:12px">
+        <div class="panel">
+          <div class="ph"><span class="pt">Step 4 — Draft &amp; Review</span></div>
+          <div class="pb">
+            <div class="fp-info-card" style="font-size:10px;color:var(--fg-3);line-height:1.8">Built in: <span style="color:var(--glacier-600)">MoneyGuidePro</span><br>Turnaround: 1–3 days (light) / 3+ days (comprehensive)<br>Draft sent to advisor for approval before client presentation.</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ph"><span class="pt">Step 5 — Presentation</span></div>
+          <div class="pb">
+            <select class="fc" id="fp-pres" style="width:100%;margin-bottom:6px"><option>Planning Team–Led</option><option selected>Advisor-Led</option><option>Joint Presentation</option></select>
+            <div style="font-size:10px;color:var(--fg-3)">Deliver a clear, actionable plan aligned to client goals.</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ph"><span class="pt">Step 6 — Follow-Up</span></div>
+          <div class="pb">
+            <div class="fp-info-card" style="font-size:10px;color:var(--fg-3);line-height:1.8">Next steps coordinated between advisor and planning team.<br><br>For updates: email financialplanning@wedbush.com with client name, sections to update, new documentation.</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span class="pt">Planning Team Directory</span></div>
+        <div class="pb">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+            <div class="dir-card"><div class="dir-name">John Lindsey</div><div class="dir-role">National Director, Financial Planning</div></div>
+            <div class="dir-card"><div class="dir-name">Ava Dilger</div><div class="dir-role">Paraplanner</div></div>
+            <div class="dir-card"><div class="dir-name">Andrew Daze</div><div class="dir-role">Paraplanner</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PORTFOLIO -->
+    <div class="section" id="section-portfolio">
+      <div class="panel">
+        <div class="ph"><span class="pt">Portfolio Monitor <span class="ds-b man">Connect Schwab MCP</span></span></div>
+        <div class="pb">
+          <div style="text-align:center;padding:40px 20px;color:var(--fg-4)">
+            <div style="font-size:32px;margin-bottom:12px;opacity:.3">◈</div>
+            <div style="font-family:var(--font-display);font-size:16px;color:var(--fg-3);margin-bottom:8px">Portfolio data ready to wire</div>
+            <div style="font-size:11px;line-height:1.7">Connect the Schwab MCP to populate live positions, P&amp;L, Greeks, and account summary.<br>Data sources: <code style="font-family:var(--font-mono);color:var(--glacier-600)">sw_positions</code> · <code style="font-family:var(--font-mono);color:var(--glacier-600)">sw_account</code> · <code style="font-family:var(--font-mono);color:var(--glacier-600)">sw_quotes</code></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI PROMPTS -->
+    <div class="section" id="section-prompts">
+      <div class="two-col">
+        <div>
+          <div class="panel">
+            <div class="ph"><span class="pt">Client Communications</span></div>
+            <div class="pb" id="prompts-comms"></div>
+          </div>
+          <div class="panel" style="margin-top:12px">
+            <div class="ph"><span class="pt">Portfolio &amp; Plan</span></div>
+            <div class="pb" id="prompts-portfolio"></div>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <div class="ph"><span class="pt">Admin &amp; Scheduling</span></div>
+            <div class="pb" id="prompts-admin"></div>
+          </div>
+          <div class="panel" style="margin-top:12px">
+            <div class="ph"><span class="pt">Data Transformations &amp; Coaching</span></div>
+            <div class="pb" id="prompts-data"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /workspace -->
+
+<!-- Paste Modal -->
+<div id="paste-modal">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <span class="modal-title" id="modal-title">Paste Data</span>
+      <button onclick="closeModal()" style="background:none;border:none;color:var(--fg-4);cursor:pointer;font-size:18px;line-height:1">×</button>
+    </div>
+    <textarea id="paste-area" class="fc" rows="7" style="width:100%" placeholder="Paste raw data here..."></textarea>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="rb" style="flex:1" onclick="processImport()">▶ Process with AI</button>
+      <button class="eb" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ── Clock ────────────────────────────────────────────────────
+function tick(){
+  const el=document.getElementById('clock');
+  if(el) el.textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',timeZone:'America/Anchorage'})+' AKDT';
+}
+tick();setInterval(tick,1000);
+document.getElementById('memo-dt').textContent=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+
+// ── Live quote data ─────────────────────────────────────────
+const LIVE_QUOTES={
+  NVDA:{name:'NVIDIA Corporation',exchange:'NASDAQ',sector:'Semiconductors',last_price:201.68,prev_close:198.35,open:199.88,high:201.70,low:199.27,volume:153662565,year_high:212.19,year_low:95.04,ma_50d:182.75,ma_200d:181.53,bid:201.49,ask:201.83},
+  AAPL:{name:'Apple Inc.',exchange:'NASDAQ',sector:'Technology',last_price:270.23,prev_close:263.40,open:267.10,high:272.30,low:266.72,volume:55211089,year_high:288.62,year_low:189.81,ma_50d:260.69,ma_200d:251.83,bid:269.76,ask:270.56},
+  MSFT:{name:'Microsoft Corporation',exchange:'NASDAQ',sector:'Technology',last_price:422.79,prev_close:420.26,open:424.79,high:431.58,low:420.69,volume:47754221,year_high:555.45,year_low:355.67,ma_50d:392.10,ma_200d:472.30,bid:422.78,ask:423.27},
+  SPY:{name:'SPDR S&P 500 ETF Trust',exchange:'NYSE Arca',sector:'ETF',last_price:710.87,prev_close:701.66,open:706.14,high:712.38,low:705.77,volume:70159638,year_high:712.38,year_low:508.46,ma_50d:674.51,ma_200d:666.01,bid:710.75,ask:710.90},
+  TLT:{name:'iShares 20+ Year Treasury Bond ETF',exchange:'NASDAQ',sector:'ETF',last_price:87.06,prev_close:86.28,open:87.05,high:87.21,low:86.89,volume:28185156,year_high:92.19,year_low:83.30,ma_50d:87.80,ma_200d:88.18,bid:87.04,ask:87.08},
+  SOXL:{name:'Direxion Daily Semiconductor Bull 3X',exchange:'NYSE Arca',sector:'ETF',last_price:94.38,prev_close:88.37,open:93.20,high:94.75,low:90.66,volume:66287403,year_high:94.75,year_low:8.15,ma_50d:60.39,ma_200d:43.82,bid:94.31,ask:94.46}
+};
+
+function pct(last,prev){return((last-prev)/prev)*100;}
+function fmtPct(p){return(p>=0?'+':'')+p.toFixed(2)+'%';}
+function fmtVol(v){return v>=1e9?(v/1e9).toFixed(2)+'B':v>=1e6?(v/1e6).toFixed(1)+'M':(v/1e3).toFixed(0)+'K';}
+
+// ── Watchlist ───────────────────────────────────────────────
+(function buildWatchlist(){
+  const el=document.getElementById('watchlist-items');
+  if(!el)return;
+  el.innerHTML=Object.entries(LIVE_QUOTES).map(([sym,q])=>{
+    const chg=pct(q.last_price,q.prev_close);
+    const cls=chg>=0?'pos':'neg';
+    return `<div class="wl-item" onclick="loadQuote('${sym}')"><span class="wl-t">${sym}</span><span class="${cls}">${fmtPct(chg)}</span></div>`;
+  }).join('');
+})();
+
+// ── Load quote ──────────────────────────────────────────────
+function loadQuote(sym){
+  document.getElementById('tickerIn').value=sym;
+  const q=LIVE_QUOTES[sym];if(!q)return;
+  const chg=q.last_price-q.prev_close;
+  const chgPct=pct(q.last_price,q.prev_close);
+  const cls=chg>=0?'pos':'neg';
+  document.getElementById('sn').textContent=q.name;
+  document.getElementById('sec-sym').textContent=sym;
+  document.getElementById('sec-meta').textContent=q.exchange+' · '+q.sector;
+  document.getElementById('sp').textContent='$'+q.last_price.toFixed(2);
+  document.getElementById('sc').textContent=(chg>=0?'+':'')+chg.toFixed(2)+' ('+fmtPct(chgPct)+')';
+  document.getElementById('sc').className='sec-chg '+cls;
+  document.getElementById('metrics-grid').innerHTML=`
+    <div class="mc"><div class="ml">Bid / Ask</div><div class="mv">${q.bid.toFixed(2)} / ${q.ask.toFixed(2)}</div></div>
+    <div class="mc"><div class="ml">Day Range</div><div class="mv" style="font-size:11px">${q.low.toFixed(2)}–${q.high.toFixed(2)}</div></div>
+    <div class="mc"><div class="ml">52W Range</div><div class="mv" style="font-size:11px">${q.year_low.toFixed(2)}–${q.year_high.toFixed(2)}</div></div>
+    <div class="mc"><div class="ml">Volume</div><div class="mv">${fmtVol(q.volume)}</div></div>
+    <div class="mc"><div class="ml">50D MA</div><div class="mv ${q.last_price>=q.ma_50d?'pos':'neg'}">${q.ma_50d.toFixed(2)}</div></div>
+    <div class="mc"><div class="ml">200D MA</div><div class="mv ${q.last_price>=q.ma_200d?'pos':'neg'}">${q.ma_200d.toFixed(2)}</div></div>
+    <div class="mc"><div class="ml">vs 50D MA</div><div class="mv ${q.last_price>=q.ma_50d?'pos':'neg'}">${fmtPct(pct(q.last_price,q.ma_50d))}</div></div>
+    <div class="mc"><div class="ml">vs 200D MA</div><div class="mv ${q.last_price>=q.ma_200d?'pos':'neg'}">${fmtPct(pct(q.last_price,q.ma_200d))}</div></div>`;
+  document.getElementById('sec-time').textContent='Live · OpenBB · '+new Date().toLocaleTimeString();
+  sw('research',document.querySelector('.nav-tab'));
+  bldChart('1M',null);
+}
+loadQuote('NVDA');
+
+// ── Section switch ──────────────────────────────────────────
+function sw(s,el){
+  document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+  const sec=document.getElementById('section-'+s);if(sec)sec.classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
+  if(el&&el.classList)el.classList.add('active');
+}
+
+// ── Chart ───────────────────────────────────────────────────
+let pc;
+function bldChart(period,el){
+  if(el){document.querySelectorAll('.st').forEach(x=>x.classList.remove('active'));el.classList.add('active');}
+  const ctx=document.getElementById('priceChart');if(!ctx)return;
+  const n=period==='1M'?30:period==='3M'?90:252;
+  const labels=[],data=[];let v=170;
+  for(let i=0;i<n;i++){v*=(1+(Math.random()-.46)*.025);labels.push('');data.push(+v.toFixed(2));}
+  data[data.length-1]=201.68;
+  if(pc)pc.destroy();
+  pc=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[{data,borderColor:'#2E7A95',borderWidth:1.5,pointRadius:0,fill:true,backgroundColor:'rgba(68,148,176,0.06)',tension:.3}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{display:false},
+        y:{
+          grid:{color:'rgba(20,33,43,0.05)'},
+          ticks:{color:'#7D8D96',font:{size:9,family:'JetBrains Mono'},callback:v=>'$'+v.toFixed(0)}
+        }
+      }
+    }
+  });
+}
+bldChart('1M',null);
+
+// ── Run research ─────────────────────────────────────────────
+function runResearch(){
+  const t=document.getElementById('tickerIn').value.trim().toUpperCase();
+  if(!t)return;
+  if(LIVE_QUOTES[t]){loadQuote(t);return;}
+  document.getElementById('sn').textContent='Loading '+t+'...';
+  setTimeout(()=>{document.getElementById('sn').textContent=t+' — Connect Claude API for live analysis';},1200);
+}
+
+// ── Compliance ───────────────────────────────────────────────
+function runComp(){
+  const score=Math.floor(72+Math.random()*23);
+  document.getElementById('fid-score').textContent=score;
+  const bar=document.getElementById('fid-bar');
+  bar.style.width=score+'%';
+  bar.className='rb-fill '+(score>=80?'high':score>=65?'med':'low');
+  const scoreEl=document.getElementById('fid-score');
+  scoreEl.className='score-num '+(score>=80?'pos':score>=65?'warn-c':'neg');
+  document.getElementById('fid-verdict').textContent=score>=80?'PASSES — Consistent with client best interest under Reg BI.':score>=65?'CONDITIONAL — Review flagged items before proceeding.':'FLAGGED — Suitability concerns. Do not proceed without review.';
+}
+
+// ── Thesis ───────────────────────────────────────────────────
+function genThesis(){
+  document.getElementById('thesis-out').innerHTML='<span><span class="spinner"></span><span style="color:var(--fg-4)">Running AI analysis...</span></span>';
+  setTimeout(()=>{
+    document.getElementById('thesis-out').innerHTML='<div class="ai-sec"><div class="ai-sl">Bull Case</div>Dominant AI infrastructure play. Blackwell GPU ramp adds TAM. CUDA moat creates defensible switching costs.</div><div class="ai-sec"><div class="ai-sl">Bear Case</div>Valuation at 60x+ pricing perfection. Export restrictions. AMD inference competition.</div><div class="ai-sec"><div class="ai-sl">Suitability</div>Aggressive/Growth profiles. Size carefully; high beta requires monitoring.</div>';
+  },1200);
+}
+
+// ── Rec memo ─────────────────────────────────────────────────
+function genMemo(){
+  const t=(document.getElementById('rm-sec').value||'SECURITY').toUpperCase();
+  const a=document.getElementById('rm-act').value.toUpperCase();
+  const alloc=document.getElementById('rm-alloc').value||'5% of portfolio';
+  document.getElementById('rm-out').innerHTML='<span class="spinner"></span><span style="color:var(--fg-4)">Generating memo for '+t+'...</span>';
+  setTimeout(()=>{
+    const dt=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+    document.getElementById('rm-out').innerHTML=`<span style="color:var(--glacier-700);font-size:9px;letter-spacing:.12em;font-weight:600;text-transform:uppercase">Investment Recommendation Memorandum</span><br><span style="color:var(--fg-4)">Christopher Granger | Registered Investment Advisor | ${dt}</span><br><br><strong>SECURITY:</strong> ${t}<br><strong>ACTION:</strong> ${a} &nbsp;·&nbsp; <strong>ALLOCATION:</strong> ${alloc}<br><br><span style="color:var(--glacier-700);font-size:9px;letter-spacing:.1em;font-weight:600;text-transform:uppercase">Investment Thesis</span><br>Connect this terminal to the Claude API for live AI-generated thesis. Enter your rationale above and the AI will expand and structure it with suitability notes.<br><br><span style="color:var(--glacier-700);font-size:9px;letter-spacing:.1em;font-weight:600;text-transform:uppercase">Reg BI Status</span><br><span class="pos">✓</span> Fiduciary reviewed &nbsp;<span class="pos">✓</span> Suitability pending client profile`;
+  },900);
+}
+
+// ── Client Review ────────────────────────────────────────────
+const CR_ISSUES=[
+  {cat:'Advisory',issues:['Risk Profile','Financial Plan','Managed Money','Education Planning (529)','Retirement Planning','Legacy (Distribution) Planning','At Retirement','At Death']},
+  {cat:'Investments',issues:['Total Asset Allocation','Concentrated Equity','Re-Balancing']},
+  {cat:'Liabilities',issues:['Credit Line','Mortgage','HELOC']},
+  {cat:'Estate Planning',issues:['Trusts','Titling of Assets','Durable POA','Successor Trustee','Executor','Gifting Strategies','Philanthropic Planning','Insurance - Life/LTC/Disability','Business Succession/"Key Man"']},
+  {cat:'Other',issues:['Contact with CPA/Attorney?','Next Gen Legacy/Family Members?','Regular Review Preference']}
+];
+(function buildCR(){
+  const el=document.getElementById('cr-issues');if(!el)return;
+  let html='';
+  CR_ISSUES.forEach(cat=>{
+    html+=`<div class="wm-cat-label">${cat.cat}</div>`;
+    cat.issues.forEach(issue=>{
+      const id='cr_'+issue.replace(/[^a-z0-9]/gi,'_');
+      html+=`<div class="wm-issue-row">
+        <div class="wm-issue-name">${issue}</div>
+        <textarea class="wm-ta" id="${id}_act" rows="2" placeholder="Actions planned/taken..."></textarea>
+        <input class="wm-ta" id="${id}_inv" placeholder="Who?" style="min-height:0;resize:none">
+        <select class="wm-sel" id="${id}_res"><option value="">—</option><option>Y</option><option>N</option><option>Pending</option></select>
+        <textarea class="wm-ta" id="${id}_ns" rows="2" placeholder="Next steps..."></textarea>
+      </div>`;
+    });
+  });
+  el.innerHTML=html;
+})();
+
+// ── 13 WMI ───────────────────────────────────────────────────
+const WMI_ISSUES=['Investment Planning','Risk Management and Insurance Planning','Banking and Credit Management','Retirement Planning','Executive Compensation','Business Succession Planning','Planning for Incapacity','Education and Family Support','Charitable Giving','Titling and Beneficiary Designation','Executor and Trustee Selection','Distribution of Estate','Tax Planning'];
+(function buildWMI(){
+  const el=document.getElementById('wmi-rows');if(!el)return;
+  el.innerHTML=WMI_ISSUES.map((issue,i)=>{
+    const id='wmi_'+i;
+    return `<div class="wmi-row">
+      <div class="wmi-issue">${issue}</div>
+      <select class="wm-sel" id="${id}_pri"><option value="none">—</option><option value="high">High</option><option value="med">Medium</option><option value="low">Low</option></select>
+      <textarea class="wm-ta" id="${id}_act" rows="2" placeholder="Action planned/taken..."></textarea>
+      <input class="wm-ta" id="${id}_date" type="date" style="min-height:0;resize:none">
+    </div>`;
+  }).join('');
+})();
+
+// ── Asset grid ───────────────────────────────────────────────
+const AG_COLS=['Personal','IRAs','Other Ret.','Lending','Estate','Trusts','529/Custodial','Fin. Planning','Corp 401k','Inv. Banking','ACATs','Biz Partners','CPA Ref.','DCA'];
+(function buildAgRows(){
+  const tbody=document.getElementById('ag-body');if(!tbody)return;
+  for(let i=0;i<8;i++){
+    const tr=document.createElement('tr');
+    let td=`<td><input style="background:transparent;border:none;color:var(--fg-1);font-family:var(--font-sans);font-size:10px;width:110px;outline:none;padding:3px" placeholder="Client name"></td>`;
+    AG_COLS.forEach(()=>{td+=`<td><input style="background:transparent;border:none;color:var(--glacier-700);font-family:var(--font-mono);font-size:9px;width:60px;text-align:center;outline:none;padding:2px"></td>`;});
+    tr.innerHTML=td;tbody.appendChild(tr);
+  }
+})();
+function addAgRow(){
+  const tbody=document.getElementById('ag-body');if(!tbody)return;
+  const tr=document.createElement('tr');
+  let td=`<td><input style="background:transparent;border:none;color:var(--fg-1);font-family:var(--font-sans);font-size:10px;width:110px;outline:none;padding:3px" placeholder="Client name"></td>`;
+  AG_COLS.forEach(()=>{td+=`<td><input style="background:transparent;border:none;color:var(--glacier-700);font-family:var(--font-mono);font-size:9px;width:60px;text-align:center;outline:none;padding:2px"></td>`;});
+  tr.innerHTML=td;tbody.appendChild(tr);
+}
+
+// ── AI Prompts ───────────────────────────────────────────────
+const PROMPTS={
+  comms:[
+    {title:'Onboarding Welcome Email',desc:'Draft a warm welcome email introducing the advisory relationship, service scope, and documents to gather.',tags:['Outlook','Word']},
+    {title:'Quarterly Portfolio Update',desc:'Create a quarterly update email with performance narrative, allocation shifts, risk reminder, and fee reminder.',tags:['Outlook']},
+    {title:'Meeting Confirmation',desc:'Write a meeting confirmation with agenda, prework checklist, and calendar-friendly logistics.',tags:['Outlook']},
+    {title:'Post-Meeting Follow-Up',desc:'Draft follow-up summarizing discussion, 3–5 action items with owners and due dates, and next meeting window.',tags:['Outlook','Teams']},
+    {title:'Sensitive / Bad News Message',desc:'Rewrite a client message about a sensitive topic with calm, empathetic tone and a short FAQ.',tags:['Word','Outlook']},
+  ],
+  admin:[
+    {title:'Client Week at a Glance',desc:'Create a weekly prep table: client, topic, prep notes, materials needed, next action. Flag compliance items.',tags:['Teams','Copilot Chat']},
+    {title:'Draft Meeting Invite',desc:'Create a 45-minute Annual Review invite with tight agenda, attachments, and Teams link.',tags:['Outlook']},
+    {title:'Catch-Up on Client Comms',desc:'Summarize unread emails and Teams chats about a client from the last 7 days. Output to-do list with owners.',tags:['Teams','Copilot Chat']},
+  ],
+  portfolio:[
+    {title:'Client-Friendly Plan Summary',desc:'Summarize the attached financial plan: net worth, goals, recommended changes, SS strategy, probability of success.',tags:['Word']},
+    {title:'Risk / Upside-Downside Explainer',desc:'Explain portfolio risk in client terms: standard deviation, bear market example, diversification.',tags:['Word','PowerPoint']},
+    {title:'What-If Comparison Deck',desc:'6-slide deck comparing current plan vs. recommended changes. Speaker notes in supportive tone.',tags:['PowerPoint']},
+    {title:'IPS Drafting Helper',desc:'Draft an IPS outline: risk tolerance, allocation ranges, rebalancing policy, cash reserve, monitoring cadence, sign-off.',tags:['Word']},
+  ],
+  data:[
+    {title:'Spreadsheet → Client Review Deck',desc:'From attached Excel, build a 10-slide client review deck with allocation, performance, and contribution charts.',tags:['PowerPoint','Excel']},
+    {title:'PDF Plan → Executive Summary',desc:'Create a 1-page exec summary: goals, recommendations, actions before next meeting, risks/assumptions.',tags:['Word']},
+    {title:'Meeting Notes → Task List',desc:'Extract action items from meeting notes. Output: owner, due date, context. Group: client-facing vs. back-office.',tags:['Teams','Planner']},
+    {title:'Plain-English Concept Explainer',desc:'Explain a concept (e.g. bond laddering, RMD, NUA) for a non-technical client. 120–150 words + 3-step how-it-works.',tags:['Word']},
+  ]
+};
+(function buildPrompts(){
+  const map={comms:'prompts-comms',admin:'prompts-admin',portfolio:'prompts-portfolio',data:'prompts-data'};
+  Object.keys(PROMPTS).forEach(k=>{
+    const el=document.getElementById(map[k]);if(!el)return;
+    el.innerHTML=PROMPTS[k].map(p=>`<div class="prompt-card" onclick="usePrompt('${p.title}')">
+      <div class="prompt-title">${p.title}</div>
+      <div class="prompt-desc">${p.desc}</div>
+      <div style="margin-top:5px">${p.tags.map(t=>`<span class="prompt-tag">${t}</span>`).join('')}</div>
+    </div>`).join('');
+  });
+})();
+function usePrompt(title){
+  const p=Object.values(PROMPTS).flat().find(x=>x.title===title);
+  if(p&&navigator.clipboard)navigator.clipboard.writeText(p.desc).then(()=>alert('Prompt copied:\n\n'+p.desc));
+}
+
+// ── Modal ────────────────────────────────────────────────────
+let modalType='';
+function openModal(type){
+  modalType=type;
+  const titles={capiq:'Paste Cap IQ Data',cfra:'Paste CFRA Data',openbb:'Paste OpenBB Export',portfolio:'Paste Portfolio CSV'};
+  document.getElementById('modal-title').textContent=titles[type]||'Paste Data';
+  document.getElementById('paste-area').value='';
+  document.getElementById('paste-modal').style.display='flex';
+}
+function closeModal(){document.getElementById('paste-modal').style.display='none';}
+function processImport(){
+  const txt=document.getElementById('paste-area').value.trim();
+  if(!txt)return alert('No data pasted.');
+  document.getElementById('import-status').textContent=modalType.toUpperCase()+' data received ('+txt.split('\n').length+' lines). Will be parsed on next analysis run.';
+  document.getElementById('import-status').style.color='var(--ok-700)';
+  closeModal();
+}
+
+// ── Utilities ────────────────────────────────────────────────
+function copyEl(id){const el=document.getElementById(id);if(el&&navigator.clipboard)navigator.clipboard.writeText(el.innerText);}
+function exportCR(){alert('Export: Wire to your PDF generation pipeline.');}
+function exportWMI(){alert('Export: Wire to PDF pipeline.');}
+</script>
+</body>
+</html>
