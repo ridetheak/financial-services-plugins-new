@@ -80,7 +80,9 @@ never silently block or auto-file.
 - [x] Module 1 — IPS Module (`modules/ips-module.html`)
 - [x] Module 2 — Four-Quadrant Risk Framework (`modules/four-quadrant-risk.html`)
 - [x] Module 3 — Portfolio Risk Analyzer (`modules/portfolio-risk-analyzer.html`)
-- [ ] Modules 4–10 — built in the order above
+- [x] Module 4 — Trade Thesis Library (`modules/trade-thesis-library.html`)
+- [x] Module 5 — Solicited/Unsolicited Audit Trail (`modules/audit-trail.html`)
+- [ ] Modules 6–10 — built in the order above
 
 ### Module 1 — IPS Module
 
