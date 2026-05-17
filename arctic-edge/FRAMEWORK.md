@@ -78,7 +78,8 @@ never silently block or auto-file.
 
 - [x] Framework and module-wrapper pattern defined
 - [x] Module 1 — IPS Module (`modules/ips-module.html`)
-- [ ] Modules 2–10 — built in the order above
+- [x] Module 2 — Four-Quadrant Risk Framework (`modules/four-quadrant-risk.html`)
+- [ ] Modules 3–10 — built in the order above
 
 ### Module 1 — IPS Module
 
