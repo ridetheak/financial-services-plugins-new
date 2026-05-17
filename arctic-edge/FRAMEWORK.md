@@ -84,7 +84,9 @@ never silently block or auto-file.
 - [x] Module 5 — Solicited/Unsolicited Audit Trail (`modules/audit-trail.html`)
 - [x] Module 6 — Reg BI Note Generator (`modules/reg-bi-note-generator.html`) — **regulated; needs compliance sign-off**
 - [x] Module 7 — Note Completeness Auditor (`modules/note-completeness-auditor.html`) — **regulated; checklist needs compliance ownership**
-- [ ] Modules 8–10 — built in the order above
+- [x] Module 8 — Equity Tearsheet Generator (`modules/equity-tearsheet-generator.html`)
+- [x] Module 9 — Concentration & Cross-Holdings X-Ray (`modules/concentration-xray.html`)
+- [ ] Module 10 — Workstation (integration into `ae_terminal.html`)
 
 > Modules 6 and 7 are functional drafts. Their output language, the
 > `reg-bi-note/v1` template, and the `reg-bi-checklist/v1` element list must be
