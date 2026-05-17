@@ -77,5 +77,14 @@ never silently block or auto-file.
 ## Status
 
 - [x] Framework and module-wrapper pattern defined
-- [ ] Module 1 — IPS Module
+- [x] Module 1 — IPS Module (`modules/ips-module.html`)
 - [ ] Modules 2–10 — built in the order above
+
+### Module 1 — IPS Module
+
+- **Terminal surface:** `section-ips` (terminal integration is Module 10)
+- **Input contract:** advisor entry
+- **Compute:** validation + asset-class target consistency (bands, 100% sum)
+- **Output artifact:** `ips-record/v1` JSON
+- **Compliance:** not regulated work product; PII held client-side only
+- **Dependencies:** none — this is the foundation
