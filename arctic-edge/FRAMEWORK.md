@@ -86,7 +86,12 @@ never silently block or auto-file.
 - [x] Module 7 — Note Completeness Auditor (`modules/note-completeness-auditor.html`) — **regulated; checklist needs compliance ownership**
 - [x] Module 8 — Equity Tearsheet Generator (`modules/equity-tearsheet-generator.html`)
 - [x] Module 9 — Concentration & Cross-Holdings X-Ray (`modules/concentration-xray.html`)
-- [ ] Module 10 — Workstation (integration into `ae_terminal.html`)
+- [x] Module 10 — Workstation (`workstation.html`) — multi-tab shell hosting Modules 1–9
+
+**Phase 1 — Section One complete.** All 10 modules built to the wrapper
+contract. `workstation.html` is the integration surface. Remaining follow-on
+work: (1) compliance sign-off on Modules 6–7, (2) wiring the market-data MCP
+into Modules 3 and 8, (3) deeper embedding into the legacy `ae_terminal.html`.
 
 > Modules 6 and 7 are functional drafts. Their output language, the
 > `reg-bi-note/v1` template, and the `reg-bi-checklist/v1` element list must be
