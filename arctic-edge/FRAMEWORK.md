@@ -82,7 +82,14 @@ never silently block or auto-file.
 - [x] Module 3 — Portfolio Risk Analyzer (`modules/portfolio-risk-analyzer.html`)
 - [x] Module 4 — Trade Thesis Library (`modules/trade-thesis-library.html`)
 - [x] Module 5 — Solicited/Unsolicited Audit Trail (`modules/audit-trail.html`)
-- [ ] Modules 6–10 — built in the order above
+- [x] Module 6 — Reg BI Note Generator (`modules/reg-bi-note-generator.html`) — **regulated; needs compliance sign-off**
+- [x] Module 7 — Note Completeness Auditor (`modules/note-completeness-auditor.html`) — **regulated; checklist needs compliance ownership**
+- [ ] Modules 8–10 — built in the order above
+
+> Modules 6 and 7 are functional drafts. Their output language, the
+> `reg-bi-note/v1` template, and the `reg-bi-checklist/v1` element list must be
+> reviewed and owned by a qualified compliance professional before any use on
+> real client files. Module 7 is affirmative and non-blocking by design.
 
 ### Module 1 — IPS Module
 
