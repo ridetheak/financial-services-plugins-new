@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arctic Edge — Compliance Portal</title>
+<!--
+  Arctic Edge — Compliance Portal
+  Single-file HTML index over the compliance package. Renders the package
+  table of contents grouped by audience and topic; on click, fetches and
+  displays the markdown documents.
+
+  Audience: CCO, GC, CEO, Head of Supervision, Head of IT, exam staff.
+  Position: portal only. The signed regulatory work product lives in the
+  templates/ subfolder under CCO sign-off via 11-sign-off-template.md.
+-->
+<style>
+:root{
+  --arctic-900:#0E1A22;--arctic-800:#1C2B35;--arctic-700:#243845;
+  --glacier-700:#1F5D74;--glacier-500:#4494B0;--arctic-300:#9EC5D8;
+  --paper-0:#FFFFFF;--paper-1:#F9FBFC;--paper-2:#F4F8FA;--paper-3:#ECF2F5;
+  --ink-900:#0A1219;--ink-700:#243845;--ink-500:#5A6C77;--ink-400:#7D8D96;
+  --border-1:#DCE4E8;--border-2:#C7D2D8;
+  --warn-500:#D77A1A;--warn-100:#FCE8D2;--warn-700:#9E5714;
+  --ok-500:#1F9D6B;--ok-100:#DCEFE2;
+  --risk-500:#B64841;--risk-100:#F4DEDB;
+  --font-sans:"Inter Tight",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --font-serif:"Source Serif Pro",Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font-sans);background:var(--paper-2);color:var(--ink-900);font-size:13px;line-height:1.5;display:flex;flex-direction:column;}
+
+.topbar{background:var(--arctic-900);color:#fff;padding:0 24px;height:56px;
+  display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.brand{font-size:15px;font-weight:600;letter-spacing:-.01em;}
+.brand span{color:var(--glacier-500);font-weight:400;}
+.brand-sub{font-size:11px;color:var(--arctic-300);font-family:var(--font-mono);padding-left:14px;border-left:1px solid #2c3e4a;}
+.topbar .spacer{flex:1;}
+.topbar .meta{font-size:10px;color:var(--arctic-300);font-family:var(--font-mono);}
+
+.shell{flex:1;display:flex;overflow:hidden;}
+.sidebar{width:300px;background:var(--paper-1);border-right:1px solid var(--border-1);overflow-y:auto;flex-shrink:0;}
+.sb-header{padding:18px 18px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-400);font-weight:600;}
+.sb-group{padding:0 14px 6px;}
+.sb-group-title{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--glacier-700);font-weight:600;padding:14px 4px 6px;}
+.sb-item{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-radius:5px;cursor:pointer;color:var(--ink-700);font-size:12px;}
+.sb-item:hover{background:var(--paper-3);}
+.sb-item.active{background:var(--glacier-700);color:#fff;}
+.sb-item .num{font-family:var(--font-mono);color:var(--ink-400);font-size:10px;width:22px;flex-shrink:0;padding-top:1px;}
+.sb-item.active .num{color:var(--arctic-300);}
+.sb-item.regulated::after{content:"REG";font-family:var(--font-mono);font-size:9px;color:var(--warn-500);font-weight:600;margin-left:auto;align-self:center;}
+.sb-item.active.regulated::after{color:var(--warn-100);}
+
+.main{flex:1;overflow-y:auto;background:var(--paper-2);}
+.doc{max-width:880px;margin:0 auto;padding:32px 36px 80px;}
+.doc h1{font-size:22px;font-weight:600;letter-spacing:-.01em;margin-bottom:6px;}
+.doc h2{font-size:15px;font-weight:600;margin:22px 0 8px;color:var(--ink-700);border-bottom:1px solid var(--border-1);padding-bottom:4px;}
+.doc h3{font-size:13px;font-weight:600;margin:16px 0 6px;color:var(--glacier-700);text-transform:uppercase;letter-spacing:.04em;}
+.doc h4{font-size:12px;font-weight:600;margin:12px 0 4px;color:var(--ink-700);}
+.doc p{margin:6px 0;font-size:13px;}
+.doc ul,.doc ol{margin:6px 0 6px 22px;}
+.doc li{margin:3px 0;font-size:13px;}
+.doc code{font-family:var(--font-mono);font-size:11px;background:var(--paper-3);padding:1px 5px;border-radius:3px;}
+.doc pre{font-family:var(--font-mono);font-size:11px;background:var(--arctic-900);color:#E0EDF2;
+  padding:12px 14px;border-radius:6px;margin:10px 0;overflow:auto;line-height:1.45;}
+.doc pre code{background:none;padding:0;color:inherit;}
+.doc table{border-collapse:collapse;width:100%;margin:10px 0;font-size:12px;}
+.doc th,.doc td{border:1px solid var(--border-1);padding:7px 10px;text-align:left;vertical-align:top;}
+.doc th{background:var(--paper-3);font-weight:600;color:var(--ink-700);}
+.doc blockquote{border-left:3px solid var(--glacier-500);background:var(--paper-1);padding:8px 14px;margin:10px 0;color:var(--ink-700);}
+.doc hr{border:none;border-top:1px solid var(--border-1);margin:18px 0;}
+.doc a{color:var(--glacier-700);text-decoration:none;border-bottom:1px dashed var(--glacier-500);}
+.doc a:hover{color:var(--glacier-500);}
+.doc strong{color:var(--ink-900);}
+
+.dochead{display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--border-1);padding-bottom:14px;margin-bottom:18px;}
+.dochead .pill{font-family:var(--font-mono);font-size:10px;background:var(--arctic-900);color:#fff;padding:3px 8px;border-radius:4px;letter-spacing:.04em;}
+.dochead .pill.reg{background:var(--warn-500);}
+.dochead .pill.template{background:var(--glacier-700);}
+
+.welcome{padding:8px 0;}
+.welcome .pills{display:flex;gap:8px;margin:10px 0 18px;}
+.welcome .pill{font-family:var(--font-mono);font-size:10px;background:var(--paper-3);color:var(--ink-700);
+  padding:4px 10px;border-radius:4px;letter-spacing:.04em;}
+.welcome .pill.signed{background:var(--ok-100);color:#167A52;}
+.welcome .pill.reg{background:var(--warn-100);color:var(--warn-700);}
+.welcome .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px;}
+.welcome .card{border:1px solid var(--border-1);border-radius:8px;padding:16px 18px;background:var(--paper-0);}
+.welcome .card h3{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--glacier-700);
+  font-weight:600;margin-bottom:10px;border:0;padding:0;}
+.welcome .card ul{margin:0 0 0 16px;}
+.welcome .card li{font-size:12px;line-height:1.6;margin:0;}
+.welcome .lede{font-size:14px;color:var(--ink-500);line-height:1.6;max-width:720px;margin-bottom:6px;}
+.welcome .stat-row{display:flex;gap:16px;margin:16px 0 0;}
+.welcome .stat{flex:1;border:1px solid var(--border-1);border-radius:8px;padding:14px 16px;background:var(--paper-0);}
+.welcome .stat .num{font-family:var(--font-mono);font-size:22px;font-weight:600;color:var(--glacier-700);}
+.welcome .stat .lbl{font-size:11px;color:var(--ink-500);text-transform:uppercase;letter-spacing:.04em;margin-top:2px;}
+
+.footer{padding:14px 24px;font-size:10px;color:var(--ink-400);font-family:var(--font-mono);border-top:1px solid var(--border-1);background:var(--paper-1);text-align:center;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="brand">Arctic<span>Edge</span></span>
+  <span class="brand-sub">Compliance Portal · Phase 1</span>
+  <span class="spacer"></span>
+  <span class="meta">Package v1.0 · For CCO review</span>
+</div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main" id="main">
+    <div class="doc" id="docview"></div>
+  </main>
+</div>
+
+<div class="footer">
+  Compliance package for Arctic Edge. Sign-off via 11-sign-off-template.md.
+  Templates locked under 12-version-lock.md once signed.
+</div>
+
+<script>
+// ── Document registry ─────────────────────────────────────────────
+const SECTIONS=[
+  { title:"Start here", items:[
+    { n:"—",  file:"README.md",                            name:"Package overview" },
+    { n:"00", file:"00-executive-summary.md",              name:"Executive summary" },
+  ]},
+  { title:"Regulatory framework", items:[
+    { n:"01", file:"01-regulatory-framework.md",           name:"Regulatory framework" },
+    { n:"02", file:"02-module-compliance-matrix.md",       name:"Module compliance matrix" },
+  ]},
+  { title:"Regulated work product", items:[
+    { n:"03", file:"03-reg-bi-deep-dive.md",               name:"Reg BI deep dive (Modules 6 & 7)", reg:true },
+    { n:"04", file:"04-cfp-standards-mapping.md",          name:"CFP Standards mapping" },
+  ]},
+  { title:"Books, records, supervision", items:[
+    { n:"05", file:"05-recordkeeping.md",                  name:"Recordkeeping" },
+    { n:"06", file:"06-supervision.md",                    name:"Supervision (FINRA 3110)" },
+  ]},
+  { title:"Rollout", items:[
+    { n:"07", file:"07-implementation-playbook.md",        name:"Implementation playbook" },
+    { n:"08", file:"08-pilot-rollout.md",                  name:"90-day pilot plan" },
+    { n:"09", file:"09-training-curriculum.md",            name:"Training curriculum" },
+  ]},
+  { title:"Ongoing", items:[
+    { n:"10", file:"10-monitoring-and-testing.md",         name:"Monitoring & testing" },
+    { n:"11", file:"11-sign-off-template.md",              name:"CCO sign-off template", reg:true },
+    { n:"12", file:"12-version-lock.md",                   name:"Version lock policy" },
+  ]},
+  { title:"Operational", items:[
+    { n:"13", file:"13-data-handling.md",                  name:"Data handling (Reg S-P / Part 500)" },
+    { n:"14", file:"14-incident-response.md",              name:"Incident response" },
+    { n:"15", file:"15-faq.md",                            name:"FAQ" },
+  ]},
+  { title:"Templates (signed)", items:[
+    { n:"A",  file:"templates/reg-bi-note-v1.md",          name:"reg-bi-note/v1", reg:true, tpl:true },
+    { n:"B",  file:"templates/reg-bi-checklist-v1.md",     name:"reg-bi-checklist/v1", reg:true, tpl:true },
+    { n:"C",  file:"templates/ips-record-v1.md",           name:"ips-record/v1", tpl:true },
+    { n:"D",  file:"templates/recommendation-event-v1.md", name:"recommendation-event/v1", tpl:true },
+    { n:"E",  file:"templates/portfolio-risk-v1.md",       name:"portfolio-risk/v1", tpl:true },
+    { n:"F",  file:"templates/note-audit-v1.md",           name:"note-audit/v1", tpl:true },
+  ]},
+];
+
+// ── Sidebar ───────────────────────────────────────────────────────
+const sidebar=document.getElementById("sidebar");
+sidebar.innerHTML='<div class="sb-header">Compliance Package</div>'+
+  SECTIONS.map(sec=>(
+    '<div class="sb-group">'+
+    '<div class="sb-group-title">'+sec.title+'</div>'+
+    sec.items.map(it=>(
+      '<div class="sb-item'+(it.reg?' regulated':'')+'" data-file="'+it.file+'">'+
+      '<span class="num">'+it.n+'</span>'+
+      '<span class="name">'+it.name+'</span>'+
+      '</div>'
+    )).join("")+
+    '</div>'
+  )).join("");
+
+sidebar.querySelectorAll(".sb-item").forEach(el=>{
+  el.addEventListener("click",()=>load(el.dataset.file,el));
+});
+
+// ── Welcome screen ────────────────────────────────────────────────
+function welcome(){
+  document.querySelectorAll(".sb-item").forEach(s=>s.classList.remove("active"));
+  document.getElementById("docview").innerHTML=`
+    <div class="welcome">
+      <h1>Arctic Edge — Compliance Portal</h1>
+      <p class="lede">A complete compliance dossier for the Arctic Edge Phase 1
+        platform. Read by audience and by topic. Two documents are regulated
+        work product subject to CCO sign-off; the rest support
+        implementation, operations, and exam-readiness.</p>
+
+      <div class="pills">
+        <span class="pill">Package v1.0</span>
+        <span class="pill reg">Modules 6 &amp; 7 regulated</span>
+        <span class="pill signed">All sections drafted</span>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat"><div class="num">10</div><div class="lbl">Phase 1 modules</div></div>
+        <div class="stat"><div class="num">2</div><div class="lbl">Regulated templates</div></div>
+        <div class="stat"><div class="num">16</div><div class="lbl">Compliance docs</div></div>
+        <div class="stat"><div class="num">90</div><div class="lbl">Days to firm-wide</div></div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Chief Compliance Officer</h3>
+          <ul>
+            <li>Read <strong>01 — Regulatory framework</strong>.</li>
+            <li>Read <strong>02 — Module compliance matrix</strong>.</li>
+            <li>Read <strong>03 — Reg BI deep dive</strong>.</li>
+            <li>Tailor <strong>templates A &amp; B</strong>.</li>
+            <li>Execute <strong>11 — sign-off</strong>.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Chief Executive Officer</h3>
+          <ul>
+            <li>Read <strong>00 — Executive summary</strong>.</li>
+            <li>Read <strong>07 — Implementation playbook</strong>.</li>
+            <li>Endorse pilot.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>General Counsel</h3>
+          <ul>
+            <li>Read <strong>01 — Regulatory framework</strong>.</li>
+            <li>Read <strong>03 — Reg BI deep dive</strong>.</li>
+            <li>Read <strong>13 — Data handling</strong>.</li>
+            <li>Co-sign <strong>11 — sign-off</strong>.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Head of Supervision</h3>
+          <ul>
+            <li>Read <strong>06 — Supervision</strong>.</li>
+            <li>Read <strong>10 — Monitoring &amp; testing</strong>.</li>
+            <li>Configure principal review queue.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Head of IT / CISO</h3>
+          <ul>
+            <li>Read <strong>13 — Data handling</strong>.</li>
+            <li>Plan records-system integration.</li>
+            <li>Confirm Reg S-P / Part 500 fit.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Exam staff</h3>
+          <ul>
+            <li>Read <strong>01</strong>, <strong>02</strong>, <strong>11</strong> (executed).</li>
+            <li>Request records package by client / date range.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  `;
+}
+welcome();
+
+// ── Minimal markdown renderer ─────────────────────────────────────
+// Intentionally minimal: headings, paragraphs, lists, tables, code,
+// blockquote, hr, inline emphasis, code, links. Compliance docs use
+// a small markdown subset by design.
+function md(src){
+  // Escape HTML.
+  function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  // Inline markdown.
+  function inline(s){
+    s = s.replace(/`([^`]+)`/g, (_,c)=>'<code>'+esc(c)+'</code>');
+    s = s.replace(/\*\*([^*]+)\*\*/g, (_,c)=>'<strong>'+c+'</strong>');
+    s = s.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, (_,c)=>'<em>'+c+'</em>');
+    s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_,t,u)=>'<a href="'+u+'">'+t+'</a>');
+    return s;
+  }
+  const lines = src.split(/\r?\n/);
+  let out = [];
+  let i = 0;
+  while(i < lines.length){
+    let line = lines[i];
+    // Code fence
+    if(/^```/.test(line)){
+      const lang = line.replace(/^```/, "");
+      i++;
+      let buf = [];
+      while(i < lines.length && !/^```/.test(lines[i])){ buf.push(lines[i]); i++; }
+      i++;
+      out.push('<pre><code>'+esc(buf.join("\n"))+'</code></pre>');
+      continue;
+    }
+    // Headings
+    let m;
+    if(m = line.match(/^####\s+(.*)/)){ out.push('<h4>'+inline(esc(m[1]))+'</h4>'); i++; continue; }
+    if(m = line.match(/^###\s+(.*)/)){ out.push('<h3>'+inline(esc(m[1]))+'</h3>'); i++; continue; }
+    if(m = line.match(/^##\s+(.*)/)){ out.push('<h2>'+inline(esc(m[1]))+'</h2>'); i++; continue; }
+    if(m = line.match(/^#\s+(.*)/)){ out.push('<h1>'+inline(esc(m[1]))+'</h1>'); i++; continue; }
+    // HR
+    if(/^---\s*$/.test(line)){ out.push('<hr>'); i++; continue; }
+    // Table
+    if(/^\|.*\|$/.test(line) && /^\|.*\|$/.test(lines[i+1]||"") && /---/.test(lines[i+1]||"")){
+      const header = line.split("|").slice(1,-1).map(s=>s.trim());
+      i += 2;
+      const rows = [];
+      while(i < lines.length && /^\|.*\|$/.test(lines[i])){
+        rows.push(lines[i].split("|").slice(1,-1).map(s=>s.trim()));
+        i++;
+      }
+      let html = '<table><thead><tr>'+header.map(h=>'<th>'+inline(esc(h))+'</th>').join("")+'</tr></thead><tbody>';
+      rows.forEach(r=>{
+        html += '<tr>'+r.map(c=>'<td>'+inline(esc(c))+'</td>').join("")+'</tr>';
+      });
+      html += '</tbody></table>';
+      out.push(html);
+      continue;
+    }
+    // Blockquote
+    if(/^>\s?/.test(line)){
+      let buf = [];
+      while(i < lines.length && /^>\s?/.test(lines[i])){
+        buf.push(lines[i].replace(/^>\s?/, ""));
+        i++;
+      }
+      out.push('<blockquote>'+inline(esc(buf.join(" ")))+'</blockquote>');
+      continue;
+    }
+    // Unordered list
+    if(/^[-*]\s+/.test(line)){
+      let buf = [];
+      while(i < lines.length && /^[-*]\s+/.test(lines[i])){
+        buf.push(lines[i].replace(/^[-*]\s+/, ""));
+        i++;
+      }
+      out.push('<ul>'+buf.map(b=>'<li>'+inline(esc(b))+'</li>').join("")+'</ul>');
+      continue;
+    }
+    // Ordered list
+    if(/^\d+\.\s+/.test(line)){
+      let buf = [];
+      while(i < lines.length && /^\d+\.\s+/.test(lines[i])){
+        buf.push(lines[i].replace(/^\d+\.\s+/, ""));
+        i++;
+      }
+      out.push('<ol>'+buf.map(b=>'<li>'+inline(esc(b))+'</li>').join("")+'</ol>');
+      continue;
+    }
+    // Paragraph (collect contiguous non-blank lines)
+    if(line.trim() !== ""){
+      let buf = [line];
+      i++;
+      while(i < lines.length && lines[i].trim() !== "" && !/^[#>\-*]|^\d+\./.test(lines[i]) && !/^\|/.test(lines[i]) && !/^---/.test(lines[i])){
+        buf.push(lines[i]);
+        i++;
+      }
+      out.push('<p>'+inline(esc(buf.join(" ")))+'</p>');
+      continue;
+    }
+    i++;
+  }
+  return out.join("\n");
+}
+
+// ── Doc loader ────────────────────────────────────────────────────
+async function load(file, el){
+  document.querySelectorAll(".sb-item").forEach(s=>s.classList.remove("active"));
+  if(el) el.classList.add("active");
+  const view = document.getElementById("docview");
+  view.innerHTML = '<p style="color:var(--ink-400);font-size:12px">Loading…</p>';
+  try {
+    const r = await fetch(file);
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const text = await r.text();
+    // Doc header pill
+    const isReg = file.includes("reg-bi-note") || file.includes("reg-bi-checklist") ||
+                  file.includes("03-reg-bi-deep-dive") || file.includes("11-sign-off");
+    const isTpl = file.includes("templates/");
+    const pill = '<div class="dochead">'+
+      '<span class="pill'+(isReg?' reg':'')+(isTpl?' template':'')+'">'+
+      (isTpl ? 'TEMPLATE' : (isReg ? 'REGULATED' : 'COMPLIANCE'))+'</span>'+
+      '<span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-400)">'+file+'</span>'+
+      '</div>';
+    view.innerHTML = pill + md(text);
+    view.scrollTop = 0;
+    document.getElementById("main").scrollTop = 0;
+  } catch(e){
+    view.innerHTML = '<h1>Could not load</h1><p style="color:var(--ink-500)">'+
+      'Tried to fetch <code>'+file+'</code>: '+e.message+'</p>'+
+      '<p style="color:var(--ink-500)">If you opened this file via <code>file://</code>, the '+
+      'browser blocks <code>fetch()</code> for local files. Either:</p>'+
+      '<ul style="color:var(--ink-500);margin-left:20px"><li>Serve this folder with a local web server '+
+      '(e.g., <code>python3 -m http.server</code> in the <code>arctic-edge/compliance/</code> directory), or</li>'+
+      '<li>Open the markdown files directly from the repository.</li></ul>';
+  }
+}
+</script>
+</body>
+</html>

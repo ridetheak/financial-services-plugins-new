@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arctic Edge — Equity Tearsheet Generator</title>
+<!--
+  Arctic Edge — Module 8: Equity Tearsheet Generator
+  Terminal surface: section-research
+  Input contract: advisor entry (market-data MCP wiring is a later integration)
+  Compute: one-page tearsheet assembly + implied-upside calc
+  Output artifact: equity-tearsheet/v1
+  Compliance: standard industry-style disclosure language only — no firm
+              name, no advisor name on the tearsheet.
+-->
+<style>
+:root{
+  --arctic-800:#1C2B35;--glacier-700:#1F5D74;--glacier-500:#4494B0;
+  --paper-0:#FFFFFF;--paper-2:#F4F8FA;--paper-3:#ECF2F5;
+  --ink-900:#0A1219;--ink-700:#243845;--ink-500:#5A6C77;--ink-400:#7D8D96;
+  --border-1:#DCE4E8;--border-2:#C7D2D8;
+  --ok-500:#1F9D6B;--warn-500:#D77A1A;--risk-500:#B64841;--risk-100:#F4DEDB;
+  --font-sans:"Inter Tight",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --font-serif:"Source Serif 4",Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--paper-2);color:var(--ink-900);font-size:13px;line-height:1.45;padding:24px;}
+.module{max-width:920px;margin:0 auto;background:var(--paper-0);border:1px solid var(--border-1);border-radius:8px;overflow:hidden;}
+.module-head{background:var(--arctic-800);color:#fff;padding:14px 20px;}
+.module-head h1{font-size:15px;font-weight:600;}
+.module-head p{font-size:11px;color:#9EC5D8;margin-top:2px;}
+.module-body{padding:20px;}
+.group-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--glacier-700);
+  padding-bottom:6px;border-bottom:1px solid var(--border-1);margin:18px 0 10px;}
+.group-title:first-child{margin-top:0;}
+.row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field.w2{grid-column:span 2;}
+label{font-size:11px;font-weight:500;color:var(--ink-500);}
+input,textarea{font-family:var(--font-sans);font-size:13px;padding:7px 9px;border:1px solid var(--border-2);
+  border-radius:5px;background:var(--paper-0);color:var(--ink-900);}
+input:focus,textarea:focus{outline:none;border-color:var(--glacier-500);box-shadow:0 0 0 3px rgba(68,148,176,.18);}
+textarea{resize:vertical;min-height:46px;}
+.btn{font-family:var(--font-sans);font-size:12px;font-weight:500;padding:7px 14px;border-radius:5px;
+  border:1px solid var(--border-2);background:var(--paper-0);color:var(--ink-700);cursor:pointer;}
+.btn:hover{background:var(--paper-3);}
+.btn.primary{background:var(--glacier-700);border-color:var(--glacier-700);color:#fff;}
+.btn-row{display:flex;gap:8px;margin-top:8px;}
+.status{font-size:12px;padding:8px 12px;border-radius:5px;margin-top:10px;display:none;}
+.status.show{display:block;}
+.status.err{background:var(--risk-100);color:#8A2F2A;border:1px solid var(--risk-500);}
+/* tearsheet */
+.sheet{display:none;margin-top:16px;border:1px solid var(--border-2);border-radius:6px;padding:22px;background:var(--paper-0);}
+.sheet.show{display:block;}
+.sheet-head{display:flex;align-items:baseline;justify-content:space-between;border-bottom:2px solid var(--arctic-800);padding-bottom:8px;}
+.sheet-tk{font-family:var(--font-mono);font-size:22px;font-weight:600;}
+.sheet-co{font-family:var(--font-serif);font-size:14px;color:var(--ink-500);}
+.sheet-asof{font-size:10px;color:var(--ink-400);font-family:var(--font-mono);}
+.sheet-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px;}
+.sheet-block h3{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--glacier-700);margin-bottom:5px;}
+.kv{display:flex;justify-content:space-between;font-size:12px;padding:2px 0;border-bottom:1px solid var(--paper-3);}
+.kv .v{font-family:var(--font-mono);font-weight:500;}
+.flags{margin-top:12px;}
+.flag-item{font-size:11px;padding:4px 9px;background:var(--risk-100);border:1px solid var(--risk-500);
+  color:#8A2F2A;border-radius:4px;display:inline-block;margin:2px 4px 2px 0;}
+.upside{font-family:var(--font-mono);font-weight:600;}
+.upside.pos{color:var(--ok-500);}.upside.neg{color:var(--risk-500);}
+.disclosure{margin-top:14px;padding-top:10px;border-top:1px solid var(--border-1);
+  font-size:9px;color:var(--ink-400);line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="module">
+  <div class="module-head">
+    <h1>Equity Tearsheet Generator</h1>
+    <p>Arctic Edge Phase 1, Module 8 — one-page security tearsheet</p>
+  </div>
+  <div class="module-body">
+
+    <div class="group-title">Security</div>
+    <div class="row">
+      <div class="field"><label>Ticker</label><input id="ticker" placeholder="AAPL"></div>
+      <div class="field w2"><label>Company name</label><input id="company" placeholder="Apple Inc."></div>
+      <div class="field"><label>As-of date</label><input id="asof" type="date"></div>
+    </div>
+
+    <div class="group-title">Price &amp; Performance</div>
+    <div class="row">
+      <div class="field"><label>Price ($)</label><input id="price" type="number" step="0.01"></div>
+      <div class="field"><label>52-wk low ($)</label><input id="low52" type="number" step="0.01"></div>
+      <div class="field"><label>52-wk high ($)</label><input id="high52" type="number" step="0.01"></div>
+      <div class="field"><label>1-yr total return (%)</label><input id="ret1y" type="number" step="0.1"></div>
+    </div>
+
+    <div class="group-title">Valuation</div>
+    <div class="row">
+      <div class="field"><label>P/E (TTM)</label><input id="pe" type="number" step="0.1"></div>
+      <div class="field"><label>Forward P/E</label><input id="fpe" type="number" step="0.1"></div>
+      <div class="field"><label>EV/EBITDA</label><input id="evebitda" type="number" step="0.1"></div>
+      <div class="field"><label>Dividend yield (%)</label><input id="divyield" type="number" step="0.01"></div>
+    </div>
+
+    <div class="group-title">Fundamentals</div>
+    <div class="row">
+      <div class="field"><label>Revenue ($B)</label><input id="revenue" type="number" step="0.1"></div>
+      <div class="field"><label>Revenue growth (%)</label><input id="revgrowth" type="number" step="0.1"></div>
+      <div class="field"><label>Net margin (%)</label><input id="margin" type="number" step="0.1"></div>
+      <div class="field"><label>ROE (%)</label><input id="roe" type="number" step="0.1"></div>
+    </div>
+
+    <div class="group-title">Analyst Consensus</div>
+    <div class="row">
+      <div class="field"><label>Consensus rating</label><input id="rating" placeholder="e.g. Overweight"></div>
+      <div class="field"><label>Mean price target ($)</label><input id="pt" type="number" step="0.01"></div>
+      <div class="field"><label># of analysts</label><input id="nAnalysts" type="number"></div>
+      <div class="field"><label>Implied upside</label><input id="upside" disabled placeholder="auto"></div>
+    </div>
+
+    <div class="group-title">Risk Flags</div>
+    <div class="field" style="margin-bottom:10px"><label>One flag per line</label>
+      <textarea id="riskFlags" placeholder="Customer concentration&#10;Elevated leverage&#10;Regulatory overhang"></textarea></div>
+
+    <div class="btn-row">
+      <button class="btn primary" onclick="generate()">Generate Tearsheet</button>
+      <button class="btn" onclick="window.print()">Print / PDF</button>
+      <button class="btn" onclick="exportSheet()">Export JSON</button>
+    </div>
+    <div id="status" class="status"></div>
+
+    <div id="sheet" class="sheet"></div>
+  </div>
+</div>
+
+<script>
+let lastSheet=null;
+function v(id){return document.getElementById(id).value.trim();}
+function n(id){const x=parseFloat(document.getElementById(id).value);return isNaN(x)?null:x;}
+function err(m){const s=document.getElementById("status");s.textContent=m;s.className="status show err";}
+function fmt(x,suffix=""){return x==null?"—":x+suffix;}
+
+function generate(){
+  const tk=v("ticker").toUpperCase(),co=v("company"),price=n("price"),pt=n("pt");
+  if(!tk||!co||price==null){err("Ticker, company, and price are required.");return;}
+  document.getElementById("status").className="status";
+
+  const upside=(pt!=null&&price)?((pt-price)/price*100):null;
+  document.getElementById("upside").value=upside!=null?upside.toFixed(1)+"%":"—";
+
+  const flags=v("riskFlags").split("\n").map(s=>s.trim()).filter(Boolean);
+  const asof=v("asof")||new Date().toISOString().slice(0,10);
+
+  const sheet={
+    contract:"equity-tearsheet/v1",generatedAt:new Date().toISOString(),
+    ticker:tk,company:co,asOf:asof,
+    price:{last:price,low52:n("low52"),high52:n("high52"),return1yPct:n("ret1y")},
+    valuation:{pe:n("pe"),forwardPe:n("fpe"),evEbitda:n("evebitda"),dividendYieldPct:n("divyield")},
+    fundamentals:{revenueB:n("revenue"),revenueGrowthPct:n("revgrowth"),netMarginPct:n("margin"),roePct:n("roe")},
+    consensus:{rating:v("rating"),meanTarget:pt,analysts:n("nAnalysts"),impliedUpsidePct:upside!=null?+upside.toFixed(1):null},
+    riskFlags:flags,
+  };
+  lastSheet=sheet;
+  render(sheet);
+}
+
+function render(s){
+  const up=s.consensus.impliedUpsidePct;
+  const upCls=up==null?"":up>=0?"pos":"neg";
+  const el=document.getElementById("sheet");
+  el.innerHTML=`
+    <div class="sheet-head">
+      <div><span class="sheet-tk">${s.ticker}</span> &nbsp;<span class="sheet-co">${s.company}</span></div>
+      <div class="sheet-asof">As of ${s.asOf}</div>
+    </div>
+    <div class="sheet-grid">
+      <div class="sheet-block">
+        <h3>Price &amp; Performance</h3>
+        <div class="kv"><span>Last price</span><span class="v">$${s.price.last}</span></div>
+        <div class="kv"><span>52-week range</span><span class="v">${fmt(s.price.low52,"")} – ${fmt(s.price.high52,"")}</span></div>
+        <div class="kv"><span>1-year total return</span><span class="v">${fmt(s.price.return1yPct,"%")}</span></div>
+      </div>
+      <div class="sheet-block">
+        <h3>Valuation</h3>
+        <div class="kv"><span>P/E (TTM)</span><span class="v">${fmt(s.valuation.pe)}</span></div>
+        <div class="kv"><span>Forward P/E</span><span class="v">${fmt(s.valuation.forwardPe)}</span></div>
+        <div class="kv"><span>EV/EBITDA</span><span class="v">${fmt(s.valuation.evEbitda)}</span></div>
+        <div class="kv"><span>Dividend yield</span><span class="v">${fmt(s.valuation.dividendYieldPct,"%")}</span></div>
+      </div>
+      <div class="sheet-block">
+        <h3>Fundamentals</h3>
+        <div class="kv"><span>Revenue</span><span class="v">${fmt(s.fundamentals.revenueB,"B")}</span></div>
+        <div class="kv"><span>Revenue growth</span><span class="v">${fmt(s.fundamentals.revenueGrowthPct,"%")}</span></div>
+        <div class="kv"><span>Net margin</span><span class="v">${fmt(s.fundamentals.netMarginPct,"%")}</span></div>
+        <div class="kv"><span>ROE</span><span class="v">${fmt(s.fundamentals.roePct,"%")}</span></div>
+      </div>
+      <div class="sheet-block">
+        <h3>Analyst Consensus</h3>
+        <div class="kv"><span>Rating</span><span class="v">${s.consensus.rating||"—"}</span></div>
+        <div class="kv"><span>Mean price target</span><span class="v">${s.consensus.meanTarget!=null?"$"+s.consensus.meanTarget:"—"}</span></div>
+        <div class="kv"><span>Implied upside</span><span class="v upside ${upCls}">${up!=null?up+"%":"—"}</span></div>
+        <div class="kv"><span>Covering analysts</span><span class="v">${fmt(s.consensus.analysts)}</span></div>
+      </div>
+    </div>
+    ${s.riskFlags.length?`<div class="flags"><h3 style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--risk-500);margin-bottom:5px">Risk Flags</h3>
+      ${s.riskFlags.map(f=>`<span class="flag-item">${f.replace(/[<>]/g,"")}</span>`).join("")}</div>`:""}
+    <div class="disclosure">
+      For informational purposes only. Not investment advice or a recommendation to buy or sell any security.
+      Figures are advisor-entered and should be verified against primary sources. Valuation and analyst data
+      are point-in-time and subject to change. Past performance is not indicative of future results.
+      Investing involves risk, including possible loss of principal.
+    </div>`;
+  el.classList.add("show");
+}
+
+function exportSheet(){
+  if(!lastSheet){err("Generate the tearsheet first.");return;}
+  const blob=new Blob([JSON.stringify(lastSheet,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download=`tearsheet_${lastSheet.ticker}.json`;a.click();
+}
+document.getElementById("asof").value=new Date().toISOString().slice(0,10);
+</script>
+</body>
+</html>
