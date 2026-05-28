@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arctic Edge — Reg BI Note Generator</title>
+<!--
+  Arctic Edge — Module 6: Reg BI Note Generator  [REGULATED WORK PRODUCT]
+  Terminal surface: section-recmemo
+  Input contract: advisor entry + IPS Record (Module 1)
+  Compute: assembles a trade note structured to the Reg BI obligations and
+           CFP Standards of Conduct; tags each note against reg-bi-checklist/v1
+  Output artifact: reg-bi-note/v1
+  Compliance: REGULATED. Output templates and language must be reviewed and
+              signed off by a qualified compliance professional before use on
+              real client files. PII is handled client-side; use a client
+              reference (ID/initials) rather than full name where possible.
+-->
+<style>
+:root{
+  --arctic-800:#1C2B35;--glacier-700:#1F5D74;--glacier-500:#4494B0;
+  --paper-0:#FFFFFF;--paper-2:#F4F8FA;--paper-3:#ECF2F5;
+  --ink-900:#0A1219;--ink-700:#243845;--ink-500:#5A6C77;--ink-400:#7D8D96;
+  --border-1:#DCE4E8;--border-2:#C7D2D8;
+  --ok-500:#1F9D6B;--ok-100:#DCEFE2;--warn-500:#D77A1A;--warn-100:#FCE8D2;
+  --warn-700:#9E5714;--risk-500:#B64841;--risk-100:#F4DEDB;
+  --font-sans:"Inter Tight",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --font-serif:"Source Serif 4",Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--paper-2);color:var(--ink-900);font-size:13px;line-height:1.45;padding:24px;}
+.module{max-width:900px;margin:0 auto;background:var(--paper-0);border:1px solid var(--border-1);border-radius:8px;overflow:hidden;}
+.module-head{background:var(--arctic-800);color:#fff;padding:14px 20px;}
+.module-head h1{font-size:15px;font-weight:600;}
+.module-head p{font-size:11px;color:#9EC5D8;margin-top:2px;}
+.compliance-banner{background:var(--warn-100);border-bottom:1px solid var(--warn-500);
+  color:var(--warn-700);font-size:11px;padding:9px 20px;font-weight:500;}
+.module-body{padding:20px;}
+.group-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--glacier-700);
+  padding-bottom:6px;border-bottom:1px solid var(--border-1);margin:18px 0 10px;}
+.group-title:first-child{margin-top:0;}
+.row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field.full{grid-column:1/-1;}
+label{font-size:11px;font-weight:500;color:var(--ink-500);}
+input,select,textarea{font-family:var(--font-sans);font-size:13px;padding:7px 9px;border:1px solid var(--border-2);
+  border-radius:5px;background:var(--paper-0);color:var(--ink-900);}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--glacier-500);box-shadow:0 0 0 3px rgba(68,148,176,.18);}
+textarea{resize:vertical;min-height:54px;}
+.btn{font-family:var(--font-sans);font-size:12px;font-weight:500;padding:7px 14px;border-radius:5px;
+  border:1px solid var(--border-2);background:var(--paper-0);color:var(--ink-700);cursor:pointer;}
+.btn:hover{background:var(--paper-3);}
+.btn.primary{background:var(--glacier-700);border-color:var(--glacier-700);color:#fff;}
+.btn-row{display:flex;gap:8px;margin-top:8px;}
+.status{font-size:12px;padding:8px 12px;border-radius:5px;margin-top:10px;display:none;}
+.status.show{display:block;}
+.status.err{background:var(--risk-100);color:#8A2F2A;border:1px solid var(--risk-500);}
+.note-out{display:none;margin-top:14px;border:1px solid var(--border-1);border-radius:6px;}
+.note-out.show{display:block;}
+.note-doc{font-family:var(--font-serif);font-size:13px;line-height:1.6;padding:20px 22px;background:var(--paper-0);}
+.note-doc h2{font-family:var(--font-sans);font-size:11px;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--glacier-700);margin:14px 0 4px;}
+.note-doc h2:first-child{margin-top:0;}
+.note-doc .draft-mark{font-family:var(--font-sans);font-size:10px;color:var(--warn-700);
+  background:var(--warn-100);padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:10px;}
+.note-foot{font-size:10px;color:var(--ink-400);padding:8px 22px;border-top:1px solid var(--border-1);background:var(--paper-2);}
+</style>
+</head>
+<body>
+<div class="module">
+  <div class="module-head">
+    <h1>Reg BI Note Generator</h1>
+    <p>Arctic Edge Phase 1, Module 6 — trade notes structured to Reg BI &amp; CFP Standards</p>
+  </div>
+  <div class="compliance-banner">
+    REGULATED WORK PRODUCT — generated notes are drafts. Output language and templates require
+    sign-off by a qualified compliance professional before use on any real client file.
+  </div>
+  <div class="module-body">
+
+    <div class="group-title">Client &amp; Recommendation</div>
+    <div class="row">
+      <div class="field"><label>Client reference (ID / initials — not full name)</label><input id="clientRef" placeholder="e.g. HH-2041 / J.D."></div>
+      <div class="field"><label>Date</label><input id="noteDate" type="date"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Action</label>
+        <select id="action"><option>Buy</option><option>Add to</option><option>Hold</option><option>Trim</option><option>Sell</option></select>
+      </div>
+      <div class="field"><label>Security</label><input id="security" placeholder="e.g. MSFT — Microsoft Corp."></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Recommendation origin</label>
+        <select id="origin"><option value="solicited">Solicited (advisor-initiated)</option>
+        <option value="unsolicited">Unsolicited (client-initiated)</option></select></div>
+      <div class="field"><label>Approx. amount / allocation</label><input id="amount" placeholder="e.g. 3% of portfolio"></div>
+    </div>
+
+    <div class="group-title">Investment Profile (from IPS)</div>
+    <div class="row">
+      <div class="field"><label>Primary objective</label><input id="objective" placeholder="e.g. Balanced growth"></div>
+      <div class="field"><label>Risk tolerance / capacity</label><input id="risk" placeholder="e.g. Moderate"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Time horizon</label><input id="horizon" placeholder="e.g. 12 years"></div>
+      <div class="field"><label>Liquidity needs</label><input id="liquidity" placeholder="e.g. None near-term"></div>
+    </div>
+    <div class="field full" style="margin-bottom:10px"><label>Relevant financial situation</label>
+      <textarea id="financial" placeholder="Income, net worth context, account type relevant to this recommendation"></textarea></div>
+
+    <div class="group-title">Reg BI Care Obligation</div>
+    <div class="field full" style="margin-bottom:10px"><label>Basis for recommendation — why it is in the client's best interest</label>
+      <textarea id="basis" placeholder="How this recommendation fits the investment profile above"></textarea></div>
+    <div class="field full" style="margin-bottom:10px"><label>Reasonably available alternatives considered</label>
+      <textarea id="alternatives" placeholder="Other options weighed and why this one was selected"></textarea></div>
+    <div class="field full" style="margin-bottom:10px"><label>Cost consideration</label>
+      <textarea id="costs" placeholder="Costs/fees of this recommendation and how they factored in"></textarea></div>
+
+    <div class="group-title">Conflicts &amp; Disclosure</div>
+    <div class="field full" style="margin-bottom:10px"><label>Conflicts of interest</label>
+      <textarea id="conflicts" placeholder="Material conflicts — or state 'None identified'"></textarea></div>
+    <div class="field full"><label>Disclosures provided to the client</label>
+      <textarea id="disclosures" placeholder="Form CRS, fee schedule, product disclosures provided"></textarea></div>
+
+    <div class="btn-row">
+      <button class="btn primary" onclick="generate()">Generate Reg BI Note</button>
+      <button class="btn" onclick="copyNote()">Copy note text</button>
+      <button class="btn" onclick="exportNote()">Export JSON</button>
+    </div>
+    <div id="status" class="status"></div>
+
+    <div id="noteOut" class="note-out">
+      <div class="note-doc" id="noteDoc"></div>
+      <div class="note-foot" id="noteFoot"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const CHECKLIST_VERSION="reg-bi-checklist/v1";
+let lastNote=null;
+
+function val(id){return document.getElementById(id).value.trim();}
+function err(msg){const s=document.getElementById("status");s.textContent=msg;s.className="status show err";}
+
+function generate(){
+  const f={
+    clientRef:val("clientRef"),date:val("noteDate"),action:val("action"),security:val("security"),
+    origin:val("origin"),amount:val("amount"),objective:val("objective"),risk:val("risk"),
+    horizon:val("horizon"),liquidity:val("liquidity"),financial:val("financial"),
+    basis:val("basis"),alternatives:val("alternatives"),costs:val("costs"),
+    conflicts:val("conflicts"),disclosures:val("disclosures"),
+  };
+  const required={clientRef:"client reference",date:"date",security:"security",
+    objective:"objective",risk:"risk tolerance",horizon:"time horizon",
+    basis:"basis for recommendation",alternatives:"alternatives considered",
+    costs:"cost consideration",conflicts:"conflicts",disclosures:"disclosures"};
+  const missing=Object.entries(required).filter(([k])=>!f[k]).map(([,l])=>l);
+  if(missing.length){err("Complete all fields before generating — missing: "+missing.join(", "));return;}
+
+  document.getElementById("status").className="status";
+  const originText=f.origin==="solicited"
+    ? "This was a solicited recommendation, initiated by the advisor."
+    : "This was an unsolicited transaction, initiated/directed by the client; documented here for the file.";
+
+  const doc=`<span class="draft-mark">DRAFT — pending compliance review</span>
+<h2>Recommendation</h2>
+${f.action} ${f.security}${f.amount?" — "+f.amount:""}. ${originText}
+
+<h2>Client Investment Profile</h2>
+Objective: ${f.objective}. Risk tolerance/capacity: ${f.risk}. Time horizon: ${f.horizon}.
+Liquidity needs: ${f.liquidity||"Not specified"}. ${f.financial}
+
+<h2>Care Obligation — Basis for the Recommendation</h2>
+${f.basis}
+
+<h2>Reasonably Available Alternatives Considered</h2>
+${f.alternatives}
+
+<h2>Cost Consideration</h2>
+${f.costs}
+
+<h2>Conflict of Interest</h2>
+${f.conflicts}
+
+<h2>Disclosure</h2>
+${f.disclosures}
+
+<h2>Attestation</h2>
+This recommendation was made in what the advisor believes to be the retail client's best
+interest, consistent with Regulation Best Interest and the CFP Board Standards of Conduct,
+based on the investment profile documented above. Reviewed against ${CHECKLIST_VERSION}.`;
+
+  document.getElementById("noteDoc").innerHTML=doc.replace(/\n/g,"<br>");
+  document.getElementById("noteFoot").textContent=
+    `Client ref ${f.clientRef} · ${f.date} · contract reg-bi-note/v1 · DRAFT — not for client file until compliance sign-off.`;
+  document.getElementById("noteOut").classList.add("show");
+
+  lastNote={
+    contract:"reg-bi-note/v1",
+    checklistVersion:CHECKLIST_VERSION,
+    status:"draft-pending-compliance-review",
+    generatedAt:new Date().toISOString(),
+    fields:f,
+    plainText:doc.replace(/<[^>]+>/g,""),
+  };
+}
+function copyNote(){
+  if(!lastNote){err("Generate the note first.");return;}
+  navigator.clipboard.writeText(lastNote.plainText);
+}
+function exportNote(){
+  if(!lastNote){err("Generate the note first.");return;}
+  const blob=new Blob([JSON.stringify(lastNote,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download="reg-bi-note.json";a.click();
+}
+document.getElementById("noteDate").value=new Date().toISOString().slice(0,10);
+</script>
+</body>
+</html>

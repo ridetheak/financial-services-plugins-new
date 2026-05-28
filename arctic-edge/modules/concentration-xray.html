@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arctic Edge — Concentration &amp; Cross-Holdings X-Ray</title>
+<!--
+  Arctic Edge — Module 9: Concentration & Cross-Holdings X-Ray
+  Terminal surface: section-asset-grid
+  Input contract: Holdings Snapshot across a household + fund look-through
+  Compute: distribute fund value to constituents (signed weights handle
+           inverse/leveraged exposure), aggregate net exposure per underlying
+           name, surface true single-name concentration across all accounts
+  Output artifact: concentration-xray/v1
+  Compliance: informational; surfaces concentration the position-level view hides
+-->
+<style>
+:root{
+  --arctic-800:#1C2B35;--glacier-700:#1F5D74;--glacier-500:#4494B0;
+  --paper-0:#FFFFFF;--paper-2:#F4F8FA;--paper-3:#ECF2F5;
+  --ink-900:#0A1219;--ink-700:#243845;--ink-500:#5A6C77;--ink-400:#7D8D96;
+  --border-1:#DCE4E8;--border-2:#C7D2D8;
+  --ok-500:#1F9D6B;--ok-100:#DCEFE2;--warn-500:#D77A1A;--warn-100:#FCE8D2;
+  --warn-700:#9E5714;--risk-500:#B64841;--risk-100:#F4DEDB;
+  --font-sans:"Inter Tight",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--paper-2);color:var(--ink-900);font-size:13px;line-height:1.45;padding:24px;}
+.module{max-width:960px;margin:0 auto;background:var(--paper-0);border:1px solid var(--border-1);border-radius:8px;overflow:hidden;}
+.module-head{background:var(--arctic-800);color:#fff;padding:14px 20px;}
+.module-head h1{font-size:15px;font-weight:600;}
+.module-head p{font-size:11px;color:#9EC5D8;margin-top:2px;}
+.module-body{padding:20px;}
+.group-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--glacier-700);
+  padding-bottom:6px;border-bottom:1px solid var(--border-1);margin:18px 0 10px;}
+.group-title:first-child{margin-top:0;}
+.note{font-size:11px;color:var(--ink-500);background:var(--paper-3);border:1px solid var(--border-1);
+  border-radius:5px;padding:9px 12px;margin-bottom:12px;}
+.pos{border:1px solid var(--border-1);border-radius:6px;padding:11px;margin-bottom:9px;}
+.pos-row{display:grid;grid-template-columns:1.4fr 1fr 0.9fr auto;gap:8px;margin-bottom:7px;}
+label{font-size:10px;font-weight:500;color:var(--ink-500);display:block;margin-bottom:2px;}
+input,textarea{width:100%;font-family:var(--font-sans);font-size:12px;padding:6px 8px;border:1px solid var(--border-2);
+  border-radius:5px;background:var(--paper-0);color:var(--ink-900);}
+input:focus,textarea:focus{outline:none;border-color:var(--glacier-500);box-shadow:0 0 0 3px rgba(68,148,176,.18);}
+textarea{font-family:var(--font-mono);font-size:11px;min-height:42px;resize:vertical;}
+.btn{font-family:var(--font-sans);font-size:12px;font-weight:500;padding:7px 14px;border-radius:5px;
+  border:1px solid var(--border-2);background:var(--paper-0);color:var(--ink-700);cursor:pointer;}
+.btn:hover{background:var(--paper-3);}
+.btn.primary{background:var(--glacier-700);border-color:var(--glacier-700);color:#fff;}
+.btn.sm{padding:4px 9px;font-size:11px;}
+.btn-row{display:flex;gap:8px;margin-top:8px;}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px;}
+th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-400);
+  padding:5px 6px;border-bottom:1px solid var(--border-1);}
+td{padding:4px 6px;border-bottom:1px solid var(--paper-3);}
+td.num{text-align:right;font-family:var(--font-mono);}
+tr.flagged td{background:var(--warn-100);}
+.metric-row{display:flex;gap:10px;margin:6px 0 4px;}
+.metric{border:1px solid var(--border-1);border-radius:6px;padding:9px 13px;}
+.metric .k{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-400);}
+.metric .v{font-family:var(--font-mono);font-size:17px;font-weight:600;margin-top:2px;}
+.flag{font-size:11px;padding:7px 11px;border-radius:5px;margin-top:6px;background:var(--warn-100);
+  border:1px solid var(--warn-500);color:var(--warn-700);}
+.flag.none{background:var(--ok-100);border-color:var(--ok-500);color:#167A52;}
+.results{display:none;}.results.show{display:block;}
+.status{font-size:12px;padding:8px 12px;border-radius:5px;margin-top:10px;display:none;}
+.status.show{display:block;}
+.status.err{background:var(--risk-100);color:#8A2F2A;border:1px solid var(--risk-500);}
+</style>
+</head>
+<body>
+<div class="module">
+  <div class="module-head">
+    <h1>Concentration &amp; Cross-Holdings X-Ray</h1>
+    <p>Arctic Edge Phase 1, Module 9 — true single-name exposure across a household</p>
+  </div>
+  <div class="module-body">
+
+    <div class="note">
+      Enter each position. For a fund/ETF, paste its look-through in the constituents box
+      (one line per holding: <code>TICKER WEIGHT%</code>). Use a <strong>negative weight</strong>
+      for inverse exposure — e.g. an inverse ETF — so offsetting leveraged positions net correctly.
+      Direct equities can be left without a look-through.
+    </div>
+
+    <div class="group-title">Positions</div>
+    <div id="positions"></div>
+    <div class="btn-row">
+      <button class="btn sm" onclick="addPosition()">+ Add position</button>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn primary" onclick="run()">Run X-Ray</button>
+      <button class="btn" onclick="exportXray()">Export JSON</button>
+    </div>
+    <div id="status" class="status"></div>
+
+    <div id="results" class="results">
+      <div class="group-title">Household Exposure</div>
+      <div class="metric-row" id="metrics"></div>
+      <div class="group-title">True Single-Name Exposure</div>
+      <table><thead><tr><th>Underlying</th><th class="num">Net exposure $</th><th class="num">% of household</th><th class="num">Gross $</th></tr></thead>
+        <tbody id="nameRows"></tbody></table>
+      <div class="group-title">Concentration Flags</div>
+      <div id="flags"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const CONC_THRESHOLD=10; // % of household — single-name flag
+let posCount=0,lastXray=null;
+
+function positionHTML(i){
+  return `<div class="pos" data-i="${i}">
+    <div class="pos-row">
+      <div><label>Position / fund</label><input class="p-label" placeholder="e.g. SOXL or AAPL"></div>
+      <div><label>Account</label><input class="p-acct" placeholder="e.g. Joint Brokerage"></div>
+      <div><label>Market value $</label><input class="p-val" type="number"></div>
+      <div style="display:flex;align-items:flex-end"><button class="btn sm" onclick="this.closest('.pos').remove()">&times;</button></div>
+    </div>
+    <div><label>Fund look-through — optional (lines: TICKER WEIGHT%)</label>
+      <textarea class="p-lt" placeholder="NVDA 22&#10;AVGO 18&#10;AMD 7"></textarea></div>
+  </div>`;
+}
+function addPosition(){
+  document.getElementById("positions").insertAdjacentHTML("beforeend",positionHTML(posCount++));
+}
+function err(m){const s=document.getElementById("status");s.textContent=m;s.className="status show err";}
+
+function parseLookthrough(text){
+  // returns [{ticker, weight}] ; weight as percent (may be negative)
+  return text.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{
+    const m=l.match(/^(.+?)[\s,:]+(-?\d+(?:\.\d+)?)\s*%?$/);
+    if(!m) return null;
+    return {ticker:m[1].trim().toUpperCase(),weight:parseFloat(m[2])};
+  }).filter(Boolean);
+}
+
+function run(){
+  const positions=[];
+  document.querySelectorAll("#positions .pos").forEach(p=>{
+    const label=p.querySelector(".p-label").value.trim();
+    const val=parseFloat(p.querySelector(".p-val").value);
+    if(!label||isNaN(val)) return;
+    positions.push({
+      label,account:p.querySelector(".p-acct").value.trim()||"—",value:val,
+      lookthrough:parseLookthrough(p.querySelector(".p-lt").value),
+    });
+  });
+  if(!positions.length){err("Add at least one position with a label and market value.");return;}
+  document.getElementById("status").className="status";
+
+  const household=positions.reduce((s,p)=>s+p.value,0);
+
+  // aggregate net + gross exposure per underlying name
+  const exposure={}; // ticker -> {net, gross}
+  function add(ticker,amt){
+    if(!exposure[ticker]) exposure[ticker]={net:0,gross:0};
+    exposure[ticker].net+=amt;
+    exposure[ticker].gross+=Math.abs(amt);
+  }
+  positions.forEach(p=>{
+    if(p.lookthrough.length){
+      p.lookthrough.forEach(c=>add(c.ticker,p.value*c.weight/100));
+    }else{
+      add(p.label.toUpperCase(),p.value);
+    }
+  });
+
+  const names=Object.entries(exposure).map(([ticker,e])=>({
+    ticker,net:e.net,gross:e.gross,
+    pctHousehold:household?e.net/household*100:0,
+  })).sort((a,b)=>Math.abs(b.net)-Math.abs(a.net));
+
+  const flags=[];
+  names.forEach(nm=>{
+    if(Math.abs(nm.pctHousehold)>=CONC_THRESHOLD)
+      flags.push(`${nm.ticker}: ${nm.pctHousehold.toFixed(1)}% net household exposure — above the ${CONC_THRESHOLD}% single-name threshold.`);
+    if(nm.gross>Math.abs(nm.net)*1.5 && nm.gross>0)
+      flags.push(`${nm.ticker}: offsetting positions — $${Math.round(nm.gross).toLocaleString()} gross vs $${Math.round(nm.net).toLocaleString()} net. Both legs still carry cost and tracking risk.`);
+  });
+
+  lastXray={
+    contract:"concentration-xray/v1",
+    computedAt:new Date().toISOString(),
+    householdValue:household,
+    concentrationThresholdPct:CONC_THRESHOLD,
+    underlyingExposure:names.map(n=>({ticker:n.ticker,netExposure:Math.round(n.net),
+      grossExposure:Math.round(n.gross),pctHousehold:+n.pctHousehold.toFixed(1)})),
+    flags,
+  };
+  render(lastXray);
+}
+
+function render(X){
+  document.getElementById("metrics").innerHTML=`
+    <div class="metric"><div class="k">Household value</div><div class="v">$${X.householdValue.toLocaleString()}</div></div>
+    <div class="metric"><div class="k">Distinct underlyings</div><div class="v">${X.underlyingExposure.length}</div></div>
+    <div class="metric"><div class="k">Single-name flags</div><div class="v">${X.flags.length}</div></div>`;
+  document.getElementById("nameRows").innerHTML=X.underlyingExposure.map(n=>`
+    <tr class="${Math.abs(n.pctHousehold)>=X.concentrationThresholdPct?"flagged":""}">
+      <td>${n.ticker}</td>
+      <td class="num">$${n.netExposure.toLocaleString()}</td>
+      <td class="num">${n.pctHousehold}%</td>
+      <td class="num">$${n.grossExposure.toLocaleString()}</td>
+    </tr>`).join("");
+  document.getElementById("flags").innerHTML=X.flags.length
+    ? X.flags.map(f=>`<div class="flag">${f}</div>`).join("")
+    : `<div class="flag none">No single-name concentration above ${X.concentrationThresholdPct}% of the household.</div>`;
+  document.getElementById("results").classList.add("show");
+}
+
+function exportXray(){
+  if(!lastXray){err("Run the X-Ray first.");return;}
+  const blob=new Blob([JSON.stringify(lastXray,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download="concentration-xray.json";a.click();
+}
+addPosition();addPosition();
+</script>
+</body>
+</html>
