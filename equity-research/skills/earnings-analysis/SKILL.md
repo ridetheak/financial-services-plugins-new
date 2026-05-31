@@ -1,228 +1,228 @@
 ---
 name: earnings-analysis
-description: 创建专业股票研究盈利更新报告（8-12 页，3,000-5,000 字）分析已覆盖公司的季度结果。快速周转格式，重点关注超/未达预期分析、关键指标、更新的估计和修订的论文。包括 1-3 个汇总表和 8-12 个图表。用户请求"盈利更新"、"季度更新"、"盈利分析"、"Q1/Q2/Q3/Q4 结果"或盈利后报告时使用。
+description: Create professional equity research earnings update reports (8-12 pages, 3,000-5,000 words) analyzing covered company quarterly results. Fast-turnaround format focused on beat/miss analysis, key metrics, updated estimates, and revised thesis. Includes 1-3 summary tables and 8-12 charts. Use when the user requests "earnings update", "quarterly update", "earnings analysis", "Q1/Q2/Q3/Q4 results", or post-earnings reports.
 ---
 
-# 股票研究盈利更新
+# Equity Research Earnings Update
 
-创建专业**盈利更新报告**，分析已覆盖公司的季度结果，遵循机构标准（摩根大通、高盛、摩根士丹利格式）。
+Create a professional **earnings update report** analyzing covered company quarterly results, following institutional standards (JPMorgan, Goldman Sachs, Morgan Stanley format).
 
-**主要特征：**
-- **长度**：8-12 页
-- **字数**：3,000-5,000 字
-- **表格**：1-3 个汇总表（非全面）
-- **图表**：8-12 个
-- **周转时间**：1-2 天（盈利发布后 24-48 小时内）
-- **受众**：已熟悉该公司的客户
-- **焦点**：新增内容 - 超/未达预期、更新的估计、论文影响
-- **字体**：整个文档使用 Times New Roman（除非用户另有说明）
+**Key characteristics:**
+- **Length**: 8-12 pages
+- **Word count**: 3,000-5,000 words
+- **Tables**: 1-3 summary tables (not comprehensive)
+- **Charts**: 8-12
+- **Turnaround**: 1-2 days (within 24-48 hours of earnings release)
+- **Audience**: Clients already familiar with the company
+- **Focus**: What's new — beat/miss, updated estimates, thesis impact
+- **Font**: Times New Roman throughout (unless the user specifies otherwise)
 
-## 何时使用
+## When to Use
 
-用户请求以下内容时使用：
-- "为[公司] Q3 2024 创建盈利更新"
-- "分析[公司]的季度结果"
-- "[公司]的盈利后报告"
-- "[公司]的 Q1/Q2/Q3/Q4 更新"
+Use when the user requests:
+- "Create an earnings update for [Company] Q3 2024"
+- "Analyze [Company]'s quarterly results"
+- "Post-earnings report for [Company]"
+- "Q1/Q2/Q3/Q4 update for [Company]"
 
-**不要在以下情况下使用：**
-- 用户请求"初始报告" → 使用不同的技能
-- 用户请求"快速笔记"或"快速观点" → 不同的格式
-- 公司未被覆盖 → 需要首先启动覆盖
+**Do NOT use when:**
+- User requests an "initiating report" → use a different skill
+- User requests a "quick note" or "quick take" → different format
+- Company is not covered → initiate coverage first
 
-## 关键要求
+## Key Requirements
 
-### 1. 速度和及时性
-- 在盈利发布后 24-48 小时内发布
-- 仅关注新信息
-- 不要过度重述公司背景
+### 1. Speed and Timeliness
+- Publish within 24-48 hours of earnings release
+- Focus only on new information
+- Don't over-restate company background
 
-### 2. 超/未达预期分析
-- 首先说明公司是否超或未达预期
-- 量化差异（例如，"收入超过预期 1.2 亿美元或 3%"）
-- 解释为什么结果与预期不同
+### 2. Beat/Miss Analysis
+- Lead with whether the company beat or missed
+- Quantify the gap (e.g., "Revenue beat expectations by $120M or 3%")
+- Explain why results differed from expectations
 
-### 3. 汇总格式
-- 将表格保持在 1-3 个（仅汇总，不全面）
-- 无完整损益表/现金流/资产负债表（仅关键指标）
-- 假设读者已看过初始报告
+### 3. Summary Format
+- Keep tables to 1-3 (summary only, not comprehensive)
+- No complete IS/BS/CF (key metrics only)
+- Assume the reader has seen the initiating report
 
-### 4. 引用和来源归属 ⭐⭐⭐ 强制性
+### 4. Citations and Source Attribution ⭐⭐⭐ MANDATORY
 
-**关键**：使用特定来源和可点击的超链接正确引用所有数据。
+**Critical**: Use specific sources and clickable hyperlinks to properly cite all data.
 
-**在每个图表和表格中包含特定的引用和可点击链接：**
-
-```
-来源：2024 年 Q3 10-Q，提交日期 2024 年 11 月 8 日；公司盈利发布
-       [超链接"10-Q"至：https://www.sec.gov/cgi-bin/viewer?accession=...]
-       [超链接"盈利发布"至：https://investor.company.com/news/q3-2024]
-```
-
-**超链接在 Word 中的显示方式：**
-- 文件名显示为蓝色、下划线可点击链接
-- 读者可以按 Ctrl+单击直接打开源
-- 不是纯文本 URL - 带有显示文本的格式化超链接
-
-**必需的来源列表：**
-
-在每个盈利更新中引用：
-- ✅ 盈利发布（包含日期和 URL）
-- ✅ 10-Q 备案（包含备案日期和 EDGAR 链接）
-- ✅ 盈利电话会议记录（包含日期）
-- ✅ 投资者陈述/补充材料（如果可用）
-- ✅ 一致预期来源（Bloomberg/FactSet 等，包含日期）
-- ✅ 先前指导（来自上一季度的材料）
-
-**带有可点击超链接的参考部分：**
-
-在报告末尾包含"来源"部分：
+**Include specific citations and clickable links in every chart and table:**
 
 ```
-来源和参考资料
-
-盈利材料（2024 年 Q3）：
-• 盈利发布（2024 年 11 月 7 日）
-  [超链接整行至：https://investor.company.com/news/q3-2024-earnings]
-
-• 10-Q 表（提交于 2024 年 11 月 8 日）
-  [超链接至：https://www.sec.gov/cgi-bin/viewer?accession=...]
-
-• 盈利电话会议记录（2024 年 11 月 7 日）
-  [超链接至：https://seekingalpha.com/article/...]
-
-• 投资者陈述（2024 年 11 月 7 日）
-  [超链接至：https://investor.company.com/presentations/q3-2024.pdf]
+Source: Q3 2024 10-Q, filed November 8, 2024; company earnings release
+       [hyperlink "10-Q" to: https://www.sec.gov/cgi-bin/viewer?accession=...]
+       [hyperlink "earnings release" to: https://investor.company.com/news/q3-2024]
 ```
 
-**验证清单：**
-- [ ] 每个图表都有来源，包含特定文件和日期
-- [ ] 每个表格都有来源和文件参考
-- [ ] 超/未达预期分析引用一致预期来源和日期
-- [ ] 指导变化引用当前和先前指导来源
-- [ ] 关键统计数据有脚注
-- [ ] 来源部分列出所有材料及 URL
-- [ ] 所有 URL 都是可点击的超链接（不是纯文本）
-- [ ] 所有 SEC 备案都超链接到 EDGAR 查看器
+**How hyperlinks should display in Word:**
+- Filename displays as blue, underlined, clickable link
+- Reader can Ctrl+click to open the source directly
+- Not plain text URLs — formatted hyperlinks with display text
 
-### 5. 更新的估计
-- 根据结果更新前向估计
-- 清楚地显示旧估计与新估计的对比
-- 解释发生了什么变化及其原因
+**Required source list:**
 
-## 高级工作流程
+In every earnings update, cite:
+- ✅ Earnings release (with date and URL)
+- ✅ 10-Q filing (with filing date and EDGAR link)
+- ✅ Earnings call transcript (with date)
+- ✅ Investor presentation / supplemental materials (if available)
+- ✅ Consensus estimate source (Bloomberg / FactSet, etc., with date)
+- ✅ Prior guidance (from prior quarter materials)
 
-盈利更新流程遵循 5 个阶段：
+**References section with clickable hyperlinks:**
 
-### 阶段 1：数据收集（30-60 分钟）
+Include a "Sources" section at the end of the report:
 
-**🚨🚨🚨 关键：训练数据已过期 🚨🚨🚨**
+```
+Sources and References
 
-**在开始前 - 按顺序完成这 4 步：**
-1. **检查今天的日期** - 写下当前日期
-2. **搜索最新信息** - 使用网页搜索："[公司]最新盈利结果"
-3. **验证日期** - 确认盈利发布在过去 3 个月内
-4. **检查记录日期** - 验证记录日期与发布日期匹配
+Earnings Materials (Q3 2024):
+• Earnings Release (November 7, 2024)
+  [hyperlink entire line to: https://investor.company.com/news/q3-2024-earnings]
 
-**常见错误**：使用来自训练数据的过期盈利电话会议，而不是搜索最新的。
+• Form 10-Q (filed November 8, 2024)
+  [hyperlink to: https://www.sec.gov/cgi-bin/viewer?accession=...]
 
-**要求：**
-- ✅ 搜索最新盈利 - 不要依赖训练数据
-- ✅ 写下今天的日期和找到的发布日期
-- ✅ 验证发布日期在今天的 3 个月内
-- ✅ 验证记录日期与发布日期匹配
-- ✅ 如果日期不匹配或太旧（>3 个月），重新搜索
+• Earnings Call Transcript (November 7, 2024)
+  [hyperlink to: https://seekingalpha.com/article/...]
 
-**查看 [references/workflow.md](references/workflow.md)** 了解详细的搜索程序和验证步骤。
+• Investor Presentation (November 7, 2024)
+  [hyperlink to: https://investor.company.com/presentations/q3-2024.pdf]
+```
 
-### 阶段 2：分析（2-3 小时）
-- 每个关键指标的超/未达预期分析
-- 细分/地理/产品分解
-- 利润率和指导分析
-- 更新财务模型和估计
+**Verification checklist:**
+- [ ] Every chart has a source with specific document and date
+- [ ] Every table has a source with document reference
+- [ ] Beat/miss analysis cites the consensus source and date
+- [ ] Guidance changes cite both current and prior guidance sources
+- [ ] Key statistics have footnotes
+- [ ] Sources section lists every material with URL
+- [ ] All URLs are clickable hyperlinks (not plain text)
+- [ ] All SEC filings hyperlink to the EDGAR viewer
 
-**查看 [references/workflow.md](references/workflow.md)** 了解详细的分析框架。
+### 5. Updated Estimates
+- Update forward estimates based on results
+- Clearly show old estimates vs new estimates
+- Explain what changed and why
 
-### 阶段 3：图表生成（1-2 小时）
-创建 8-12 个图表，重点关注季度趋势和新增内容：
-- 季度收入进展
-- 季度每股收益进展
-- 季度利润率趋势
-- 按细分/地理的收入
-- 关键运营指标
-- 超/未达预期摘要
-- 估计修订
-- 估值图表
+## High-Level Workflow
 
-**查看 [references/workflow.md](references/workflow.md)** 了解图表规范。
+The earnings update process follows 5 stages:
 
-### 阶段 4：报告创建（2-3 小时）
-创建 8-12 页 DOCX 报告，具有特定结构。
+### Stage 1: Data Collection (30-60 min)
 
-**查看 [references/report-structure.md](references/report-structure.md)** 了解完整的逐页模板和格式要求。
+**🚨🚨🚨 CRITICAL: TRAINING DATA IS STALE 🚨🚨🚨**
 
-**高级结构：**
-- 第 1 页：盈利摘要，包含评级和目标价格
-- 第 2-3 页：详细结果分析
-- 第 4-5 页：关键指标和指导
-- 第 6-7 页：更新的投资论文
-- 第 8-10 页：估值和估计
-- 第 11-12 页：附录（可选）
+**Before starting — complete these 4 steps in order:**
+1. **Check today's date** — write down the current date
+2. **Search for latest information** — use web search: "[Company] latest earnings results"
+3. **Verify dates** — confirm earnings release is within the last 3 months
+4. **Check transcript date** — verify transcript date matches release date
 
-### 阶段 5：质量检查和交付（30 分钟）
-在交付前验证内容、格式、准确性和及时性。
+**Common mistake**: using a stale earnings transcript from training data instead of searching for the latest.
 
-**查看 [references/best-practices.md](references/best-practices.md)** 了解质量检查表和要避免的常见错误。
+**Requirements:**
+- ✅ Search for the latest earnings — do not rely on training data
+- ✅ Write down today's date and the release date you found
+- ✅ Verify release date is within 3 months of today
+- ✅ Verify transcript date matches release date
+- ✅ If dates don't match or are too old (>3 months), search again
 
-## 输出规范
+**See [references/workflow.md](references/workflow.md)** for detailed search procedures and verification steps.
 
-**主要可交付成果**：DOCX 报告（8-12 页）
-**文件名**：`[公司]_Q[季度]_[年份]_盈利更新.docx`
-**示例**：`耐克_Q2_财年24_盈利更新.docx`
+### Stage 2: Analysis (2-3 hours)
+- Beat/miss analysis for every key metric
+- Segment / geography / product breakdown
+- Margin and guidance analysis
+- Update financial model and estimates
 
-**内容：**
-- 第 1 页：摘要，包含评级、目标价格、关键要点
-- 第 2-3 页：详细结果分析
-- 第 4-5 页：关键指标和指导
-- 第 6-7 页：更新的论文评估
-- 第 8-10 页：估值和估计
-- 第 11-12 页：附录（可选）
-- 8-12 个嵌入式图表
-- 1-3 个汇总表
-- 带有可点击超链接的完整来源部分
+**See [references/workflow.md](references/workflow.md)** for detailed analysis framework.
 
-**可选可交付成果**：XLS 模型更新（盈利更新的可选项）
+### Stage 3: Chart Generation (1-2 hours)
+Create 8-12 charts focused on quarterly trends and what's new:
+- Quarterly revenue progression
+- Quarterly EPS progression
+- Quarterly margin trends
+- Revenue by segment / geography
+- Key operating metrics
+- Beat/miss summary
+- Estimate revisions
+- Valuation charts
 
-## 与初始报告的关键区别
+**See [references/workflow.md](references/workflow.md)** for chart specifications.
 
-| 方面 | 盈利更新 | 初始报告 |
-|------|---------|---------|
-| **长度** | 8-12 页 | 30-50 页 |
-| **字数** | 3,000-5,000 | 10,000-15,000 |
-| **表格** | 1-3 个汇总 | 12-20 个全面 |
-| **图表** | 8-12 个 | 25-35 个 |
-| **周转时间** | 1-2 天 | 3-6 周 |
-| **范围** | 季度结果 | 完整公司 |
-| **焦点** | 新增内容 | 全部 |
-| **公司背景** | 简短提及 | 6-10 页 |
-| **XLS 模型** | 可选 | 必需 |
+### Stage 4: Report Creation (2-3 hours)
+Create an 8-12 page DOCX report with specific structure.
 
-## 资源
+**See [references/report-structure.md](references/report-structure.md)** for the complete page-by-page template and formatting requirements.
+
+**High-level structure:**
+- Page 1: Earnings summary with rating and price target
+- Pages 2-3: Detailed results analysis
+- Pages 4-5: Key metrics and guidance
+- Pages 6-7: Updated investment thesis
+- Pages 8-10: Valuation and estimates
+- Pages 11-12: Appendices (optional)
+
+### Stage 5: Quality Check and Delivery (30 min)
+Verify content, formatting, accuracy, and timeliness before delivery.
+
+**See [references/best-practices.md](references/best-practices.md)** for the quality checklist and common mistakes to avoid.
+
+## Output Specifications
+
+**Primary deliverable**: DOCX report (8-12 pages)
+**Filename**: `[Company]_Q[Quarter]_[Year]_Earnings_Update.docx`
+**Example**: `Nike_Q2_FY24_Earnings_Update.docx`
+
+**Contents:**
+- Page 1: Summary with rating, price target, key takeaways
+- Pages 2-3: Detailed results analysis
+- Pages 4-5: Key metrics and guidance
+- Pages 6-7: Updated thesis assessment
+- Pages 8-10: Valuation and estimates
+- Pages 11-12: Appendices (optional)
+- 8-12 embedded charts
+- 1-3 summary tables
+- Complete sources section with clickable hyperlinks
+
+**Optional deliverable**: XLS model update (optional for earnings updates)
+
+## Key Differences vs Initiating Report
+
+| Aspect | Earnings Update | Initiating Report |
+|--------|----------------|-------------------|
+| **Length** | 8-12 pages | 30-50 pages |
+| **Word count** | 3,000-5,000 | 10,000-15,000 |
+| **Tables** | 1-3 summary | 12-20 comprehensive |
+| **Charts** | 8-12 | 25-35 |
+| **Turnaround** | 1-2 days | 3-6 weeks |
+| **Scope** | Quarterly results | Full company |
+| **Focus** | What's new | Everything |
+| **Company background** | Brief mention | 6-10 pages |
+| **XLS model** | Optional | Required |
+
+## Resources
 
 ### references/workflow.md
-详细的阶段 1-5 说明，包含数据收集、分析、图表生成和报告创建的分步程序。
+Detailed Stage 1-5 instructions with step-by-step procedures for data collection, analysis, chart generation, and report creation.
 
 ### references/report-structure.md
-DOCX 报告的完整逐页模板、表格格式和格式要求。
+Complete page-by-page template, table format, and formatting requirements for the DOCX report.
 
 ### references/best-practices.md
-好坏标题的示例、成功提示、要避免的常见错误和全面的质量检查表。
+Examples of good vs bad headlines, success tips, common mistakes to avoid, and a comprehensive quality checklist.
 
-## 依赖关系
+## Dependencies
 
-**必需：**
-- Python（matplotlib、pandas、seaborn）用于图表生成
-- DOCX 技能用于报告创建
+**Required:**
+- Python (matplotlib, pandas, seaborn) for chart generation
+- DOCX skill for report creation
 
-**可选：**
-- XLS 技能用于模型更新（不需要盈利更新）
+**Optional:**
+- XLS skill for model updates (not required for earnings updates)

@@ -1,8 +1,8 @@
 ---
-description: 查看或更新催化剂日历
-argument-hint: "[时间框架，例如'未来 2 周']"
+description: View or update the catalyst calendar
+argument-hint: "[time frame, e.g. 'next 2 weeks']"
 ---
 
-加载`催化剂日历`技能来构建或审查覆盖范围内的即将到来催化剂。
+Load the `catalyst-calendar` skill to build or review upcoming catalysts across the coverage.
 
-如果提供了时间框架，使用它。否则默认为未来 2 周。
+If a time frame is provided, use it. Otherwise default to the next 2 weeks.
