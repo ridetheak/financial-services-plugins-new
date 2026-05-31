@@ -3,35 +3,65 @@ title: Plugins
 type: domain
 domain: plugins
 tags: [landing, claude-cowork, plugin-engineering]
-sources: []
+sources:
+  - .claude-plugin/marketplace.json
+  - CLAUDE.md
 updated: 2026-05-31
-status: stub
+status: stable
 ---
 
 # Plugins
 
-Landing page for Claude Cowork plugin engineering — the architectural counterpart to [[finance]]. Covers:
+Landing page for the Claude Cowork plugin marketplace that lives in this repo. The architectural counterpart to [[finance]].
 
-- Plugin manifests and the marketplace registry
-- Commands, skills, hooks, MCP servers
-- Patterns observed across the plugins in this repo (`investment-banking/`, `equity-research/`, `financial-analysis/`, `private-equity/`, `wealth-management/`, `partner-built/`)
-- Cross-plugin tooling (`tools/`)
-- Plugin docs (`docs/`)
+## The marketplace
 
-## Concepts
-*(none yet)*
+Registered in `.claude-plugin/marketplace.json` (owner: Anthropic). Seven plugins:
 
-## Entities
-*(none yet — but candidates include each plugin as its own entity page)*
+| Plugin | Path | Entity |
+|---|---|---|
+| financial-analysis | `financial-analysis/` | [[plugin-financial-analysis]] |
+| investment-banking | `investment-banking/` | [[plugin-investment-banking]] |
+| equity-research | `equity-research/` | [[plugin-equity-research]] |
+| private-equity | `private-equity/` | [[plugin-private-equity]] |
+| wealth-management | `wealth-management/` | [[plugin-wealth-management]] |
+| lseg | `partner-built/lseg/` | [[plugin-lseg]] |
+| sp-global | `partner-built/spglobal/` | [[plugin-spglobal]] |
 
-## Playbooks
-*(none yet)*
+The first five are first-party; the last two are partner-built.
+
+## Plugin anatomy
+
+Each plugin follows the same layout (defined in root `CLAUDE.md`):
+
+```
+plugin-name/
+├── .claude-plugin/plugin.json   # Manifest
+├── commands/                    # Slash commands (.md)
+├── skills/                      # SKILL.md files (procedural knowledge)
+├── hooks/                       # Event-driven automation
+├── mcp/                         # MCP integrations
+└── .claude/                     # User config
+```
+
+- **Skills** map to wiki [[playbooks]] (see [[index]] for the full list of 52)
+- **plugin.json** is the entity-page source
+- **Commands** are the user-facing CLI surface (`/plugin:command`)
+
+## Meta-skills (skills about building skills)
+
+- [[skill-creator]] — guide for authoring new skills
+- [[ppt-template-creator]] — turn a PPT template into a reusable skill
+
+See [[plugin-engineering]] for the stub concept page.
+
+## Cross-plugin patterns
+
+- **Modeling foundation**: [[plugin-financial-analysis]]'s [[dcf-model]] / [[lbo-model]] / [[3-statements]] are consumed by IB, ER, and PE workflows
+- **QC layer**: [[check-deck]] and [[check-model]] (in financial-analysis) gate any client-ready deliverable from IB or PE
+- **Tear sheets**: [[plugin-spglobal]]'s [[tear-sheet-skill]] is the canonical implementation; [[strip-profile]] (in IB) is the multi-slide cousin
+- **Vendor MCP routing**: LSEG and S&P Global skills all share the pattern of routing MCP tool outputs into structured analyses — let the tools compute, the skill interprets
 
 ## See also
-- [[index]]
-- [[finance]] — the domain these plugins serve
-- [[wiki-setup]]
-- `CLAUDE.md` Part 1 (root) — plugin marketplace structure
-
----
-*This page is a stub. It will populate as `raw/` material is ingested.*
+- [[finance]] · [[index]] · [[wiki-setup]]
+- `CLAUDE.md` Part 1 (root) — full marketplace structure
