@@ -14,6 +14,29 @@ Append-only record of every ingestion pass. Newest entries at the top.
 
 ---
 
+## 2026-05-31 (3) — Translate Chinese SKILL.md and commands to English (Phase 1)
+
+**Sources translated** (overwritten in place — these are the canonical plugin source files):
+- 8 × Chinese `equity-research/skills/*/SKILL.md` files:
+  - `catalyst-calendar`, `earnings-analysis`, `earnings-preview`, `idea-generation`, `model-update`, `morning-note`, `sector-overview`, `thesis-tracker`
+- 6 × Chinese `equity-research/commands/*.md` files:
+  - `catalysts.md`, `earnings-preview.md`, `initiate.md`, `model-update.md`, `morning-note.md`, `screen.md`
+
+(`initiating-coverage/SKILL.md` and `earnings.md` were already in English and untouched.)
+
+**Wiki updates**:
+- 8 playbook pages: removed Chinese title parentheticals and the "SKILL.md is in Chinese" disclaimers
+- `wiki/entities/plugin-equity-research.md`: removed the "Most SKILL.md content is in Chinese..." caveat and Chinese parens in the skill list
+
+**Summary**: First translation pass per user request "translate them to English and get rid of the Chinese." Preserved structure, trigger phrases (re-rendered in English), and financial domain terminology. Verified: no CJK Unified Ideograph (`[一-龯]`) characters remain in any translated file or wiki page.
+
+**Phase 2 queued** (not yet translated): 11 large reference / asset files (~6,700 lines):
+- `equity-research/skills/earnings-analysis/references/{best-practices,report-structure,workflow}.md`
+- `equity-research/skills/initiating-coverage/assets/{quality-checklist,report-template}.md`
+- `equity-research/skills/initiating-coverage/references/{task1-company-research,task2-financial-modeling,task3-valuation,task4-chart-generation,task5-report-assembly,valuation-methodologies}.md`
+
+---
+
 ## 2026-05-31 (2) — Ingest in-repo plugin content
 
 **Sources processed** (treated as authoritative in-repo source, not duplicated into `raw/`):

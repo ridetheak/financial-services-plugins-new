@@ -1,8 +1,8 @@
 ---
-description: 创建初始覆盖报告
-argument-hint: "[公司股票代码]"
+description: Create an initiating coverage report
+argument-hint: "[company ticker]"
 ---
 
-加载`启动覆盖`技能并开始 5 任务工作流程来创建机构质量的初始报告。
+Load the `initiating-coverage` skill and start the 5-task workflow to create an institutional-quality initiation report.
 
-如果提供了股票代码，使用它。否则要求用户要启动覆盖哪家公司。
+If a ticker is provided, use it. Otherwise ask the user which company to initiate coverage on.

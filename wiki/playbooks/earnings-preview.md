@@ -1,22 +1,20 @@
 ---
-title: Earnings Preview (盈利前瞻)
+title: Earnings Preview
 type: playbook
 domain: finance
 tags: [equity-research, earnings-preview, scenarios, pre-earnings]
 sources:
-  - equity-research/skills/earnings-preview/SKILL.md
+ - equity-research/skills/earnings-preview/SKILL.md
 updated: 2026-05-31
 status: stable
 ---
 
-# Earnings Preview (盈利前瞻)
+# Earnings Preview
 
 **Plugin**: [[plugin-equity-research]]
-**Triggers**: "earnings preview", "what to watch for [company] earnings", "pre-earnings", "earnings setup", "[company] QX preview" (Chinese: 盈利前瞻)
+**Triggers**: "earnings preview", "what to watch for [company] earnings", "pre-earnings", "earnings setup", "[company] QX preview"
 
 Pre-earnings analysis using estimate models, scenario frameworks, and key metrics. Build positioning notes, bull/bear scenarios, identify what will move the stock.
-
-**SKILL.md is in Chinese.**
 
 **Related sister-skill** (English): [[earnings-preview-beta]] (in [[plugin-spglobal]]) — HTML output, single-company variant.
 

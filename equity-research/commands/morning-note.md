@@ -1,6 +1,6 @@
 ---
-description: 草拟早间会议笔记
+description: Draft morning meeting notes
 argument-hint: ""
 ---
 
-加载`早间笔记`技能，并草拟一份简洁的早间笔记，涵盖隔夜发展、盈利反应和覆盖范围内的交易创意。
+Load the `morning-note` skill and draft a concise morning note covering overnight developments, earnings reactions, and trade ideas across the coverage.
