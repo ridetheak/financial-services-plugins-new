@@ -96,7 +96,7 @@ Provide:
 │ │ EV/EBITDA │ XXx │ XXx │   │ • State Street: X.X%              │
 │ └──────────────────────┘   │                                    │
 └────────────────────────────┴────────────────────────────────────┘
-Source: Company filings, FactSet
+Source: Company filings (SEC EDGAR), AE composite MCP (openbb)
 ```
 
 ## Quality Checklist

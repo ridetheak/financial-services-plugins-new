@@ -12,11 +12,13 @@ description: |
 - **Only after user confirms**, proceed to research
 
 ### 2. Research & Planning
-**Data Sources:**
-- **Primary**: Company filings (BamSEC, SEC EDGAR - "Item 1. Business", MD&A), investor presentations, corporate website
-- **Market data**: Bloomberg, FactSet, CapIQ (price, shares, market cap, net debt, EV, ownership)
-- **Estimates**: FactSet/CapIQ consensus for NTM revenue, EBITDA, EPS
-- **News**: Press releases from last 90 days, M&A activity, guidance changes
+**Data Sources (priority order):**
+1. **AE composite MCP** (`openbb` server) — quotes, price history, market cap, EV, ownership, consensus estimates, fundamentals, ratios
+2. **SEC EDGAR filings** (10-K / 10-Q / 8-K) — "Item 1. Business", MD&A, financial statements; BamSEC is an acceptable EDGAR front-end
+3. **Advisor-provided materials** — investor presentations, corporate website, deal documents uploaded by the user
+4. **Free market data** — Yahoo Finance, FRED for supplemental context
+5. **Premium vendors** (Bloomberg, FactSet, S&P Capital IQ) — **only if user explicitly confirms access**; do not attempt to reach these by default
+- **News**: Press releases from last 90 days, M&A activity, guidance changes (use MCP news tools or free sources)
 
 **Required Metrics:**
 - **Financials**: Revenue, EBITDA, margins (%), EPS, FCF for ±3 years

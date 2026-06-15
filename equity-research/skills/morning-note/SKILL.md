@@ -1,86 +1,100 @@
-# 早间笔记
+---
+name: morning-note
+description: Draft concise morning meeting notes summarizing overnight developments, trade ideas, and key events for covered stocks. Designed for a 7am morning meeting format — tight, opinionated, actionable. Trigger when: "morning note", "morning meeting", "what happened overnight", "trade ideas", "morning call prep", or "daily note".
+---
 
-描述：草拟简洁的早间会议笔记，总结隔夜发展、交易创意和覆盖股票的关键事件。为 7 点早间会议格式设计 — 紧凑、有观点、可行动。触发条件："早间笔记"、"早间会议"、"隔夜发生了什么"、"交易创意"、"早间电话准备"或"每日笔记"。
+# Morning Note
 
-## 工作流程
+Description: Draft concise morning meeting notes summarizing overnight developments, trade ideas, and key events for covered stocks. Designed for a 7am morning meeting format — tight, opinionated, actionable. Trigger when: "morning note", "morning meeting", "what happened overnight", "trade ideas", "morning call prep", or "daily note".
 
-### 第 1 步：隔夜发展
+## Workflow
 
-扫描覆盖范围内的相关事件：
+### Step 1: Overnight Developments
 
-**盈利和指导**
-- 任何覆盖公司隔夜或市前报告？
-- 盈利惊喜（收入、每股收益、关键指标超过或未达预期）
-- 指导变化（上调、下调、维持）
+Scan for relevant events across the coverage universe using these OpenBB MCP tools:
 
-**新闻和事件**
-- M&A 公告或传言
-- 管理层变化
-- 产品发布或监管决定
-- 竞争对手分析师升级/降级
-- 影响部门的宏观数据或政策变化
+**Earnings and Guidance**
+- `mcp__claude_ai_OpenBB__equity_calendar_earnings` — check which covered companies report overnight or pre-market
+- `mcp__claude_ai_OpenBB__equity_estimates_consensus` — pull consensus vs. actuals for any overnight reporters
+- `mcp__claude_ai_OpenBB__earnings_review` — structured earnings review with beat/miss analysis
+- Earnings surprises (revenue, EPS, key metrics beat or miss)
+- Guidance changes (raised, lowered, maintained)
 
-**市场背景**
-- 隔夜期货/市前波动
-- 部门 ETF 表现
-- 相关商品或货币波动
-- 关键经济数据发布
+**News and Events**
+- `mcp__claude_ai_OpenBB__news_company` — company-specific news for each covered name
+- `mcp__claude_ai_OpenBB__news_world` — broad market and macro news overnight
+- M&A announcements or rumors
+- Management changes
+- Product launches or regulatory decisions
+- Competitor analyst upgrades/downgrades
+- Macro data or policy changes affecting the sector
 
-### 第 2 步：早间笔记格式
+**Market Context**
+- `mcp__claude_ai_OpenBB__equity_price_quote` — pre-market quotes for covered names
+- `mcp__claude_ai_OpenBB__equity_market_snapshots` — broad market pre-market snapshot
+- `mcp__claude_ai_OpenBB__index_snapshots` — index-level overnight and pre-market moves
+- `mcp__claude_ai_OpenBB__etf_discovery_active` — sector ETF movers
+- `mcp__claude_ai_OpenBB__economy_calendar` — key economic data releases scheduled for the day
+- `mcp__claude_ai_Interactive_MCP__glance` — quick one-screen summary for any covered ticker
 
-保持紧凑 — 早间笔记应该在 2 分钟内可读：
+### Step 2: Morning Note Format
+
+Keep it tight — a morning note should be readable in 2 minutes:
 
 ---
 
-**[日期] 早间笔记 — [分析师名称]**
-**[部门覆盖]**
+**[Date] Morning Note — [Analyst Name]**
+**[Sector Coverage]**
 
-**主要观点：[标题 — 投资组合经理需要听到的一件事]**
-- 关键发展及其重要性的 2-3 句话
-- 股票影响：目标价格、评级重申/变化
+**Top Idea: [Headline — the one thing a portfolio manager needs to hear]**
+- 2-3 sentences on the key development and why it matters
+- Stock impact: price target, rating reiterated/changed
 
-**隔夜/市前发展**
-- [公司 A]：盈利/新闻的单行摘要 + 我们的观点
-- [公司 B]：单行摘要 + 我们的观点
-- [部门/宏观]：相关部门范围的发展
+**Overnight / Pre-Market Developments**
+- [Company A]: Single-line summary of earnings/news + our view
+- [Company B]: Single-line summary + our view
+- [Sector/Macro]: Relevant sector-wide developments
 
-**今天的关键事件**
-- [时间]：[公司]盈利电话会议
-- [时间]：经济数据发布（预期vs我们的观点）
-- [时间]：会议或投资者日
+**Key Events Today**
+- [Time]: [Company] earnings call
+- [Time]: Economic data release (expected vs. our view)
+- [Time]: Conference or investor day
 
-**交易创意**（如有）
-- [多头/空头] [公司]：1-2 句论文 + 催化剂
-- 风险：什么会使这个创意错误
+**Trade Ideas** (if any)
+- [Long/Short] [Company]: 1-2 sentence thesis + catalyst
+- Risk: what would make this idea wrong
 
 ---
 
-### 第 3 步：盈利快速评论
+### Step 3: Earnings Quick Comment
 
-如果覆盖公司报告，提供快速反应：
+If a covered company reports, provide a quick reaction. Pull data via:
+- `mcp__claude_ai_OpenBB__equity_fundamental_income` — reported income statement actuals
+- `mcp__claude_ai_OpenBB__equity_estimates_consensus` — consensus vs. actual comparison
+- `mcp__claude_ai_OpenBB__earnings_review` — structured beat/miss analysis
 
-| 指标 | 一致预期 | 实际 | 超/未达预期 |
-|------|---------|------|-----------|
-| 收入 | | | |
-| 每股收益 | | | |
-| [关键指标] | | | |
-| 指导 | | | |
+| Metric | Consensus | Actual | Beat/Miss |
+|--------|-----------|--------|-----------|
+| Revenue | | | |
+| EPS | | | |
+| [Key Metric] | | | |
+| Guidance | | | |
 
-**我们的观点**：2-3 句 — 这对股票好还是坏？它改变了我们的论文吗？
+**Our View**: 2-3 sentences — is this good or bad for the stock? Does it change our thesis?
 
-**行动**：维持/升级/降级评级？调整目标价格？
+**Action**: Maintain/upgrade/downgrade rating? Adjust price target?
 
-### 第 4 步：输出
+### Step 4: Output
 
-- 用于电子邮件/Slack 分发的 Markdown 文本
-- 如果需要正式分发，提供 Word 文档
-- 保持在 1 页以内 — 投资组合经理和交易员不会阅读更多
+- Markdown text for email/Slack distribution
+- Word document if formal distribution is needed
+- Keep to 1 page — portfolio managers and traders will not read more
 
-## 重要说明
+## Important Notes
 
-- 有观点 — 只是总结新闻而没有观点的早间笔记没有用
-- 以最重要的事情开头 — 不要埋没标题
-- "没有新闻"是一个有效的早间笔记 — 说"隔夜没有重大新闻，维持定位"
-- 区分可行动事件（盈利、M&A）和噪音（次要分析师笔记、非事件）
-- 给你的评论加上时间戳 — 如果你在凌晨 6 点写作，请注明市前可能会在开盘时变化
-- 如果你错了，在下一份早间笔记中承认 — 可信度比每次都正确更重要
+- Have a view — a morning note that just summarizes news without a perspective is useless
+- Lead with the most important thing — don't bury the headline
+- "No news" is a valid morning note — say "no material news overnight, maintaining positioning"
+- Distinguish actionable events (earnings, M&A) from noise (minor analyst notes, non-events)
+- Timestamp your comments — if writing at 6am, note that pre-market may change by open
+- If you were wrong, acknowledge it in the next morning note — credibility matters more than being right every time

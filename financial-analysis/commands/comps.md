@@ -29,7 +29,7 @@ Use `skill: "comps-analysis"` to build the analysis:
    - Same industry/sector
    - Geographic comparability
 
-3. **Gather data** (prioritize MCP sources if available):
+3. **Gather data** (follow canonical data-source priority: AE composite MCP → SEC EDGAR → user-provided → free market data → premium vendors only if user confirms access):
    - Operating metrics: Revenue, Growth, Gross Margin, EBITDA, EBITDA Margin
    - Valuation: Market Cap, Enterprise Value, EV/Revenue, EV/EBITDA, P/E
    - Additional metrics based on industry (Rule of 40 for SaaS, etc.)

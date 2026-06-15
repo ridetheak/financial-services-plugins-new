@@ -1,64 +1,69 @@
-# 论文跟踪器
+---
+name: thesis-tracker
+description: Maintain and update investment theses for portfolio positions and watchlist names. Track key data points, catalysts, and thesis milestones. Use when updating a thesis with new information, reviewing position rationale, or checking whether a thesis is still intact. Trigger when: "update thesis for [company]", "is my thesis still intact", "thesis check", "add data point to [company]", or "review my position".
+---
 
-描述：维护和更新投资组合头寸和观察名单的投资论文。跟踪关键数据点、催化剂和论文里程碑。更新论文新信息、审查头寸理由或检查论文是否仍然完整时使用。触发条件："更新[公司]的论文"、"我的论文还完整吗"、"论文检查"、"将数据点添加到[公司]"或"审查我的头寸"。
+# Thesis Tracker
 
-## 工作流程
+Description: Maintain and update investment theses for portfolio positions and watchlist names. Track key data points, catalysts, and thesis milestones. Use when updating a thesis with new information, reviewing position rationale, or checking whether a thesis is still intact. Trigger when: "update thesis for [company]", "is my thesis still intact", "thesis check", "add data point to [company]", or "review my position".
 
-### 第 1 步：定义或加载论文
+## Workflow
 
-如果创建新论文：
-- **公司**：名称和股票代码
-- **头寸**：多头或空头
-- **论文陈述**：1-2 句核心论文（例如，"多头 ACME — 定价权的利润率扩张 + 当混合向软件转变时的运营杠杆"）
-- **关键支柱**：3-5 个支持论证
-- **关键风险**：3-5 个会使论文失效的风险
-- **催化剂**：可能证明/反驳论文的即将到来的事件（盈利、产品发布、监管决定）
-- **目标价格/估值**：如果论文展开价值多少
-- **止损触发器**：什么会让你退出
+### Step 1: Define or Load Thesis
 
-如果更新现有论文，向用户要求新数据点或发展。
+If creating a new thesis:
+- **Company**: Name and ticker
+- **Position**: Long or short
+- **Thesis statement**: 1-2 sentence core thesis (e.g., "Long ACME — margin expansion from pricing power + operating leverage as mix shifts toward software")
+- **Key pillars**: 3-5 supporting arguments
+- **Key risks**: 3-5 risks that would invalidate the thesis
+- **Catalysts**: Upcoming events that could prove/disprove the thesis (earnings, product launches, regulatory decisions)
+- **Price target / valuation**: What is it worth if the thesis plays out
+- **Stop-loss triggers**: What would make you exit
 
-### 第 2 步：更新日志
+If updating an existing thesis, ask the user for the new data points or developments.
 
-对于每个新的数据点或发展：
+### Step 2: Update Log
 
-- **日期**：何时发生
-- **数据点**：发生了什么变化（盈利超预期、管理层离职、竞争对手举动等）
-- **论文影响**：这是否加强、削弱或中立特定支柱？
-- **行动**：无变化/增加头寸/减少/退出
-- **更新的确信度**：高/中/低
+For each new data point or development:
 
-### 第 3 步：论文记分卡
+- **Date**: When it occurred
+- **Data point**: What changed (earnings beat, management departure, competitor move, etc.)
+- **Thesis impact**: Does this strengthen, weaken, or leave neutral a specific pillar?
+- **Action**: No change / add to position / reduce / exit
+- **Updated conviction**: High / Medium / Low
 
-维护运行记分卡：
+### Step 3: Thesis Scorecard
 
-| 支柱 | 原始预期 | 当前状态 | 趋势 |
-|------|--------|--------|------|
-| 收入增长 >20% | 按计划进行 | Q3 为 22% | 稳定 |
-| 利润率扩张 | 落后 | 利润率同比持平 | 令人担忧 |
-| 新产品发布 | 待定 | 延迟到 Q2 | 关注 |
+Maintain a running scorecard:
 
-### 第 4 步：催化剂日历
+| Pillar | Original Expectation | Current Status | Trend |
+|--------|---------------------|---------------|-------|
+| Revenue growth >20% | On track | Q3 was 22% | Stable |
+| Margin expansion | Lagging | Margins flat YoY | Concerning |
+| New product launch | Pending | Delayed to Q2 | Watch |
 
-跟踪即将到来的催化剂：
+### Step 4: Catalyst Calendar
 
-| 日期 | 事件 | 预期影响 | 备注 |
-|------|------|--------|------|
+Track upcoming catalysts:
+
+| Date | Event | Expected Impact | Notes |
+|------|-------|----------------|-------|
 | | | | |
 
-### 第 5 步：输出
+### Step 5: Output
 
-适合以下用途的论文摘要：
-- 早间会议讨论
-- 投资组合审查
-- 风险委员会陈述
+Thesis summary suitable for:
+- Morning meeting discussion
+- Portfolio review
+- Risk committee presentation
 
-格式：简洁的 Markdown 或 Word 文档，包含记分卡、最近更新和当前确信度水平。
+Format: concise Markdown or Word document with scorecard, recent updates, and current conviction level.
 
-## 重要说明
+## Important Notes
 
-- 论文应该是可证伪的 — 如果没有什么能反驳它，它就不是论文
-- 以与确认证据一样严格的方式跟踪不证实证据
-- 至少每季度审查一次论文，即使没有发生任何戏剧性的事情
-- 如果用户管理多个头寸，提议进行完整的投资组合论文审查
-- 以结构化格式存储论文数据，以便可以在会话中引用它
+- A thesis should be falsifiable — if nothing could disprove it, it is not a thesis
+- Track disconfirming evidence as rigorously as confirming evidence
+- Review theses at least quarterly, even if nothing dramatic has happened
+- If the user manages multiple positions, offer to run a full portfolio thesis review
+- Store thesis data in structured format so it can be referenced across sessions

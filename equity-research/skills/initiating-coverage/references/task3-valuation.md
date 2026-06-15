@@ -114,7 +114,7 @@ This workflow document focuses on execution steps. Reference the methodology fil
 
    Inputs:
    - Risk-Free Rate: [Current 10-year Treasury, e.g., 4.2%]
-   - Beta: [Company beta from Bloomberg/FactSet or peer average]
+   - Beta: [Company beta from AE composite MCP (`equity_fundamental_metrics`) or Yahoo Finance, or peer average]
    - Equity Risk Premium: 5-6% (historical average)
 
    Example:
@@ -309,9 +309,9 @@ Base Case: Rev CAGR = 25%, EBITDA Margin = 32% → $56
 - EBITDA margin
 
 **Data sources:**
-- FactSet, CapitalIQ, Bloomberg (preferred)
-- Company 10-Ks/10-Qs for actuals
-- Consensus estimates from Yahoo Finance, Seeking Alpha (if pro tools unavailable)
+- AE composite MCP (openbb) — `equity_estimates_consensus`, `equity_estimates_forward_eps`, `equity_estimates_forward_ebitda`, `equity_estimates_forward_sales` (primary)
+- SEC EDGAR filings (10-K / 10-Q) for reported actuals
+- Yahoo Finance for prices and additional free estimates
 
 #### C. Calculate Valuation Multiples
 
@@ -349,7 +349,7 @@ Median               38.9     3.5x    3.2x    15.2x      13.8x      25x   17%   
 Minimum              28.5     2.8x    2.6x    12.8x      11.2x      20x   12%     22%
 
 Note: Market data as of [Date]. LTM = Last Twelve Months. NTM = Next Twelve Months.
-Source: FactSet, company filings, [Analyst] estimates.
+Source: AE composite MCP (openbb), company filings, [Analyst] estimates.
 ```
 
 **CRITICAL**: The statistical summary (max/75th/median/25th/min) is MANDATORY.

@@ -300,8 +300,13 @@ For detailed explanations of the most critical failures, see [Critical Anti-Patt
 3. If still failing, open in PowerPoint/LibreOffice manually and export
 
 **If source data has inconsistencies or conflicts:**
-1. **Priority order**: Use data explicitly provided in the task files first
-2. If using data from other sources (web search, external documents), flag this to the user
+1. **Priority order**:
+   1. Advisor-provided task files (uploaded documents, pasted data)
+   2. AE composite MCP (`openbb` server) — quotes, fundamentals, estimates, ownership
+   3. SEC EDGAR filings (10-K / 10-Q / 8-K)
+   4. Free market data (Yahoo Finance, FRED)
+   5. Premium vendors (FactSet, Bloomberg, S&P Capital IQ) — **only if user explicitly confirms access**; do not reach for these by default
+2. If using data from external sources beyond what was provided, flag this to the user
 3. Document any discrepancies explicitly
 4. Add footnote explaining data source choice
 

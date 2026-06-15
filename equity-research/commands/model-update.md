@@ -1,8 +1,8 @@
 ---
-description: 使用新数据更新财务模型
-argument-hint: "[公司股票代码]"
+description: Update a financial model with new data
+argument-hint: "[company ticker]"
 ---
 
-加载`模型更新`技能并插入新盈利、指导或修订假设。
+Load the `model-update` skill and insert new earnings, guidance, or revised assumptions.
 
-如果提供了股票代码，使用它。否则要求用户要更新哪个模型以及发生了什么变化。
+If a ticker is provided, use it. Otherwise ask the user which model to update and what has changed.

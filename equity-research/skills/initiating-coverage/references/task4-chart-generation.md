@@ -23,7 +23,7 @@ This document provides step-by-step instructions for executing Task 4 (Chart Gen
   - Comparable companies data
   - Valuation ranges
 - **Required**: External market data
-  - Historical stock price data (Yahoo Finance, Bloomberg)
+  - Historical stock price data (Yahoo Finance or AE composite MCP `equity_price_historical`)
   - Historical valuation multiples (optional for chart 34)
 
 **⚠️ CRITICAL: DO NOT START THIS TASK UNLESS TASKS 1, 2, AND 3 ARE COMPLETE**
@@ -71,14 +71,14 @@ Do not attempt to create placeholder charts or skip charts due to missing data.
 - [ ] Valuation ranges calculated? (for chart 32 ⭐)
 
 ### External Data Verification
-- [ ] Can access historical stock price data? (Yahoo Finance, Bloomberg for chart 01)
+- [ ] Can access historical stock price data? (Yahoo Finance or AE composite MCP `equity_price_historical` for chart 01)
 - [ ] Can access historical valuation data? (Optional, for chart 34)
 
 **IF ANY VERIFICATION FAILS**:
 - Missing Task 1? → Complete Task 1 (Company Research) first
 - Missing Task 2? → Complete Task 2 (Financial Modeling) first
 - Missing Task 3? → Complete Task 3 (Valuation Analysis) first
-- Missing external data? → Gather from Yahoo Finance, Bloomberg, or similar sources
+- Missing external data? → Gather from Yahoo Finance or AE composite MCP (`equity_price_historical`, `equity_price_performance`)
 
 ---
 
@@ -191,8 +191,8 @@ Understanding where each chart's data comes from:
 - chart_33: Price Target Scenarios → Valuation Summary tab (or calculate from scenarios)
 
 ### From External Sources - 2 charts
-- chart_01: Stock Price Performance → Yahoo Finance, Bloomberg, Alpha Vantage
-- chart_34: Historical Valuation Multiples → Yahoo Finance, Bloomberg (historical P/E, EV/EBITDA)
+- chart_01: Stock Price Performance → Yahoo Finance or AE composite MCP `equity_price_historical`
+- chart_34: Historical Valuation Multiples → Yahoo Finance or AE composite MCP `fmp_key_metrics_ttm` (historical P/E, EV/EBITDA)
 
 **IMPORTANT**: Require ALL three tasks (1, 2, 3) complete PLUS external data access to create all 25 required charts.
 

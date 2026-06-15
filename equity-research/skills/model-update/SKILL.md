@@ -1,92 +1,110 @@
-# 模型更新
+---
+name: model-update
+description: Update a financial model with new data — quarterly earnings, management guidance, macro changes, or revised assumptions. Adjust estimates, recalculate valuation, and flag material changes. Use after earnings, after a guidance update, or when assumptions need refreshing. Trigger when: "update model", "plug in earnings", "refresh estimates", "updated numbers for [company]", "new guidance", or "revised estimates".
+---
 
-描述：使用新数据更新财务模型 — 季度盈利、管理指导、宏观变化或修订假设。调整估计、重新计算估值并标记重大变化。盈利后、指导更新后或需要刷新假设时使用。触发条件："更新模型"、"插入盈利"、"刷新估计"、"[公司]的更新数字"、"新指导"或"修订估计"。
+# Model Update
 
-## 工作流程
+Description: Update a financial model with new data — quarterly earnings, management guidance, macro changes, or revised assumptions. Adjust estimates, recalculate valuation, and flag material changes. Use after earnings, after a guidance update, or when assumptions need refreshing. Trigger when: "update model", "plug in earnings", "refresh estimates", "updated numbers for [company]", "new guidance", or "revised estimates".
 
-### 第 1 步：识别发生的变化
+## Workflow
 
-确定更新触发因素：
-- **盈利发布**：新季度实际数据要插入
-- **指导变化**：公司更新了前向展望
-- **估计修订**：分析师根据新数据更改假设
-- **宏观更新**：利率、外汇、商品价格变化
-- **事件驱动**：M&A、重组、新产品、管理层变化
+### Step 1: Identify What Changed
 
-### 第 2 步：插入新数据
+Determine the update trigger:
+- **Earnings release**: New quarterly actuals to plug in
+- **Guidance change**: Company updated its forward outlook
+- **Estimate revision**: Analyst changing assumptions based on new data
+- **Macro update**: Interest rate, FX, commodity price changes
+- **Event-driven**: M&A, restructuring, new product, management change
 
-#### 盈利后
-使用报告的实际数据更新模型：
+### Step 2: Insert New Data
 
-| 行项目 | 先前估计 | 实际 | 差异 | 备注 |
-|--------|---------|------|------|------|
-| 收入 | | | | |
-| 毛利率 | | | | |
-| 运营费用 | | | | |
+#### Post-Earnings
+Update model with reported actuals. Pull financials using:
+- `mcp__claude_ai_OpenBB__equity_fundamental_income` — income statement actuals (revenue, gross margin, operating expenses, EBITDA, EPS)
+- `mcp__claude_ai_OpenBB__equity_fundamental_balance` — balance sheet (cash, debt, share count)
+- `mcp__claude_ai_OpenBB__equity_fundamental_cash` — cash flow statement (CapEx, free cash flow, working capital)
+- `mcp__claude_ai_OpenBB__fd_get_income_statement` / `mcp__claude_ai_OpenBB__fd_get_balance_sheet` / `mcp__claude_ai_OpenBB__fd_get_cash_flow_statement` — alternative via financialdatasets MCP
+- Fall back to SEC EDGAR 10-Q/10-K filed text for line-item verification
+
+| Line Item | Prior Estimate | Actual | Variance | Notes |
+|-----------|---------------|--------|----------|-------|
+| Revenue | | | | |
+| Gross margin | | | | |
+| Operating expenses | | | | |
 | EBITDA | | | | |
-| 每股收益 | | | | |
-| [关键指标 1] | | | | |
-| [关键指标 2] | | | | |
+| EPS | | | | |
+| [Key Metric 1] | | | | |
+| [Key Metric 2] | | | | |
 
-**细分详情**（如适用）：
-- 更新每个细分的收入和利润率
-- 注明任何细分混合变化
+**Segment Detail** (if applicable):
+- Use `mcp__claude_ai_OpenBB__fd_get_segmented_financials` for segment revenue and margin breakdown
+- Note any segment mix changes
 
-**资产负债表/现金流更新**：
-- 现金和债务余额
-- 股份数（回购、稀释）
-- 资本支出实际vs估计
-- 营运资本变化
+**Balance Sheet / Cash Flow Update**:
+- Cash and debt balances
+- Share count (buybacks, dilution)
+- CapEx actuals vs. estimate
+- Working capital changes
 
-### 第 3 步：修订前向估计
+### Step 3: Revise Forward Estimates
 
-根据新数据调整前向估计：
+Adjust forward estimates based on new data. Compare to Street consensus using:
+- `mcp__claude_ai_OpenBB__equity_estimates_consensus` — consensus revenue, EPS, EBITDA
+- `mcp__claude_ai_OpenBB__equity_estimates_forward_eps` — forward EPS estimates by period
+- `mcp__claude_ai_OpenBB__equity_estimates_forward_ebitda` — forward EBITDA estimates
+- `mcp__claude_ai_OpenBB__equity_estimates_forward_sales` — forward revenue estimates
 
-| | 旧财年估计 | 新财年估计 | 变化 | 旧次财年 | 新次财年 | 变化 |
-|---|----------|----------|------|---------|---------|------|
-| 收入 | | | | | | |
+| | Old FY Estimate | New FY Estimate | Change | Old Next FY | New Next FY | Change |
+|---|----------------|----------------|--------|-------------|-------------|--------|
+| Revenue | | | | | | |
 | EBITDA | | | | | | |
-| 每股收益 | | | | | | |
+| EPS | | | | | | |
 
-**关键假设变化：**
-- 您改变了哪些假设及其原因？
-- 收入增长率：旧 → 新（原因）
-- 利润率假设：旧 → 新（原因）
-- 任何新项目（重组费用、一次性收益等）
+**Key Assumption Changes:**
+- Which assumptions changed and why?
+- Revenue growth rate: old → new (reason)
+- Margin assumptions: old → new (reason)
+- Any new line items (restructuring charges, one-time gains, etc.)
 
-### 第 4 步：估值影响
+### Step 4: Valuation Impact
 
-使用更新的估计重新计算估值：
+Recalculate valuation with updated estimates. Pull current multiples and metrics using:
+- `mcp__claude_ai_OpenBB__equity_fundamental_metrics` — key valuation metrics (EV/EBITDA, P/E, EV/Sales, FCF yield)
+- `mcp__claude_ai_OpenBB__fmp_key_metrics_ttm` — trailing twelve-month key metrics
+- `mcp__claude_ai_OpenBB__equity_fundamental_ratios` — profitability and valuation ratios
+- `mcp__claude_ai_OpenBB__fmp_enterprise_values` — enterprise value history
 
-| 估值方法 | 先前 | 更新 | 变化 |
-|---------|------|------|------|
-| DCF 公允价值 | | | |
-| P/E (NTM 每股收益 × 目标倍数) | | | |
-| EV/EBITDA (NTM EBITDA × 目标倍数) | | | |
-| **目标价格** | | | |
+| Valuation Method | Prior | Updated | Change |
+|-----------------|-------|---------|--------|
+| DCF fair value | | | |
+| P/E (NTM EPS × target multiple) | | | |
+| EV/EBITDA (NTM EBITDA × target multiple) | | | |
+| **Price Target** | | | |
 
-### 第 5 步：总结和行动
+### Step 5: Summary and Action
 
-**估计变化总结：**
-- 一段：发生了什么变化、为什么以及对股票意味着什么
-- 这是改变论文的事件还是噪音？
+**Estimate Change Summary:**
+- One paragraph: what changed, why, and what it means for the stock
+- Is this a thesis-changing event or noise?
 
-**评级/目标价格：**
-- 维持或改变评级？
-- 新目标价格（如改变）及方法
-- 相对于当前价格的上升/下降空间
+**Rating / Price Target:**
+- Maintain or change rating?
+- New price target (if changed) and methodology
+- Upside/downside relative to current price (pull live quote via `mcp__claude_ai_OpenBB__equity_price_quote`)
 
-### 第 6 步：输出
+### Step 6: Output
 
-- 更新的 Excel 模型（如用户提供现有模型）
-- 估计变化摘要（Markdown 或 Word）
-- 更新的目标价格推导
+- Updated Excel model (if user provides existing model)
+- Estimate change summary (Markdown or Word)
+- Updated price target derivation
 
-## 重要说明
+## Important Notes
 
-- 始终将估计与公司报告的数字对账，然后再向前预测
-- 注明您的估计是 GAAP 还是调整后的，以及任何非经常性项目
-- 跟踪估计修订历史 — 这显示了您的分析进展
-- 如果季度有噪音，在估计变化中将信号与噪音分离
-- 更新后检查一致预期 — 您修订的估计与华尔街相比如何？
-- 股份数很重要 — 股票补偿、转换或回购的稀释会显著影响每股收益
+- Always reconcile estimates to company-reported numbers before projecting forward; primary source is SEC EDGAR 10-Q/10-K, verified via OpenBB tools
+- Note whether your estimates are GAAP or adjusted, and any non-recurring items
+- Track estimate revision history — this shows how your analysis has evolved
+- If the quarter was noisy, separate signal from noise in the estimate change
+- After updating, compare revised estimates to consensus via `mcp__claude_ai_OpenBB__equity_estimates_consensus` — how do your revisions compare to the Street?
+- Share count matters — dilution from stock compensation, conversions, or buybacks can materially affect EPS; verify via `mcp__claude_ai_OpenBB__equity_ownership_share_statistics`

@@ -54,9 +54,12 @@ These constraints apply throughout all DCF model building. Review before startin
 Fetch data from MCP servers, user provided data, and the web.
 
 **Data Sources Priority:**
-1. **MCP Servers** (if configured) - Structured financial data from providers like Daloopa
-2. **User-Provided Data** - Historical financials from their research
-3. **Web Search/Fetch** - Current prices, beta, debt and cash when needed
+1. **AE composite MCP (`openbb` MCP server)** — primary for quotes, fundamentals, financial statements, estimates, ratios, and ownership data
+2. **SEC EDGAR filings (10-K / 10-Q / 8-K)** — authoritative source for reported historical financials
+3. **User-Provided Data** — historical financials or estimates supplied by the advisor
+4. **Free market data** (Yahoo Finance, FRED) — for current prices, beta, macro rates when not available via MCP
+5. **Premium vendors (FactSet, Bloomberg, Daloopa, Refinitiv, etc.)** — ONLY if the user explicitly confirms access; do NOT assume availability
+6. **Web Search/Fetch** — last resort for specific data points only; never as a primary financial-data source
 
 **Validation Checklist:**
 - Verify net debt vs net cash (critical for valuation)
@@ -1142,14 +1145,15 @@ This approach centralizes scenario logic, making the model easier to audit and m
 ### At Start of DCF Build
 
 1. **Gather market data**:
-   - Check for available MCP servers for current market data
-   - Use web search/fetch for stock prices, beta, and other market metrics
-   - Request from user if specific data is needed
+   - Use the AE composite MCP (`openbb`) for current quotes, market data, and estimates
+   - Fall back to free market data (Yahoo Finance, FRED) for prices and beta if not available via MCP
+   - Request from user if specific data is still needed
 
 2. **Gather historical financials**:
-   - Check for available MCP servers (Daloopa, etc.)
-   - Request from user if not available via MCP
-   - Manual extraction from 10-Ks if necessary
+   - Use the AE composite MCP (`openbb`) for structured financials
+   - Cross-check or fill gaps with SEC EDGAR 10-K / 10-Q filings
+   - Request from user if not available via MCP or EDGAR
+   - Manual extraction from 10-Ks as a final fallback
 
 3. **Begin model construction** using the DCF methodology detailed in this skill
 
@@ -1186,10 +1190,12 @@ This approach centralizes scenario logic, making the model easier to audit and m
 
 ### Available Data Sources
 
-- **MCP servers**: If configured (Daloopa for historical financials)
-- **Web search/fetch**: For current stock prices, beta, and market data
-- **User-provided data**: Historical financials, consensus estimates
-- **Manual extraction**: SEC EDGAR filings as fallback
+- **AE composite MCP (`openbb`)**: Primary — quotes, fundamentals, financial statements, estimates, ratios
+- **SEC EDGAR filings**: Authoritative source for reported financials (10-K / 10-Q / 8-K)
+- **User-provided data**: Historical financials, consensus estimates supplied by the advisor
+- **Free market data** (Yahoo Finance, FRED): Prices, beta, macro rates
+- **Premium vendors** (FactSet, Bloomberg, Daloopa, etc.): Only if user explicitly confirms access
+- **Web search/fetch**: Last resort for specific data points only; never primary
 
 ## Final Output Checklist
 

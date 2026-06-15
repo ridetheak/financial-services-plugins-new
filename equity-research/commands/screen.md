@@ -1,8 +1,8 @@
 ---
-description: 运行股票筛选或生成投资创意
-argument-hint: "[筛选标准，例如'低估的中盘科技股']"
+description: Run a stock screen or generate investment ideas
+argument-hint: "[screening criteria, e.g. 'undervalued mid-cap tech']"
 ---
 
-加载`创意生成`技能并运行定量筛选或主题扫描以发现新的投资创意。
+Load the `idea-generation` skill and run a quantitative screen or thematic scan to surface new investment ideas.
 
-如果提供了标准，使用它们。否则要求用户他们在寻找什么（多头/空头、部门、风格、主题）。
+If criteria are provided, use them. Otherwise ask the user what they are looking for (long/short, sector, style, theme).

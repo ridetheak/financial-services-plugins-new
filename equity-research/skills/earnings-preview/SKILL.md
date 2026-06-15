@@ -1,70 +1,75 @@
-# 盈利前瞻
+---
+name: earnings-preview
+description: Pre-earnings analysis using an estimate model, scenario framework, and key metrics. Use before a company reports quarterly earnings to prepare a positioning note, build bull/bear scenarios, and identify what will move the stock. Trigger when: "earnings preview", "what to watch for [company] earnings", "pre-earnings", "earnings setup", or "[company] Q[X] preview".
+---
 
-描述：使用估计模型、情景框架和关键指标进行盈利前分析。在公司报告季度盈利前使用，准备定位笔记、建立牛/熊情景、识别什么会影响股价。触发条件："盈利前瞻"、"[公司]盈利需要注意什么"、"盈利前"、"盈利建立"或"[公司] Q[X] 预览"。
+# Earnings Preview
 
-## 工作流程
+Description: Pre-earnings analysis using an estimate model, scenario framework, and key metrics. Use before a company reports quarterly earnings to prepare a positioning note, build bull/bear scenarios, and identify what will move the stock. Trigger when: "earnings preview", "what to watch for [company] earnings", "pre-earnings", "earnings setup", or "[company] Q[X] preview".
 
-### 第 1 步：收集背景
+## Workflow
 
-- 识别公司和报告季度
-- 通过网页搜索拉取一致预期（收入、每股收益、关键细分指标）
-- 找到盈利日期和时间（市前vs市后）
-- 查看公司的上一季度盈利电话会议，了解任何指导或评论
+### Step 1: Gather Context
 
-### 第 2 步：关键指标框架
+- Identify the company and reporting quarter
+- Pull consensus estimates (revenue, EPS, key segment metrics) via AE composite MCP (openbb); fall back to SEC EDGAR filings or Yahoo Finance
+- Find earnings date and time (pre-market vs. after-market)
+- Review the company's prior-quarter earnings call for any guidance or commentary
 
-构建特定于公司的"需要关注"框架：
+### Step 2: Key Metrics Framework
 
-**财务指标：**
-- 收入vs一致预期（总额和按细分）
-- 每股收益vs一致预期
-- 利润率（毛利率、营业利润率、净利润率）— 扩大还是压缩？
-- 自由现金流
-- 前向指导vs一致预期
+Build a company-specific "what to watch" framework:
 
-**运营指标**（行业特定）：
-- 科技/SaaS：ARR、净保留率、RPO、客户数
-- 零售：同店销售、流量、篮子大小
-- 工业：积压订单、订单簿比、价格vs数量
-- 金融：净利息收益率、信用质量、贷款增长、费用收入
-- 医疗保健：处方、患者数量、管道更新
+**Financial Metrics:**
+- Revenue vs. consensus (total and by segment)
+- EPS vs. consensus
+- Margins (gross, operating, net) — expanding or contracting?
+- Free cash flow
+- Forward guidance vs. consensus
 
-### 第 3 步：情景分析
+**Operating Metrics** (industry-specific):
+- Tech/SaaS: ARR, net retention, RPO, customer count
+- Retail: same-store sales, traffic, basket size
+- Industrials: backlog, book-to-bill, price vs. volume
+- Financials: NIM, credit quality, loan growth, fee income
+- Healthcare: prescriptions, patient volumes, pipeline updates
 
-构建 3 个情景及股价影响：
+### Step 3: Scenario Analysis
 
-| 情景 | 收入 | 每股收益 | 关键驱动因素 | 股票反应 |
-|------|------|---------|----------|---------|
-| 牛市 | | | | |
-| 基础 | | | | |
-| 熊市 | | | | |
+Build 3 scenarios with stock price impact:
 
-对于每个情景：
-- 什么需要在运营上发生
-- 什么管理层评论会表示这一点
-- 历史背景 — 股票在类似报告上的历史表现如何？
+| Scenario | Revenue | EPS | Key Driver | Stock Reaction |
+|----------|---------|-----|------------|---------------|
+| Bull | | | | |
+| Base | | | | |
+| Bear | | | | |
 
-### 第 4 步：催化剂检查表
+For each scenario:
+- What needs to happen operationally
+- What management commentary would signal this
+- Historical context — how has the stock traded on similar reports?
 
-识别将决定股票反应的 3-5 件事：
+### Step 4: Catalyst Checklist
 
-1. [指标] vs [一致预期/市场预期] — 为什么很重要
-2. [指导项目] — 买方预期听到什么
-3. [叙述转变] — 任何战略变化、M&A、重组
+Identify 3-5 things that will determine the stock's reaction:
 
-### 第 5 步：输出
+1. [Metric] vs. [consensus/buyside expectations] — why it matters
+2. [Guidance item] — what the buyside expects to hear
+3. [Narrative shift] — any strategic changes, M&A, restructuring
 
-单页盈利前瞻，包含：
-- 公司、季度、盈利日期
-- 一致预期表
-- 关键指标需要关注（按重要性排序）
-- 牛/基础/熊情景表
-- 催化剂检查表
-- 交易建立：最近股票表现、期权隐含波动率
+### Step 5: Output
 
-## 重要说明
+Single-page earnings preview containing:
+- Company, quarter, earnings date
+- Consensus estimates table (sourced from AE composite MCP / openbb or Yahoo Finance)
+- Key metrics to watch (ranked by importance)
+- Bull/base/bear scenario table
+- Catalyst checklist
+- Trade setup: recent stock performance, options implied volatility
 
-- 一致预期变化 — 始终注明估计的来源和日期
-- 来自买方调查的"市场预期"通常比公开一致预期更相关
-- 历史盈利反应帮助校准预期（搜索"[公司]盈利反应历史"）
-- 期权隐含波动率告诉你市场期望什么 — 与你的情景进行比较
+## Important Notes
+
+- Consensus estimates change — always note the source and date of estimates; use AE composite MCP (openbb) as primary; fall back to Yahoo Finance
+- "Buyside expectations" from survey data are often more relevant than published consensus
+- Historical earnings reactions help calibrate expectations (search "[company] earnings reaction history")
+- Options implied volatility tells you what the market expects — compare to your scenarios

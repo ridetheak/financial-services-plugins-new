@@ -25,12 +25,14 @@ description: |
 
 **ALWAYS follow this data source hierarchy:**
 
-1. **FIRST: Check for MCP data sources** - If S&P Kensho MCP, FactSet MCP, or Daloopa MCP are available, use them exclusively for financial and trading information
-2. **DO NOT use web search** if the above MCP data sources are available
-3. **ONLY if MCPs are unavailable:** Then use Bloomberg Terminal, SEC EDGAR filings, or other institutional sources
-4. **NEVER use web search as a primary data source** - it lacks the accuracy, audit trails, and reliability required for institutional-grade analysis
+1. **FIRST: AE composite MCP (`openbb` MCP server)** — primary source for quotes, fundamentals, financial statements, estimates, ratios, and ownership data
+2. **SECOND: SEC EDGAR filings (10-K / 10-Q / 8-K)** — authoritative source for reported financials; cross-check any data against filings
+3. **THIRD: User-provided data** — historical financials or estimates pasted or uploaded by the advisor take precedence over external lookups
+4. **FOURTH: Free market data** (Yahoo Finance, FRED) — for prices, beta, macro context
+5. **Premium vendors (FactSet, Bloomberg, S&P Capital IQ, Daloopa, Refinitiv)** — ONLY if the user explicitly confirms they have access; otherwise do NOT reach for them
+6. **NEVER use generic web search as a primary financial-data source** — it lacks the accuracy, audit trails, and reliability required for institutional-grade analysis
 
-**Why this matters:** MCP sources provide verified, institutional-grade data with proper citations. Web search results can be outdated, inaccurate, or unreliable for financial analysis.
+**Why this matters:** The AE composite MCP provides verified, structured financial data with proper citations. SEC EDGAR filings are the authoritative public record. Web search results can be outdated, inaccurate, or unreliable for financial analysis.
 
 ---
 
@@ -236,10 +238,10 @@ Same structure as operating section: Max, 75th, Median, 25th, Min for every metr
 ### Required Components
 
 **Data Sources & Quality:**
-- Where did the data come from? (S&P Kensho MCP, FactSet MCP, Daloopa MCP, Bloomberg, SEC filings)
+- Where did the data come from? (AE composite MCP, SEC EDGAR filings, user-provided data, free market data)
 - What period does it cover? (Q4 2024, audited figures)
 - How was it verified? (Cross-checked against 10-K/10-Q)
-- Note: Prioritize MCP data sources (S&P Kensho, FactSet, Daloopa) if available for better accuracy and traceability
+- Note: Prefer AE composite MCP (`openbb`) and SEC EDGAR as primary sources; only use premium vendors (FactSet, Bloomberg, Daloopa, etc.) if the user explicitly confirms access
 
 **Key Definitions:**
 - EBITDA calculation method (Gross Profit + D&A, or Operating Income + D&A)
@@ -324,9 +326,9 @@ If you have more than 15 metrics, you're probably including noise. Edit ruthless
 2. **Add cell comments to ALL hard-coded inputs** - Right-click cell → Insert Comment → Document source OR assumption
 
    **For sourced data, cite exactly where it came from:**
-   - Example: "Bloomberg Terminal - MSFT Equity DES, accessed 2024-10-02"
+   - Example: "AE composite MCP (openbb) - MSFT quote/fundamentals, accessed 2024-10-02"
    - Example: "Q4 2024 10-K filing, page 42, line item 'Total Revenue'"
-   - Example: "FactSet consensus estimate as of 2024-10-02"
+   - Example: "SEC EDGAR 10-K FY2024 — consensus estimate from filing footnotes"
    - **Include hyperlinks when possible**: Right-click cell → Link → paste URL to SEC filing, data source, or report
 
    **For assumptions, explain the reasoning:**
@@ -407,7 +409,7 @@ This helps answer: "Is our target company trading rich or cheap vs. peers?"
    - Lock in units and date references
 
 2. **Gather data** (60-90 minutes)
-   - Pull from primary sources (S&P Kensho MCP, FactSet MCP, Daloopa MCP if available; otherwise Bloomberg, SEC)
+   - Pull from primary sources: AE composite MCP (`openbb`) first, then SEC EDGAR filings, then user-provided data, then free market data (Yahoo Finance, FRED); use premium vendors (Bloomberg, FactSet, Daloopa) only if the user confirms access
    - Input all raw numbers in blue
    - Document sources in notes section
 
@@ -436,7 +438,7 @@ This helps answer: "Is our target company trading rich or cheap vs. peers?"
 ### Pro Tips
 - **Save templates**: Build once, reuse forever
 - **Color-code outliers**: Conditional formatting for values >2 standard deviations
-- **Link to source files**: Hyperlink to Bloomberg screenshots or SEC filings
+- **Link to source files**: Hyperlink to SEC EDGAR filings, AE composite MCP output, or data provider pages
 - **Version control**: Save as "Comps_v1_2024-12-15" with clear dating
 - **Collaborative reviews**: Have someone else check your formulas
 
@@ -606,7 +608,7 @@ Before delivering a comp analysis, verify:
 - [ ] Units are clearly labeled (millions/billions)
 - [ ] Formulas reference cells, not hardcoded values
 - [ ] **All hard-coded input cells have comments with either: (1) exact data source with citation, OR (2) clear assumption with explanation**
-- [ ] **Hyperlinks added where relevant** (SEC EDGAR filings, Bloomberg pages, research reports)
+- [ ] **Hyperlinks added where relevant** (SEC EDGAR filings, AE composite MCP output, data source pages, research reports)
 - [ ] Statistics include at least 5 metrics (Max, 75th, Med, 25th, Min)
 - [ ] Notes section documents sources and methodology
 - [ ] Visual formatting follows conventions (blue = input, black = formula)
