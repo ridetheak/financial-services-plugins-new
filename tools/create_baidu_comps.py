@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-创建百度可比公司分析
-包含运营指标、估值倍数和统计汇总
+Create Baidu Comparable Companies Analysis
+Includes operating metrics, valuation multiples, and statistical summary
 """
 
 import openpyxl
@@ -10,15 +10,15 @@ from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from openpyxl.utils import get_column_letter
 from openpyxl.comments import Comment
 
-# 创建工作簿
+# Create workbook
 wb = Workbook()
 
-# 定义样式
+# Define styles
 header_font = Font(bold=True, size=12, color='FFFFFF', name='Times New Roman')
 title_font = Font(bold=True, size=14, name='Times New Roman')
 section_font = Font(bold=True, size=11, name='Times New Roman')
-input_font = Font(color='0000FF', name='Times New Roman')  # 蓝色 = 输入
-formula_font = Font(color='000000', name='Times New Roman')  # 黑色 = 公式
+input_font = Font(color='0000FF', name='Times New Roman')  # Blue = Input
+formula_font = Font(color='000000', name='Times New Roman')  # Black = Formula
 
 blue_fill = PatternFill(start_color='4472C4', end_color='4472C4', fill_type='solid')
 light_blue_fill = PatternFill(start_color='D9E2F3', end_color='D9E2F3', fill_type='solid')
@@ -31,36 +31,36 @@ thin_border = Border(
     bottom=Side(style='thin')
 )
 
-# 删除默认工作表
+# Remove default worksheet
 wb.remove(wb.active)
 
-# 创建工作表
+# Create worksheet
 ws = wb.create_sheet('Comparable Analysis')
 
-print("开始创建百度可比公司分析...")
+print("Building Baidu comparable companies analysis...")
 
-# ========== 标题区域 ==========
-ws['A1'] = '中国互联网行业 - 可比公司分析'
+# ========== Title Area ==========
+ws['A1'] = 'China Internet Sector - Comparable Companies Analysis'
 ws['A1'].font = Font(bold=True, size=16, name='Times New Roman')
 ws.merge_cells('A1:N1')
 
-ws['A2'] = '百度 (BIDU) • 腾讯 (TCEHY) • 阿里巴巴 (BABA) • 京东 (JD) • 美团 (MPNGY) • 拼多多 (PDD) • 谷歌 (GOOGL)'
+ws['A2'] = 'Baidu (BIDU) • Tencent (TCEHY) • Alibaba (BABA) • JD.com (JD) • Meituan (MPNGY) • PDD Holdings (PDD) • Alphabet (GOOGL)'
 ws['A2'].font = Font(size=11, name='Times New Roman', italic=True)
 
-ws['A3'] = '数据截至: 2024年12月31日 | 所有金额单位: 百万美元(USD) | 股价和每股数据除外'
+ws['A3'] = 'Data as of: December 31, 2024 | All amounts in USD millions except per-share data and stock price'
 ws['A3'].font = Font(size=10, name='Times New Roman', italic=True, color='666666')
 
-# ========== 运营指标部分 ==========
-ws['A5'] = '运营指标与财务数据'
+# ========== Operating Metrics Section ==========
+ws['A5'] = 'Operating Metrics & Financial Data'
 ws['A5'].font = title_font
 ws['A5'].fill = blue_fill
 ws['A5'].font = Font(bold=True, size=12, color='FFFFFF', name='Times New Roman')
 ws.merge_cells('A5:N5')
 
-# 列标题
+# Column headers
 columns = [
-    '公司', '股票代码', '收入 (LTM)', '收入增长 (YoY)', '毛利润', '毛利率',
-    'EBITDA', 'EBITDA利润率', '净利润', '净利润率', '自由现金流', 'FCF利润率'
+    'Company', 'Ticker', 'Revenue (LTM)', 'Revenue Growth (YoY)', 'Gross Profit', 'Gross Margin',
+    'EBITDA', 'EBITDA Margin', 'Net Income', 'Net Margin', 'Free Cash Flow', 'FCF Margin'
 ]
 
 for col_idx, col_name in enumerate(columns, start=1):
@@ -70,22 +70,22 @@ for col_idx, col_name in enumerate(columns, start=1):
     cell.font = Font(bold=True, size=11, name='Times New Roman')
     cell.alignment = Alignment(horizontal='center', vertical='center')
 
-# 可比公司数据 (基于公开财务数据)
+# Comparable companies data (based on public financial data)
 companies_data = [
-    # 百度 - 目标公司
+    # Baidu - Target company
     {
-        'name': '百度',
+        'name': 'Baidu',
         'ticker': 'BIDU',
-        'revenue': 19337,  # 百万美元
+        'revenue': 19337,  # USD millions
         'revenue_growth': 0.056,  # 5.6%
         'gross_profit': 9565,
         'ebitda': 4052,
         'net_income': 2871,
         'fcf': 3512,
     },
-    # 腾讯
+    # Tencent
     {
-        'name': '腾讯控股',
+        'name': 'Tencent Holdings',
         'ticker': 'TCEHY',
         'revenue': 86086,
         'revenue_growth': 0.098,
@@ -94,9 +94,9 @@ companies_data = [
         'net_income': 18068,
         'fcf': 22132,
     },
-    # 阿里巴巴
+    # Alibaba
     {
-        'name': '阿里巴巴',
+        'name': 'Alibaba',
         'ticker': 'BABA',
         'revenue': 134392,
         'revenue_growth': 0.068,
@@ -105,9 +105,9 @@ companies_data = [
         'net_income': 11085,
         'fcf': 18232,
     },
-    # 京东
+    # JD.com
     {
-        'name': '京东',
+        'name': 'JD.com',
         'ticker': 'JD',
         'revenue': 158287,
         'revenue_growth': 0.037,
@@ -116,9 +116,9 @@ companies_data = [
         'net_income': 2105,
         'fcf': 3421,
     },
-    # 美团
+    # Meituan
     {
-        'name': '美团',
+        'name': 'Meituan',
         'ticker': 'MPNGY',
         'revenue': 40289,
         'revenue_growth': 0.256,
@@ -127,9 +127,9 @@ companies_data = [
         'net_income': 1399,
         'fcf': 1987,
     },
-    # 拼多多
+    # PDD Holdings
     {
-        'name': '拼多多',
+        'name': 'PDD Holdings',
         'ticker': 'PDD',
         'revenue': 34811,
         'revenue_growth': 0.896,
@@ -138,9 +138,9 @@ companies_data = [
         'net_income': 6945,
         'fcf': 8234,
     },
-    # 谷歌
+    # Alphabet
     {
-        'name': '谷歌',
+        'name': 'Alphabet',
         'ticker': 'GOOGL',
         'revenue': 349800,
         'revenue_growth': 0.118,
@@ -151,7 +151,7 @@ companies_data = [
     },
 ]
 
-# 填充公司数据
+# Populate company data
 row_num = 7
 for company in companies_data:
     ws.cell(row=row_num, column=1).value = company['name']
@@ -159,28 +159,28 @@ for company in companies_data:
     ws.cell(row=row_num, column=3).value = company['revenue']
     ws.cell(row=row_num, column=4).value = company['revenue_growth']
     ws.cell(row=row_num, column=5).value = company['gross_profit']
-    ws.cell(row=row_num, column=6).value = f'=E{row_num}/C{row_num}'  # 毛利率
+    ws.cell(row=row_num, column=6).value = f'=E{row_num}/C{row_num}'  # Gross Margin
     ws.cell(row=row_num, column=7).value = company['ebitda']
-    ws.cell(row=row_num, column=8).value = f'=G{row_num}/C{row_num}'  # EBITDA利润率
+    ws.cell(row=row_num, column=8).value = f'=G{row_num}/C{row_num}'  # EBITDA Margin
     ws.cell(row=row_num, column=9).value = company['net_income']
-    ws.cell(row=row_num, column=10).value = f'=I{row_num}/C{row_num}'  # 净利润率
+    ws.cell(row=row_num, column=10).value = f'=I{row_num}/C{row_num}'  # Net Margin
     ws.cell(row=row_num, column=11).value = company['fcf']
-    ws.cell(row=row_num, column=12).value = f'=K{row_num}/C{row_num}'  # FCF利润率
+    ws.cell(row=row_num, column=12).value = f'=K{row_num}/C{row_num}'  # FCF Margin
 
-    # 设置格式
-    for col in [3, 5, 7, 9, 11]:  # 金额列
+    # Apply formatting
+    for col in [3, 5, 7, 9, 11]:  # Dollar amount columns
         ws.cell(row=row_num, column=col).number_format = '#,##0'
         ws.cell(row=row_num, column=col).font = input_font
 
-    for col in [4, 6, 8, 10, 12]:  # 百分比列
+    for col in [4, 6, 8, 10, 12]:  # Percentage columns
         ws.cell(row=row_num, column=col).number_format = '0.0%'
         ws.cell(row=row_num, column=col).font = formula_font
 
     row_num += 1
 
-# 添加统计行 (跳过一行)
+# Add statistics rows (skip one row)
 row_num += 1
-stats_labels = ['最大值', '75分位', '中位数', '25分位', '最小值']
+stats_labels = ['Maximum', '75th Percentile', 'Median', '25th Percentile', 'Minimum']
 stats_functions = ['MAX', 'QUARTILE(C7:C13,3)', 'MEDIAN', 'QUARTILE(C7:C13,1)', 'MIN']
 
 for i, label in enumerate(stats_labels):
@@ -189,45 +189,45 @@ for i, label in enumerate(stats_labels):
     ws.cell(row=current_row, column=1).fill = light_gray_fill
     ws.cell(row=current_row, column=1).font = Font(bold=True, size=11, name='Times New Roman')
 
-    # 为每个数值列添加统计公式
-    for col in [3, 4, 6, 8, 10, 12]:  # 收入、增长率、利润率等
+    # Add statistics formula for each numeric column
+    for col in [3, 4, 6, 8, 10, 12]:  # Revenue, growth rate, margins, etc.
         col_letter = get_column_letter(col)
         data_range = f'{col_letter}7:{col_letter}13'
 
-        if label == '最大值':
+        if label == 'Maximum':
             ws.cell(row=current_row, column=col).value = f'=MAX({data_range})'
-        elif label == '75分位':
+        elif label == '75th Percentile':
             ws.cell(row=current_row, column=col).value = f'=QUARTILE({data_range},3)'
-        elif label == '中位数':
+        elif label == 'Median':
             ws.cell(row=current_row, column=col).value = f'=MEDIAN({data_range})'
-        elif label == '25分位':
+        elif label == '25th Percentile':
             ws.cell(row=current_row, column=col).value = f'=QUARTILE({data_range},1)'
-        elif label == '最小值':
+        elif label == 'Minimum':
             ws.cell(row=current_row, column=col).value = f'=MIN({data_range})'
 
         ws.cell(row=current_row, column=col).fill = light_gray_fill
         ws.cell(row=current_row, column=col).font = formula_font
 
-        # 设置数字格式
-        if col == 3:  # 收入
+        # Set number format
+        if col == 3:  # Revenue
             ws.cell(row=current_row, column=col).number_format = '#,##0'
-        else:  # 百分比
+        else:  # Percentages
             ws.cell(row=current_row, column=col).number_format = '0.0%'
 
-print("✓ 运营指标部分完成")
+print("✓ Operating metrics section complete")
 
-# ========== 估值倍数部分 ==========
+# ========== Valuation Multiples Section ==========
 valuation_start_row = row_num + 7
 
-ws.cell(row=valuation_start_row, column=1).value = '估值倍数与投资指标'
+ws.cell(row=valuation_start_row, column=1).value = 'Valuation Multiples & Investment Metrics'
 ws.cell(row=valuation_start_row, column=1).font = Font(bold=True, size=12, color='FFFFFF', name='Times New Roman')
 ws.cell(row=valuation_start_row, column=1).fill = blue_fill
 ws.merge_cells(f'A{valuation_start_row}:N{valuation_start_row}')
 
-# 估值倍数列标题
+# Valuation multiples column headers
 valuation_columns = [
-    '公司', '股票代码', '市值', '企业价值', 'EV/收入', 'EV/EBITDA',
-    '市盈率 P/E', 'FCF收益率', 'PEG比率', 'Beta系数'
+    'Company', 'Ticker', 'Market Cap', 'Enterprise Value', 'EV/Revenue', 'EV/EBITDA',
+    'P/E', 'FCF Yield', 'PEG Ratio', 'Beta'
 ]
 
 header_row = valuation_start_row + 1
@@ -238,7 +238,7 @@ for col_idx, col_name in enumerate(valuation_columns, start=1):
     cell.font = Font(bold=True, size=11, name='Times New Roman')
     cell.alignment = Alignment(horizontal='center', vertical='center')
 
-# 估值数据
+# Valuation data
 valuation_data = [
     {'ticker': 'BIDU', 'market_cap': 33250, 'ev': 28437, 'pe': 11.6, 'beta': 0.85},
     {'ticker': 'TCEHY', 'market_cap': 415600, 'ev': 389432, 'pe': 23.0, 'beta': 0.78},
@@ -252,28 +252,28 @@ valuation_data = [
 data_start_row = header_row + 1
 for idx, company in enumerate(valuation_data):
     current_row = data_start_row + idx
-    original_row = 7 + idx  # 对应运营数据的行号
+    original_row = 7 + idx  # Corresponding row in operating data
 
     ws.cell(row=current_row, column=1).value = companies_data[idx]['name']
     ws.cell(row=current_row, column=2).value = company['ticker']
     ws.cell(row=current_row, column=3).value = company['market_cap']
     ws.cell(row=current_row, column=4).value = company['ev']
 
-    # EV/收入 = EV / Revenue
+    # EV/Revenue = EV / Revenue
     ws.cell(row=current_row, column=5).value = f'=D{current_row}/C{original_row}'
     # EV/EBITDA = EV / EBITDA
     ws.cell(row=current_row, column=6).value = f'=D{current_row}/G{original_row}'
     # P/E
     ws.cell(row=current_row, column=7).value = company['pe']
-    # FCF收益率 = FCF / Market Cap
+    # FCF Yield = FCF / Market Cap
     ws.cell(row=current_row, column=8).value = f'=K{original_row}/C{current_row}'
     # PEG = P/E / Growth Rate
     ws.cell(row=current_row, column=9).value = f'=G{current_row}/(D{original_row}*100)'
     # Beta
     ws.cell(row=current_row, column=10).value = company['beta']
 
-    # 设置格式
-    for col in [3, 4]:  # 市值、EV
+    # Apply formatting
+    for col in [3, 4]:  # Market Cap, EV
         ws.cell(row=current_row, column=col).number_format = '#,##0'
         ws.cell(row=current_row, column=col).font = input_font
 
@@ -284,7 +284,7 @@ for idx, company in enumerate(valuation_data):
     ws.cell(row=current_row, column=7).number_format = '0.0x'  # P/E
     ws.cell(row=current_row, column=7).font = input_font
 
-    ws.cell(row=current_row, column=8).number_format = '0.0%'  # FCF收益率
+    ws.cell(row=current_row, column=8).number_format = '0.0%'  # FCF Yield
     ws.cell(row=current_row, column=8).font = formula_font
 
     ws.cell(row=current_row, column=9).number_format = '0.0'  # PEG
@@ -293,7 +293,7 @@ for idx, company in enumerate(valuation_data):
     ws.cell(row=current_row, column=10).number_format = '0.00'  # Beta
     ws.cell(row=current_row, column=10).font = input_font
 
-# 添加估值统计行
+# Add valuation statistics rows
 stats_start_row = data_start_row + len(valuation_data) + 1
 for i, label in enumerate(stats_labels):
     current_row = stats_start_row + i
@@ -301,95 +301,95 @@ for i, label in enumerate(stats_labels):
     ws.cell(row=current_row, column=1).fill = light_gray_fill
     ws.cell(row=current_row, column=1).font = Font(bold=True, size=11, name='Times New Roman')
 
-    # 为估值倍数添加统计公式
-    for col in [5, 6, 7, 8, 9, 10]:  # EV/Revenue, EV/EBITDA, P/E, FCF收益率, PEG, Beta
+    # Add statistics formulas for valuation multiples
+    for col in [5, 6, 7, 8, 9, 10]:  # EV/Revenue, EV/EBITDA, P/E, FCF Yield, PEG, Beta
         col_letter = get_column_letter(col)
         data_range = f'{col_letter}{data_start_row}:{col_letter}{data_start_row + 6}'
 
-        if label == '最大值':
+        if label == 'Maximum':
             ws.cell(row=current_row, column=col).value = f'=MAX({data_range})'
-        elif label == '75分位':
+        elif label == '75th Percentile':
             ws.cell(row=current_row, column=col).value = f'=QUARTILE({data_range},3)'
-        elif label == '中位数':
+        elif label == 'Median':
             ws.cell(row=current_row, column=col).value = f'=MEDIAN({data_range})'
-        elif label == '25分位':
+        elif label == '25th Percentile':
             ws.cell(row=current_row, column=col).value = f'=QUARTILE({data_range},1)'
-        elif label == '最小值':
+        elif label == 'Minimum':
             ws.cell(row=current_row, column=col).value = f'=MIN({data_range})'
 
         ws.cell(row=current_row, column=col).fill = light_gray_fill
         ws.cell(row=current_row, column=col).font = formula_font
 
-        # 设置格式
-        if col in [5, 6, 7]:  # 倍数
+        # Set number format
+        if col in [5, 6, 7]:  # Multiples
             ws.cell(row=current_row, column=col).number_format = '0.0x'
-        elif col == 8:  # 百分比
+        elif col == 8:  # Percentage
             ws.cell(row=current_row, column=col).number_format = '0.0%'
         elif col == 9:  # PEG
             ws.cell(row=current_row, column=col).number_format = '0.0'
         elif col == 10:  # Beta
             ws.cell(row=current_row, column=col).number_format = '0.00'
 
-print("✓ 估值倍数部分完成")
+print("✓ Valuation multiples section complete")
 
-# ========== 注释与方法论部分 ==========
+# ========== Notes & Methodology Section ==========
 notes_start_row = stats_start_row + 8
 
-ws.cell(row=notes_start_row, column=1).value = '注释与方法论'
+ws.cell(row=notes_start_row, column=1).value = 'Notes & Methodology'
 ws.cell(row=notes_start_row, column=1).font = Font(bold=True, size=12, color='FFFFFF', name='Times New Roman')
 ws.cell(row=notes_start_row, column=1).fill = blue_fill
 ws.merge_cells(f'A{notes_start_row}:N{notes_start_row}')
 
 notes = [
-    '数据来源:',
-    '• 所有财务数据来自公司年报、季报及Bloomberg终端 (2024年12月31日更新)',
-    '• 市值和企业价值基于2024年12月31日收盘价计算',
+    'Data Sources:',
+    '• All financial data sourced from company annual reports, quarterly filings, and Bloomberg terminal (updated December 31, 2024)',
+    '• Market cap and enterprise value based on closing prices as of December 31, 2024',
     '',
-    '关键定义:',
-    '• EBITDA = 营业利润 + 折旧 + 摊销',
-    '• 自由现金流 = 经营活动现金流 - 资本支出',
-    '• 企业价值 = 市值 + 净债务 (总债务 - 现金)',
+    'Key Definitions:',
+    '• EBITDA = Operating Income + Depreciation + Amortization',
+    '• Free Cash Flow = Cash Flow from Operations - Capital Expenditures',
+    '• Enterprise Value = Market Cap + Net Debt (Total Debt - Cash)',
     '',
-    '可比公司选择标准:',
-    '• 业务模式相似 (互联网、搜索、电商、云计算)',
-    '• 地理位置相近 (主要为中国科技公司，谷歌作为全球对标)',
-    '• 规模可比 (市值 > 300亿美元)',
+    'Comparable Company Selection Criteria:',
+    '• Similar business model (internet, search, e-commerce, cloud computing)',
+    '• Geographic proximity (primarily Chinese technology companies; Alphabet included as global benchmark)',
+    '• Comparable scale (market cap > $30 billion)',
     '',
-    '估值方法论:',
-    '• 中位数EV/EBITDA倍数用于DCF终值假设',
-    '• 25-75分位范围用于敏感性分析',
-    '• PEG比率考虑增长因素，适用于高增长公司估值',
+    'Valuation Methodology:',
+    '• Median EV/EBITDA multiple used for DCF terminal value assumption',
+    '• 25th–75th percentile range used for sensitivity analysis',
+    '• PEG ratio accounts for growth and is appropriate for high-growth company valuation',
 ]
 
 for i, note in enumerate(notes):
     ws.cell(row=notes_start_row + 1 + i, column=1).value = note
     ws.cell(row=notes_start_row + 1 + i, column=1).font = Font(size=10, name='Times New Roman')
 
-# 设置列宽
+# Set column widths
 ws.column_dimensions['A'].width = 15
 ws.column_dimensions['B'].width = 10
 for col in range(3, 13):
     ws.column_dimensions[get_column_letter(col)].width = 12
 
-# 设置行高
+# Set row heights
 for row in range(1, notes_start_row + len(notes) + 2):
     ws.row_dimensions[row].height = 20
 
-print("✓ 注释部分完成")
+print("✓ Notes section complete")
 
-# 保存文件
+# Save file
 output_file = 'baidu_comparable_analysis.xlsx'
 wb.save(output_file)
 
 print(f"\n{'='*60}")
-print(f"✓ 百度可比公司分析创建成功!")
+print(f"✓ Baidu comparable companies analysis created successfully!")
 print(f"{'='*60}")
-print(f"文件名: {output_file}")
-print(f"\n包含内容:")
-print(f"  • 目标公司: 百度 (BIDU)")
-print(f"  • 可比公司: 腾讯、阿里巴巴、京东、美团、拼多多、谷歌")
-print(f"  • 运营指标: 收入、增长率、利润率、FCF")
-print(f"  • 估值倍数: EV/Revenue, EV/EBITDA, P/E, FCF收益率, PEG, Beta")
-print(f"  • 统计汇总: 最大值、75分位、中位数、25分位、最小值")
-print(f"  • 注释: 数据来源、定义、方法论")
+print(f"File: {output_file}")
+print(f"\nContents:")
+print(f"  • Target company: Baidu (BIDU)")
+print(f"  • Comparable companies: Tencent, Alibaba, JD.com, Meituan, PDD Holdings, Alphabet")
+print(f"  • Operating metrics: Revenue, growth rate, margins, FCF")
+print(f"  • Valuation multiples: EV/Revenue, EV/EBITDA, P/E, FCF Yield, PEG, Beta")
+print(f"  • Statistical summary: Maximum, 75th Percentile, Median, 25th Percentile, Minimum")
+print(f"  • Notes: Data sources, definitions, methodology")
 print(f"{'='*60}")

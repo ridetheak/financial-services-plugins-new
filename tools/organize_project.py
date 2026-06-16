@@ -2,7 +2,7 @@ import os
 import shutil
 
 def organize_files():
-    # 定义目录结构
+    # Define the directory structure
     base_dir = os.getcwd()
     structure = {
         "docs/analysis/mcp": [
@@ -52,31 +52,31 @@ def organize_files():
         ]
     }
 
-    print("🚀 开始整理本地文件...")
+    print("🚀 Starting local file organization...")
 
     for folder, files in structure.items():
-        # 创建目录
+        # Create directory
         target_dir = os.path.join(base_dir, folder)
         if not os.path.exists(target_dir):
             os.makedirs(target_dir)
-            print(f"📁 已创建目录: {folder}")
+            print(f"📁 Created directory: {folder}")
 
-        # 移动文件
+        # Move files
         for filename in files:
             source_path = os.path.join(base_dir, filename)
             if os.path.exists(source_path):
                 target_path = os.path.join(target_dir, filename)
                 try:
                     shutil.move(source_path, target_path)
-                    print(f"✅ 已移动: {filename} -> {folder}/")
+                    print(f"✅ Moved: {filename} -> {folder}/")
                 except Exception as e:
-                    print(f"❌ 移动失败 {filename}: {e}")
+                    print(f"❌ Move failed {filename}: {e}")
             else:
-                # 检查是否已经在目标位置（防止重复运行报错）
+                # Check if the file is already at the target location (prevents errors on re-run)
                 if not os.path.exists(os.path.join(target_dir, filename)):
-                    pass # 文件不存在且不在目标位置，跳过
+                    pass # File does not exist and is not at the target location, skip
 
-    print("\n✨ 整理完成！请运行 'git status' 查看新的目录结构。")
+    print("\n✨ Organization complete! Run 'git status' to review the new directory structure.")
 
 if __name__ == "__main__":
     organize_files()

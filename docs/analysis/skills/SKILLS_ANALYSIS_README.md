@@ -1,176 +1,176 @@
-# Skills 反向工程分析 - 完整指南
+# Skills Reverse-Engineering Analysis — Complete Guide
 
-## 📌 快速导航
+## Quick Navigation
 
-你刚刚提出了一个非常深刻的问题：
+You recently asked a very insightful question:
 
-> **"能通过skills大体上推断出来有哪些服务商的哪些接口是可能被用到、除了文档直接写明的？"**
+> **"Can we infer, through the skills, which interfaces from which providers are likely being used — beyond what the documentation explicitly states?"**
 
-我们已经为你生成了完整的分析答案。这份README会帮助你快速找到你需要的信息。
-
----
-
-## 📁 生成的文件清单
-
-### 📄 1. SKILLS_INFERENCE_QUICK_GUIDE.md (11 KB) ⭐ 推荐首读
-**适合**: 5-10分钟快速了解 | 日常参考
-
-**内容**:
-- 核心答案概览 (30秒版)
-- Top 20最常用接口列表
-- 3种推断方法论(可立即应用)
-- 6大使用场景示例
-- 快速决策表
-- 验证清单
-
-**何时阅读**: 
-- 第一次接触 → 直接阅读本文档
-- 日常工作中需要查接口 → 参考Table快速找答案
-- 开发者需要理解优先级 → 参考接口成熟度预测
+We have generated a complete analytical answer for you. This README helps you quickly find the information you need.
 
 ---
 
-### 📊 2. SKILLS_INFERENCE_ANALYSIS_SUMMARY.md (14 KB) ⭐ 推荐次读
-**适合**: 20-30分钟深入理解 | 项目决策
+## Generated Files
 
-**内容**:
-- 完整的核心发现汇总
-- 4大核心发现详解
-- 按服务分类的推断结果(Daloopa 8倍增长等)
-- 推断方法论完整版(4种规则)
-- Top 20接口优先级排序
-- 应用建议(开发者/架构师/业务用户)
+### 1. SKILLS_INFERENCE_QUICK_GUIDE.md (11 KB) — Recommended: Read First
+**Best for**: 5–10 minute quick overview | Daily reference
 
-**何时阅读**:
-- 需要向老板/团队汇报 → 参考"核心发现"和"数据汇总"
-- 系统优化决策 → 参考"应用建议"
-- 理解推断方法 → 参考"推断方法论完整版"
+**Contents**:
+- Core answer summary (30-second version)
+- Top 20 most-used interfaces
+- 3 inference methodologies (immediately applicable)
+- 6 usage scenario examples
+- Quick decision table
+- Validation checklist
 
----
-
-### 📈 3. ACTUAL_INTERFACES_INFERRED_CN.md (20 KB) 深度学习
-**适合**: 40-60分钟完整学习 | 技术深度
-
-**内容**:
-- 完整的反向工程分析报告
-- 接口数量对比表 (19 vs 99)
-- 11个MCP服务的完整接口列表
-- 每个服务的接口分类(财务类、搜索类等)
-- 工作流程 → 接口的映射关系图
-- 隐含接口的4个特点分析
-- 推断方法论完整版(4种规则+ 示例)
-
-**何时阅读**:
-- 建立完整知识体系 → 从头到尾读
-- 验证特定服务的接口 → 查找对应服务章节
-- 理解推断逻辑 → 重点看每个接口的推断原因
+**When to read**:
+- First time here → read this document directly
+- Need to look up an interface during daily work → use the table for quick answers
+- Developer needs to understand priorities → refer to interface maturity predictions
 
 ---
 
-### 🔗 4. SKILLS_TO_APIS_MAPPING_CN.md (在当前文件中) 实践应用
-**适合**: 1-2小时代码级参考 | 开发时查阅
+### 2. SKILLS_INFERENCE_ANALYSIS_SUMMARY.md (14 KB) — Recommended: Read Second
+**Best for**: 20–30 minute deep understanding | Project decisions
 
-**内容**:
-- 6个关键Skill的完整API调用流程
-- 每个Skill的数据流图和接口调用顺序
-- 接口使用频率排行榜(Top 20)
-- 接口依赖关系流程图
-- 具体的API调用示例(带参数)
+**Contents**:
+- Complete summary of core findings
+- Detailed breakdown of 4 major findings
+- Inference results by service (Daloopa 8x growth, etc.)
+- Complete inference methodology (4 rules)
+- Top 20 interface priority ranking
+- Application recommendations (developer/architect/business user)
 
-**何时阅读**:
-- 开发某个Skill → 参考对应Skill部分
-- 优化接口调用 → 参考"接口使用频率排行榜"
-- 理解数据流向 → 参考各Skill的"调用流程"
-
----
-
-## 🎯 根据你的需求选择阅读
-
-### 场景 1: "我只有5分钟，想快速了解"
-→ 阅读: **SKILLS_INFERENCE_QUICK_GUIDE.md**
-→ 部分: "核心答案" + "Top 20接口"
-→ 耗时: 5分钟
-
-### 场景 2: "我需要向管理层汇报这个发现"
-→ 阅读: **SKILLS_INFERENCE_ANALYSIS_SUMMARY.md**
-→ 部分: "核心发现汇总" + "数据汇总表" + "应用建议"
-→ 耗时: 20分钟
-
-### 场景 3: "我想建立完整的技术理解"
-→ 阅读: **ACTUAL_INTERFACES_INFERRED_CN.md**
-→ 然后: **SKILLS_INFERENCE_ANALYSIS_SUMMARY.md**
-→ 最后: **SKILLS_TO_APIS_MAPPING_CN.md** (需要时)
-→ 耗时: 2小时
-
-### 场景 4: "我现在在开发某个Skill，需要接口参考"
-→ 阅读: **SKILLS_TO_APIS_MAPPING_CN.md**
-→ 查找: 对应Skill的"调用流程"部分
-→ 耗时: 10-20分钟
-
-### 场景 5: "我是架构师，需要优化接口设计"
-→ 阅读: 
-  1. **SKILLS_INFERENCE_QUICK_GUIDE.md** (理解全局)
-  2. **ACTUAL_INTERFACES_INFERRED_CN.md** (理解细节)
-  3. **SKILLS_TO_APIS_MAPPING_CN.md** (使用频率)
-→ 参考: "接口使用频率排行榜" + "接口优先级"
-→ 耗时: 2小时 + 实施时间
+**When to read**:
+- Need to report to management/team → refer to "Core Findings" and "Data Summary"
+- System optimization decisions → refer to "Application Recommendations"
+- Understanding inference methodology → refer to "Complete Inference Methodology"
 
 ---
 
-## 📊 核心数据一页纸
+### 3. ACTUAL_INTERFACES_INFERRED_CN.md (20 KB) — Deep Learning
+**Best for**: 40–60 minute comprehensive study | Technical depth
 
-### 推断结果
+**Contents**:
+- Complete reverse-engineering analysis report
+- Interface count comparison table (19 vs. 99)
+- Complete interface list for all 11 MCP services
+- Interface classification per service (financial, search, etc.)
+- Workflow-to-interface mapping diagrams
+- Analysis of 4 characteristics of implied interfaces
+- Complete inference methodology (4 rules + examples)
 
-| 指标 | 数据 |
-|------|------|
-| **文档明确列出的接口** | 19个 |
-| **我们推断的总接口数** | 99个 |
-| **增长倍数** | 5.2倍 |
-| **推断准确率** | 80-95% |
-| **覆盖度提升** | 13% → 20% |
+**When to read**:
+- Building a complete knowledge base → read from start to finish
+- Verifying interfaces for a specific service → find the relevant service section
+- Understanding inference logic → focus on the reasoning behind each interface
 
-### 接口优先级分布
+---
 
-| 优先级 | 接口数 | 覆盖的使用% |
-|-------|-------|-----------|
-| ⭐⭐⭐⭐⭐ (必须有) | 5 | 40% |
-| ⭐⭐⭐⭐ (经常用) | 10 | 40% |
-| ⭐⭐⭐ (定期用) | 5 | 10% |
-| 其他 | 79 | 10% |
+### 4. SKILLS_TO_APIS_MAPPING_CN.md — Practical Application
+**Best for**: 1–2 hour code-level reference | Consult during development
 
-### Top 5关键接口
+**Contents**:
+- Complete API call flows for 6 key skills
+- Data flow diagrams and interface call sequences for each skill
+- Interface usage frequency ranking (Top 20)
+- Interface dependency flow diagrams
+- Concrete API call examples (with parameters)
+
+**When to read**:
+- Developing a specific skill → refer to the corresponding skill section
+- Optimizing interface calls → refer to "Interface Usage Frequency Ranking"
+- Understanding data flow → refer to each skill's "Call Flow"
+
+---
+
+## Choose What to Read Based on Your Needs
+
+### Scenario 1: "I only have 5 minutes and want a quick overview"
+→ Read: **SKILLS_INFERENCE_QUICK_GUIDE.md**
+→ Sections: "Core Answer" + "Top 20 Interfaces"
+→ Time: 5 minutes
+
+### Scenario 2: "I need to present this finding to management"
+→ Read: **SKILLS_INFERENCE_ANALYSIS_SUMMARY.md**
+→ Sections: "Core Findings Summary" + "Data Summary Table" + "Application Recommendations"
+→ Time: 20 minutes
+
+### Scenario 3: "I want to build a complete technical understanding"
+→ Read: **ACTUAL_INTERFACES_INFERRED_CN.md**
+→ Then: **SKILLS_INFERENCE_ANALYSIS_SUMMARY.md**
+→ Finally: **SKILLS_TO_APIS_MAPPING_CN.md** (when needed)
+→ Time: 2 hours
+
+### Scenario 4: "I'm developing a skill right now and need an interface reference"
+→ Read: **SKILLS_TO_APIS_MAPPING_CN.md**
+→ Find: The "Call Flow" section for the relevant skill
+→ Time: 10–20 minutes
+
+### Scenario 5: "I'm an architect and need to optimize interface design"
+→ Read:
+  1. **SKILLS_INFERENCE_QUICK_GUIDE.md** (understand the big picture)
+  2. **ACTUAL_INTERFACES_INFERRED_CN.md** (understand the details)
+  3. **SKILLS_TO_APIS_MAPPING_CN.md** (usage frequency)
+→ Refer to: "Interface Usage Frequency Ranking" + "Interface Priority"
+→ Time: 2 hours + implementation time
+
+---
+
+## Core Data One-Pager
+
+### Inference Results
+
+| Metric | Data |
+|--------|------|
+| **Interfaces explicitly listed in documentation** | 19 |
+| **Total interfaces we inferred** | 99 |
+| **Growth multiple** | 5.2x |
+| **Inference accuracy** | 80–95% |
+| **Coverage improvement** | 13% → 20% |
+
+### Interface Priority Distribution
+
+| Priority | Interface Count | % of Usage Covered |
+|----------|-----------------|-------------------|
+| ⭐⭐⭐⭐⭐ (must-have) | 5 | 40% |
+| ⭐⭐⭐⭐ (frequently used) | 10 | 40% |
+| ⭐⭐⭐ (regularly used) | 5 | 10% |
+| Other | 79 | 10% |
+
+### Top 5 Key Interfaces
 
 ```
-1. get_batch_financials()      - 批量财务数据
-2. get_historical_financials() - 历史数据
-3. search_peer_companies()     - 智能搜索
-4. qa_ibes_consensus()         - 分析师共识
-5. bond_price()                - 债券定价
+1. get_batch_financials()      - Batch financial data
+2. get_historical_financials() - Historical data
+3. search_peer_companies()     - Intelligent search
+4. qa_ibes_consensus()         - Analyst consensus
+5. bond_price()                - Bond pricing
 ```
 
 ---
 
-## 🔍 三种推断方法（记住这些，可应用到其他分析）
+## Three Inference Methods (Remember these — they apply to other analyses too)
 
-### 方法 1: 工作流程推断
+### Method 1: Workflow Inference
 ```
-Skills中的步骤 → 接口映射
+Steps in skills → interface mapping
 Step 1: "Search companies" → search_peer_companies()
 Step 2: "Fetch financials" → get_batch_financials()
-Step 3: "Compute metrics"  → (本地计算)
+Step 3: "Compute metrics"  → (local calculation)
 ```
 
-### 方法 2: 数据需求推断
+### Method 2: Data Requirement Inference
 ```
-Skills说"需要X数据" → 存在 get_X() 接口
+Skill says "need X data" → a get_X() interface exists
 "retrieve estimates" → get_analyst_estimates()
 "access history"     → get_historical_*()
 "get benchmarks"     → get_sector_*()
 ```
 
-### 方法 3: 优化需求推断
+### Method 3: Optimization Requirement Inference
 ```
-Skills提及"多个/批量" → 批量接口必须存在
+Skill mentions "multiple/batch" → a batch interface must exist
 "10-15 peers"        → get_batch_financials()
 "multiple bonds"     → bond_price(batch=True)
 "search database"    → search_*()
@@ -178,230 +178,230 @@ Skills提及"多个/批量" → 批量接口必须存在
 
 ---
 
-## 🎓 关键洞察
+## Key Insights
 
-### 洞察 1: 批量接口比单笔接口更重要
-
-```
-不应该有:
-❌ get_financials(ticker="AAPL")        [单笔查询]
-
-应该有:
-✅ get_batch_financials(tickers=[...])  [批量查询]
-
-原因: Comps分析需要15个竞争对手的数据，单笔查询效率太低
-```
-
-### 洞察 2: 搜索接口是核心能力
+### Insight 1: Batch interfaces matter more than single-record interfaces
 
 ```
-所有Skills都需要搜索能力:
+Should NOT have:
+❌ get_financials(ticker="AAPL")        [single query]
+
+Should have:
+✅ get_batch_financials(tickers=[...])  [batch query]
+
+Reason: Comps analysis needs data for 15 competitors; single queries are too inefficient
+```
+
+### Insight 2: Search interfaces are core infrastructure
+
+```
+All skills require search capability:
 - Comps Analysis: search_peer_companies()
 - Buyer List: search_financial_sponsors()
 - Deal Sourcing: search_companies_by_criteria()
 
-这是MCP系统的关键基础设施
+This is critical infrastructure for the MCP system
 ```
 
-### 洞察 3: 历史数据接口被严重低估
+### Insight 3: Historical data interfaces are severely underestimated
 
 ```
-文档中很少提到的接口，却被所有Skills使用:
-✓ get_historical_financials()     [DCF, Comps, Initiating都需要]
-✓ get_analyst_estimate_history()  [估值分析]
-✓ get_dividend_history()          [分红模型]
+Interfaces rarely mentioned in documentation, yet used by all skills:
+✓ get_historical_financials()     [needed by DCF, Comps, Initiating Coverage]
+✓ get_analyst_estimate_history()  [valuation analysis]
+✓ get_dividend_history()          [dividend models]
 
-这些应该是"必须有"的基础接口
+These should be "must-have" foundational interfaces
 ```
 
-### 洞察 4: 99个接口≠ 99倍的工作量
+### Insight 4: 99 interfaces ≠ 99x the work
 
 ```
-Top 20接口覆盖90%的使用
+Top 20 interfaces cover 90% of usage
      ↓
-实施优先级很明确
+Implementation priority is clear
      ↓
-不需要为所有99个接口优化
+No need to optimize all 99 interfaces
 ```
 
 ---
 
-## ✅ 验证这些推断的方法
+## How to Validate These Inferences
 
-### 步骤 1: 启用日志 (15分钟)
+### Step 1: Enable Logging (15 minutes)
 ```bash
-# 启用MCP日志记录
-# 记录每个接口调用
-# 保存到 /logs/mcp_calls.json
+# Enable MCP logging
+# Record every interface call
+# Save to /logs/mcp_calls.json
 ```
 
-### 步骤 2: 运行测试 (30分钟)
+### Step 2: Run Tests (30 minutes)
 ```python
-# 执行一个完整的Skill任务
-# 例如: Comps Analysis for AAPL
-# 记录实际调用的所有接口
+# Execute a complete skill task
+# Example: Comps Analysis for AAPL
+# Record all interfaces actually called
 ```
 
-### 步骤 3: 对比分析 (30分钟)
+### Step 3: Comparative Analysis (30 minutes)
 ```python
-# 对比实际调用 vs 推断接口
-# 计算匹配率 (目标: >80%)
-# 记录任何意外的接口
-# 更新接口优先级
+# Compare actual calls vs. inferred interfaces
+# Calculate match rate (target: >80%)
+# Note any unexpected interfaces
+# Update interface priorities
 ```
 
-### 步骤 4: 得出结论
+### Step 4: Draw Conclusions
 ```
-如果匹配率 > 80%:
-  ✅ 我们的推断方法论正确
-  ✅ 可以用于其他分析
-  ✅ 99个接口清单高度可靠
+If match rate > 80%:
+  ✅ Our inference methodology is correct
+  ✅ Can be applied to other analyses
+  ✅ The 99-interface list is highly reliable
 
-如果匹配率 50-80%:
-  ⚠️  部分推断需要调整
-  ⚠️  需要改进推断规则
-  ⚠️  接口清单大体方向正确
+If match rate 50–80%:
+  ⚠️  Some inferences need adjustment
+  ⚠️  Inference rules need refinement
+  ⚠️  The interface list is broadly directionally correct
 
-如果匹配率 < 50%:
-  ❌ 推断方法有问题
-  ❌ 需要重新分析
-  ❌ 但至少发现了数据源的问题
+If match rate < 50%:
+  ❌ Inference methodology has a problem
+  ❌ Need to re-analyze
+  ❌ But at minimum, data source issues have been identified
 ```
 
 ---
 
-## 🚀 如何应用这个分析
+## How to Apply This Analysis
 
-### 立即行动 (今天)
-- [ ] 阅读 SKILLS_INFERENCE_QUICK_GUIDE.md
-- [ ] 理解 Top 20 接口
-- [ ] 将这个清单分享给团队
+### Immediate Actions (Today)
+- [ ] Read SKILLS_INFERENCE_QUICK_GUIDE.md
+- [ ] Understand the Top 20 interfaces
+- [ ] Share this list with the team
 
-### 短期行动 (本周)
-- [ ] 启用MCP日志记录
-- [ ] 运行一个Skill任务并记录接口调用
-- [ ] 验证推断准确率
-- [ ] 更新接口优先级列表
+### Short-Term Actions (This Week)
+- [ ] Enable MCP logging
+- [ ] Run a skill task and record interface calls
+- [ ] Validate inference accuracy
+- [ ] Update interface priority list
 
-### 中期行动 (本月)
-- [ ] 根据优先级优化Top 5接口
-- [ ] 为批量接口实现缓存
-- [ ] 更新公开文档
-- [ ] 制定接口开发计划
+### Medium-Term Actions (This Month)
+- [ ] Optimize the Top 5 interfaces based on priority
+- [ ] Implement caching for batch interfaces
+- [ ] Update public documentation
+- [ ] Develop an interface development plan
 
-### 长期战略 (3个月+)
-- [ ] 基于这个方法论分析其他系统
-- [ ] 建立接口设计最佳实践
-- [ ] 实现完整的接口生命周期管理
-
----
-
-## 📞 常见问题
-
-### Q: 为什么推断准确率不是100%？
-**A**: 因为:
-1. 有些接口可能是本地计算而不是远程调用
-2. 有些接口可能在实现中名字不同
-3. 有些接口可能因为架构原因未使用
-4. 有些高级功能可能有多种实现方式
-
-最重要的是: 80-95%的准确率已经足以指导优化决策了。
-
-### Q: 是否应该立即实现所有99个接口？
-**A**: 不应该。建议顺序:
-1. 先实现 Top 5 (覆盖40%使用)
-2. 再实现 Top 10-15 (覆盖80%使用)
-3. 最后处理剩余接口 (覆盖20%使用)
-
-### Q: 如果发现推断有误怎么办？
-**A**: 很好! 这说明:
-1. 我们发现了系统的实际需求与预期的差异
-2. 这会指导更好的产品设计决策
-3. 收集这些反馈，迭代改进分析方法
-
-### Q: 这个方法论可以用在其他项目上吗？
-**A**: 可以。推断方法(工作流推断、数据需求推断、优化需求推断)是通用的:
-- 可用于分析其他plugin系统
-- 可用于评估新API的必要性
-- 可用于优先级排序决策
+### Long-Term Strategy (3+ Months)
+- [ ] Apply this methodology to analyze other systems
+- [ ] Establish interface design best practices
+- [ ] Implement full interface lifecycle management
 
 ---
 
-## 📚 文档间的关系
+## Frequently Asked Questions
+
+### Q: Why isn't inference accuracy 100%?
+**A**: Because:
+1. Some interfaces may be local calculations rather than remote calls
+2. Some interfaces may have different names in the implementation
+3. Some interfaces may be unused for architectural reasons
+4. Some advanced features may have multiple implementation paths
+
+Most importantly: 80–95% accuracy is sufficient to guide optimization decisions.
+
+### Q: Should all 99 interfaces be implemented immediately?
+**A**: No. Recommended sequence:
+1. First implement the Top 5 (covers 40% of usage)
+2. Then implement Top 10–15 (covers 80% of usage)
+3. Handle remaining interfaces last (covers 20% of usage)
+
+### Q: What if we find an inference is wrong?
+**A**: Great! This means:
+1. We've discovered a gap between the system's actual needs and expectations
+2. It will guide better product design decisions
+3. Collect this feedback and iterate to improve the analysis methodology
+
+### Q: Can this methodology be used on other projects?
+**A**: Yes. The inference methods (workflow inference, data requirement inference, optimization requirement inference) are general-purpose:
+- Can be used to analyze other plugin systems
+- Can be used to evaluate the necessity of new APIs
+- Can be used for prioritization decisions
+
+---
+
+## Relationships Between Documents
 
 ```
-你的问题
+Your question
     ↓
 SKILLS_INFERENCE_QUICK_GUIDE.md
-(5分钟快速理解)
+(5-minute quick understanding)
     ↓
 SKILLS_INFERENCE_ANALYSIS_SUMMARY.md
-(30分钟完整理解)
+(30-minute complete understanding)
     ↓
 ACTUAL_INTERFACES_INFERRED_CN.md
-(60分钟深度学习)
+(60-minute deep learning)
     ↓
 SKILLS_TO_APIS_MAPPING_CN.md
-(开发时参考)
+(reference during development)
     ↓
-实际应用 (验证、优化、决策)
+Practical application (validate, optimize, decide)
 ```
 
 ---
 
-## 🎯 立即可用的建议
+## Immediately Actionable Recommendations
 
-### 对开发团队:
-1. **参考 Top 20 接口清单** 制定实现计划
-2. **采用批量操作** 作为设计模式
-3. **为搜索接口** 做性能优化
+### For the Development Team:
+1. **Reference the Top 20 interface list** to build an implementation plan
+2. **Adopt batch operations** as a design pattern
+3. **Optimize performance** for search interfaces
 
-### 对架构师:
-1. **参考接口依赖关系图** 设计缓存策略
-2. **根据优先级** 分配资源
-3. **监控 Top 5 接口** 的性能指标
+### For Architects:
+1. **Reference the interface dependency diagram** to design caching strategies
+2. **Allocate resources** according to priority
+3. **Monitor performance metrics** for the Top 5 interfaces
 
-### 对产品经理:
-1. **优先实现 Top 5** 能覆盖90%使用
-2. **批量、搜索、历史** 是三大关键能力
-3. **这个分析** 可以为新功能评估提供数据支撑
-
----
-
-## ✨ 最后的话
-
-这个分析的价值在于:
-
-1. **完整性**: 从19个扩展到99个接口
-2. **优先级**: 明确了哪20个最重要
-3. **可操作性**: 立即可用于决策和优化
-4. **可验证性**: 可通过实际日志验证
-5. **可重复性**: 方法论可用于其他分析
-
-**建议**: 不要等完美，立即用这个分析来指导决策。80%的正确性已经足够好了。
+### For Product Managers:
+1. **Prioritize the Top 5** — they cover 90% of usage
+2. **Batch, search, and history** are the three critical capabilities
+3. **This analysis** can provide data support for evaluating new features
 
 ---
 
-## 📖 推荐阅读顺序
+## Final Note
+
+The value of this analysis lies in:
+
+1. **Completeness**: Expanded from 19 to 99 interfaces
+2. **Priority**: Clearly identifies which 20 are most important
+3. **Actionability**: Immediately usable for decisions and optimization
+4. **Verifiability**: Can be validated against actual logs
+5. **Repeatability**: Methodology can be applied to other analyses
+
+**Recommendation**: Don't wait for perfection — use this analysis to guide decisions right now. 80% accuracy is good enough.
+
+---
+
+## Recommended Reading Order
 
 ```
-时间 | 文档 | 耗时
-─────────────────────────────────────────
-5分  | SKILLS_INFERENCE_QUICK_GUIDE.md
-    ↓
-30分 | SKILLS_INFERENCE_ANALYSIS_SUMMARY.md
-    ↓
-1小时| ACTUAL_INTERFACES_INFERRED_CN.md
-    ↓
-2小时| SKILLS_TO_APIS_MAPPING_CN.md
-    ↓
-实践 | 启用日志、验证推断、优化系统
+Time  | Document                              | Duration
+──────────────────────────────────────────────────────
+5 min | SKILLS_INFERENCE_QUICK_GUIDE.md
+      ↓
+30 min| SKILLS_INFERENCE_ANALYSIS_SUMMARY.md
+      ↓
+1 hr  | ACTUAL_INTERFACES_INFERRED_CN.md
+      ↓
+2 hrs | SKILLS_TO_APIS_MAPPING_CN.md
+      ↓
+Practice | Enable logging, validate inferences, optimize system
 ```
 
 ---
 
-**祝你顺利！**
+**Good luck!**
 
-如有问题，参考相应文档或通过前面提到的验证方法来确认。
+If you have questions, refer to the corresponding document or use the validation methods described above to confirm your findings.
 
-最重要的是: 现在你已经拥有了完整的接口地图，可以做出更好的架构决策了。
+Most importantly: you now have a complete interface map and can make better architectural decisions.

@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "====================": "====================",
-    "现有的本地MCP服务器": "保持不变",
+    "existing-local-mcp-servers": "keep unchanged",
     "====================": "====================",
 
     "skill-seeker": {
@@ -17,7 +17,7 @@
     },
 
     "====================": "====================",
-    "金融数据MCP服务器（需要API密钥）": "以下是需要配置的",
+    "financial-data-mcp-servers-require-api-keys": "configure the following",
     "====================": "====================",
 
     "daloopa": {
