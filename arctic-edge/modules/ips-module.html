@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arctic Edge — IPS Module</title>
+<!--
+  Arctic Edge — Module 1: IPS Module
+  Terminal surface: section-ips (integration into ae_terminal.html is Module 10)
+  Input contract: advisor entry
+  Compute: validation + asset-class target consistency check
+  Output artifact: IPS Record (JSON) — consumed by Reg BI Note Generator,
+                   Note Completeness Auditor, Audit Trail, Suitability Bridge
+  Compliance: not regulated work product; PII stays client-side (localStorage)
+-->
+<style>
+:root{
+  --arctic-800:#1C2B35;--arctic-700:#243845;--glacier-700:#1F5D74;--glacier-500:#4494B0;
+  --paper-0:#FFFFFF;--paper-2:#F4F8FA;--paper-3:#ECF2F5;
+  --ink-900:#0A1219;--ink-700:#243845;--ink-500:#5A6C77;--ink-400:#7D8D96;
+  --border-1:#DCE4E8;--border-2:#C7D2D8;
+  --ok-500:#1F9D6B;--warn-500:#D77A1A;--risk-500:#B64841;
+  --font-sans:"Inter Tight",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--paper-2);color:var(--ink-900);font-size:13px;line-height:1.45;padding:24px;}
+.module{max-width:860px;margin:0 auto;background:var(--paper-0);border:1px solid var(--border-1);border-radius:8px;overflow:hidden;}
+.module-head{background:var(--arctic-800);color:#fff;padding:14px 20px;}
+.module-head h1{font-size:15px;font-weight:600;letter-spacing:-.01em;}
+.module-head p{font-size:11px;color:#9EC5D8;margin-top:2px;}
+.module-body{padding:20px;}
+.group{margin-bottom:20px;}
+.group-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--glacier-700);
+  padding-bottom:6px;border-bottom:1px solid var(--border-1);margin-bottom:12px;}
+.row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:10px;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field.full{grid-column:1/-1;}
+label{font-size:11px;font-weight:500;color:var(--ink-500);}
+input,select,textarea{font-family:var(--font-sans);font-size:13px;padding:7px 9px;
+  border:1px solid var(--border-2);border-radius:5px;background:var(--paper-0);color:var(--ink-900);}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--glacier-500);box-shadow:0 0 0 3px rgba(68,148,176,.18);}
+textarea{resize:vertical;min-height:54px;}
+.alloc-table{width:100%;border-collapse:collapse;font-size:12px;}
+.alloc-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--ink-400);padding:5px 6px;border-bottom:1px solid var(--border-1);}
+.alloc-table td{padding:3px 6px;border-bottom:1px solid var(--paper-3);}
+.alloc-table input{width:100%;padding:5px 7px;}
+.alloc-table td.num input{text-align:right;}
+.btn{font-family:var(--font-sans);font-size:12px;font-weight:500;padding:7px 14px;border-radius:5px;
+  border:1px solid var(--border-2);background:var(--paper-0);color:var(--ink-700);cursor:pointer;}
+.btn:hover{background:var(--paper-3);}
+.btn.primary{background:var(--glacier-700);border-color:var(--glacier-700);color:#fff;}
+.btn.primary:hover{background:var(--glacier-500);}
+.btn-row{display:flex;gap:8px;margin-top:8px;}
+.tag{font-size:11px;padding:3px 8px;border-radius:4px;background:var(--paper-3);border:1px solid var(--border-1);
+  display:inline-flex;align-items:center;gap:6px;margin:2px 4px 2px 0;}
+.tag button{border:none;background:none;cursor:pointer;color:var(--ink-400);font-size:13px;line-height:1;}
+.alloc-total{font-family:var(--font-mono);font-weight:600;}
+.alloc-total.ok{color:var(--ok-500);}
+.alloc-total.bad{color:var(--risk-500);}
+.status{font-size:12px;padding:8px 12px;border-radius:5px;margin-top:12px;display:none;}
+.status.show{display:block;}
+.status.ok{background:#DCEFE2;color:#167A52;border:1px solid #1F9D6B;}
+.status.err{background:#F4DEDB;color:#8A2F2A;border:1px solid #B64841;}
+.output{margin-top:16px;background:var(--ink-900);color:#C8D6DC;border-radius:6px;padding:14px;
+  font-family:var(--font-mono);font-size:11px;white-space:pre;overflow-x:auto;display:none;}
+.output.show{display:block;}
+</style>
+</head>
+<body>
+<div class="module">
+  <div class="module-head">
+    <h1>IPS Module</h1>
+    <p>Investment Policy Statement capture — Arctic Edge Phase 1, Module 1</p>
+  </div>
+  <div class="module-body">
+
+    <div class="group">
+      <div class="group-title">Client</div>
+      <div class="row">
+        <div class="field"><label>Client name</label><input id="clientName" placeholder="Household / client name"></div>
+        <div class="field"><label>Client ID</label><input id="clientId" placeholder="Internal reference"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>IPS effective date</label><input id="effectiveDate" type="date"></div>
+        <div class="field"><label>Review cadence</label>
+          <select id="reviewCadence"><option>Annual</option><option>Semi-annual</option><option>Quarterly</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">Objectives &amp; Risk Capacity</div>
+      <div class="row">
+        <div class="field"><label>Primary objective</label>
+          <select id="objective"><option>Capital preservation</option><option>Income</option><option>Balanced</option><option>Growth</option><option>Aggressive growth</option></select>
+        </div>
+        <div class="field"><label>Target annual return (%)</label><input id="returnTarget" type="number" step="0.1" placeholder="e.g. 6.5"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Time horizon (years)</label><input id="horizon" type="number" min="0" placeholder="e.g. 15"></div>
+        <div class="field"><label>Risk capacity</label>
+          <select id="riskCapacity"><option>Low</option><option>Moderate-low</option><option>Moderate</option><option>Moderate-high</option><option>High</option></select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field full"><label>Liquidity needs</label><textarea id="liquidity" placeholder="Known cash needs, timing, amounts"></textarea></div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">Asset-Class Targets</div>
+      <table class="alloc-table">
+        <thead><tr><th style="width:40%">Asset class</th><th class="num">Target %</th><th class="num">Min %</th><th class="num">Max %</th><th></th></tr></thead>
+        <tbody id="allocRows"></tbody>
+      </table>
+      <div class="btn-row">
+        <button class="btn" onclick="addAllocRow()">+ Add asset class</button>
+        <span style="margin-left:auto;font-size:11px;color:var(--ink-500);padding-top:7px;">
+          Target total: <span id="allocTotal" class="alloc-total">0%</span></span>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">Rebalancing Rules</div>
+      <div class="row">
+        <div class="field"><label>Method</label>
+          <select id="rebalMethod" onchange="syncRebalField()">
+            <option value="calendar">Calendar</option><option value="threshold">Threshold</option><option value="hybrid">Hybrid</option>
+          </select>
+        </div>
+        <div class="field"><label id="rebalTriggerLabel">Frequency</label><input id="rebalTrigger" placeholder="e.g. Annually"></div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">Constraints</div>
+      <div class="row">
+        <div class="field full"><label>Tax considerations</label><textarea id="taxNotes" placeholder="Account types, harvesting preferences, lot considerations"></textarea></div>
+      </div>
+      <div class="row">
+        <div class="field full"><label>Legal / regulatory / unique circumstances</label><textarea id="uniqueNotes" placeholder="Trusts, restricted stock, ESG mandates, concentrations"></textarea></div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">Prohibited Holdings</div>
+      <div class="field full">
+        <div class="row" style="grid-template-columns:1fr auto;">
+          <input id="prohibitedInput" placeholder="Ticker or category (e.g. TSLA, tobacco)">
+          <button class="btn" onclick="addProhibited()">Add</button>
+        </div>
+        <div id="prohibitedTags" style="margin-top:6px;"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn primary" onclick="saveIPS()">Validate &amp; Save IPS Record</button>
+      <button class="btn" onclick="loadIPS()">Load saved</button>
+      <button class="btn" onclick="exportIPS()">Export JSON</button>
+    </div>
+
+    <div id="status" class="status"></div>
+    <div id="output" class="output"></div>
+
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = "arctic-edge.ips-record";
+const prohibited = [];
+
+const DEFAULT_ALLOC = [
+  ["US Equity", 45, 35, 55],
+  ["International Equity", 15, 10, 25],
+  ["Fixed Income", 30, 20, 45],
+  ["Cash", 10, 5, 20],
+];
+
+function allocRowHTML(name="", target="", min="", max=""){
+  return `<tr>
+    <td><input class="a-name" value="${name}" placeholder="Asset class"></td>
+    <td class="num"><input class="a-target" type="number" value="${target}" oninput="recalcTotal()"></td>
+    <td class="num"><input class="a-min" type="number" value="${min}"></td>
+    <td class="num"><input class="a-max" type="number" value="${max}"></td>
+    <td><button class="btn" style="padding:3px 8px" onclick="this.closest('tr').remove();recalcTotal()">&times;</button></td>
+  </tr>`;
+}
+function addAllocRow(name,target,min,max){
+  document.getElementById("allocRows").insertAdjacentHTML("beforeend", allocRowHTML(name,target,min,max));
+  recalcTotal();
+}
+function recalcTotal(){
+  let t=0;
+  document.querySelectorAll("#allocRows .a-target").forEach(i=>t+=parseFloat(i.value)||0);
+  const el=document.getElementById("allocTotal");
+  el.textContent=t+"%";
+  el.className="alloc-total "+(Math.abs(t-100)<0.01?"ok":"bad");
+  return t;
+}
+function syncRebalField(){
+  const m=document.getElementById("rebalMethod").value;
+  const lbl=document.getElementById("rebalTriggerLabel");
+  const inp=document.getElementById("rebalTrigger");
+  if(m==="calendar"){lbl.textContent="Frequency";inp.placeholder="e.g. Annually";}
+  else if(m==="threshold"){lbl.textContent="Drift trigger (%)";inp.placeholder="e.g. 5";}
+  else{lbl.textContent="Frequency + drift trigger";inp.placeholder="e.g. Annually or 5% drift";}
+}
+function addProhibited(){
+  const inp=document.getElementById("prohibitedInput");
+  const v=inp.value.trim();
+  if(v && !prohibited.includes(v)){prohibited.push(v);renderProhibited();}
+  inp.value="";
+}
+function renderProhibited(){
+  document.getElementById("prohibitedTags").innerHTML =
+    prohibited.map((p,i)=>`<span class="tag">${p}<button onclick="prohibited.splice(${i},1);renderProhibited()">&times;</button></span>`).join("");
+}
+
+function collectIPS(){
+  const allocations=[];
+  document.querySelectorAll("#allocRows tr").forEach(tr=>{
+    const name=tr.querySelector(".a-name").value.trim();
+    if(!name) return;
+    allocations.push({
+      assetClass:name,
+      targetPct:parseFloat(tr.querySelector(".a-target").value)||0,
+      minPct:parseFloat(tr.querySelector(".a-min").value)||0,
+      maxPct:parseFloat(tr.querySelector(".a-max").value)||0,
+    });
+  });
+  return {
+    contract:"ips-record/v1",
+    client:{
+      name:document.getElementById("clientName").value.trim(),
+      id:document.getElementById("clientId").value.trim(),
+      effectiveDate:document.getElementById("effectiveDate").value,
+      reviewCadence:document.getElementById("reviewCadence").value,
+    },
+    objectives:{
+      primary:document.getElementById("objective").value,
+      returnTargetPct:parseFloat(document.getElementById("returnTarget").value)||null,
+      horizonYears:parseInt(document.getElementById("horizon").value)||null,
+      riskCapacity:document.getElementById("riskCapacity").value,
+      liquidityNeeds:document.getElementById("liquidity").value.trim(),
+    },
+    assetClassTargets:allocations,
+    rebalancing:{
+      method:document.getElementById("rebalMethod").value,
+      trigger:document.getElementById("rebalTrigger").value.trim(),
+    },
+    constraints:{
+      tax:document.getElementById("taxNotes").value.trim(),
+      uniqueCircumstances:document.getElementById("uniqueNotes").value.trim(),
+    },
+    prohibitedHoldings:[...prohibited],
+    capturedAt:new Date().toISOString(),
+  };
+}
+
+function validateIPS(rec){
+  const errors=[];
+  if(!rec.client.name) errors.push("Client name is required.");
+  if(!rec.client.effectiveDate) errors.push("IPS effective date is required.");
+  if(!rec.objectives.horizonYears) errors.push("Time horizon is required.");
+  if(rec.assetClassTargets.length===0) errors.push("At least one asset-class target is required.");
+  const total=rec.assetClassTargets.reduce((s,a)=>s+a.targetPct,0);
+  if(Math.abs(total-100)>0.01) errors.push(`Asset-class targets must sum to 100% (currently ${total}%).`);
+  rec.assetClassTargets.forEach(a=>{
+    if(a.targetPct<a.minPct||a.targetPct>a.maxPct)
+      errors.push(`${a.assetClass}: target ${a.targetPct}% is outside its ${a.minPct}–${a.maxPct}% band.`);
+  });
+  if(!rec.rebalancing.trigger) errors.push("Rebalancing trigger is required.");
+  return errors;
+}
+
+function showStatus(msg,ok){
+  const s=document.getElementById("status");
+  s.textContent=msg;
+  s.className="status show "+(ok?"ok":"err");
+}
+
+function saveIPS(){
+  const rec=collectIPS();
+  const errors=validateIPS(rec);
+  if(errors.length){showStatus("Cannot save — "+errors.join(" "),false);return;}
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(rec));
+  showStatus("IPS Record validated and saved. Ready for downstream modules.",true);
+  const o=document.getElementById("output");
+  o.textContent=JSON.stringify(rec,null,2);
+  o.className="output show";
+}
+function loadIPS(){
+  const raw=localStorage.getItem(STORAGE_KEY);
+  if(!raw){showStatus("No saved IPS Record found.",false);return;}
+  const rec=JSON.parse(raw);
+  document.getElementById("clientName").value=rec.client.name||"";
+  document.getElementById("clientId").value=rec.client.id||"";
+  document.getElementById("effectiveDate").value=rec.client.effectiveDate||"";
+  document.getElementById("reviewCadence").value=rec.client.reviewCadence||"Annual";
+  document.getElementById("objective").value=rec.objectives.primary||"Balanced";
+  document.getElementById("returnTarget").value=rec.objectives.returnTargetPct||"";
+  document.getElementById("horizon").value=rec.objectives.horizonYears||"";
+  document.getElementById("riskCapacity").value=rec.objectives.riskCapacity||"Moderate";
+  document.getElementById("liquidity").value=rec.objectives.liquidityNeeds||"";
+  document.getElementById("rebalMethod").value=rec.rebalancing.method||"calendar";
+  syncRebalField();
+  document.getElementById("rebalTrigger").value=rec.rebalancing.trigger||"";
+  document.getElementById("taxNotes").value=rec.constraints.tax||"";
+  document.getElementById("uniqueNotes").value=rec.constraints.uniqueCircumstances||"";
+  document.getElementById("allocRows").innerHTML="";
+  rec.assetClassTargets.forEach(a=>addAllocRow(a.assetClass,a.targetPct,a.minPct,a.maxPct));
+  prohibited.length=0;
+  (rec.prohibitedHoldings||[]).forEach(p=>prohibited.push(p));
+  renderProhibited();
+  showStatus("Loaded saved IPS Record.",true);
+}
+function exportIPS(){
+  const rec=collectIPS();
+  const errors=validateIPS(rec);
+  if(errors.length){showStatus("Fix validation errors before export — "+errors.join(" "),false);return;}
+  const blob=new Blob([JSON.stringify(rec,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=`ips-record_${(rec.client.name||"client").replace(/\s+/g,"-")}.json`;
+  a.click();
+}
+
+DEFAULT_ALLOC.forEach(r=>addAllocRow(...r));
+syncRebalField();
+</script>
+</body>
+</html>
