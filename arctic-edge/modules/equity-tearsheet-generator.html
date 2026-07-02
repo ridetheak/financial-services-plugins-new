@@ -8,11 +8,13 @@
   Arctic Edge — Module 8: Equity Tearsheet Generator
   Terminal surface: section-research
   Input contract: advisor entry (market-data MCP wiring is a later integration)
-  Compute: one-page tearsheet assembly + implied-upside calc
+  Compute: one-page tearsheet assembly + implied-upside calc + price chart
   Output artifact: equity-tearsheet/v1
   Compliance: standard industry-style disclosure language only — no firm
               name, no advisor name on the tearsheet.
+  Chart: TradingView Lightweight Charts v4.2.3 (client-side, CDN).
 -->
+<script src="https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
 <style>
 :root{
   --arctic-800:#1C2B35;--glacier-700:#1F5D74;--glacier-500:#4494B0;
@@ -68,6 +70,23 @@ textarea{resize:vertical;min-height:46px;}
 .upside.pos{color:var(--ok-500);}.upside.neg{color:var(--risk-500);}
 .disclosure{margin-top:14px;padding-top:10px;border-top:1px solid var(--border-1);
   font-size:9px;color:var(--ink-400);line-height:1.5;}
+/* chart */
+.chart-panel{border:1px solid var(--border-1);border-radius:6px;background:var(--paper-0);
+  margin-bottom:14px;overflow:hidden;}
+.chart-panel-head{display:flex;justify-content:space-between;align-items:center;
+  padding:7px 12px;background:var(--paper-3);border-bottom:1px solid var(--border-1);}
+.chart-panel-title{font-size:11px;font-weight:600;color:var(--ink-700);letter-spacing:.02em;}
+.chart-legend{display:flex;gap:14px;font-size:10px;color:var(--ink-500);font-family:var(--font-mono);}
+.chart-legend .dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle;}
+#chart{width:100%;height:280px;}
+#tearsheetChart{width:100%;height:200px;margin-top:6px;border:1px solid var(--border-1);border-radius:5px;}
+.chart-input{padding:10px 12px;border-top:1px solid var(--border-1);background:var(--paper-2);}
+.chart-input label{display:block;margin-bottom:5px;}
+.chart-input textarea{width:100%;font-family:var(--font-mono);font-size:10px;min-height:64px;
+  border:1px solid var(--border-2);border-radius:4px;padding:6px 8px;background:var(--paper-0);resize:vertical;}
+.chart-input-row{display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap;}
+.chart-hint{font-size:10px;color:var(--ink-400);font-family:var(--font-mono);}
+.sheet-block.full{grid-column:1 / -1;}
 </style>
 </head>
 <body>
@@ -91,6 +110,32 @@ textarea{resize:vertical;min-height:46px;}
       <div class="field"><label>52-wk low ($)</label><input id="low52" type="number" step="0.01"></div>
       <div class="field"><label>52-wk high ($)</label><input id="high52" type="number" step="0.01"></div>
       <div class="field"><label>1-yr total return (%)</label><input id="ret1y" type="number" step="0.1"></div>
+    </div>
+
+    <div class="group-title">Price History</div>
+    <div class="chart-panel">
+      <div class="chart-panel-head">
+        <span class="chart-panel-title">Daily Price · 50D / 200D SMA</span>
+        <div class="chart-legend">
+          <span><span class="dot" style="background:#1F9D6B"></span>Up day</span>
+          <span><span class="dot" style="background:#B64841"></span>Down day</span>
+          <span><span class="dot" style="background:#D77A1A"></span>50D SMA</span>
+          <span><span class="dot" style="background:#1F5D74"></span>200D SMA</span>
+        </div>
+      </div>
+      <div id="chart"></div>
+      <div class="chart-input">
+        <label>Paste OHLC CSV — one row per trading day: <code>date,open,high,low,close</code></label>
+        <textarea id="ohlcCsv" placeholder="2026-06-30,383.10,388.00,381.50,384.28
+2026-06-27,381.90,385.20,378.40,382.75
+…"></textarea>
+        <div class="chart-input-row">
+          <button class="btn primary" onclick="loadChart()">Load Chart</button>
+          <button class="btn" onclick="loadSampleChart()">Load sample (synthetic 260d)</button>
+          <button class="btn" onclick="clearChart()">Clear</button>
+          <span class="chart-hint">Live data pipe: OpenBB /equity/price/historical (wire when MCP session is stable)</span>
+        </div>
+      </div>
     </div>
 
     <div class="group-title">Valuation</div>
@@ -134,10 +179,107 @@ textarea{resize:vertical;min-height:46px;}
 
 <script>
 let lastSheet=null;
+let chart=null,candles=null,ma50Line=null,ma200Line=null;
+let tsChart=null,tsLine=null,tsMa50=null,tsMa200=null;
+let currentOhlc=[];
+
 function v(id){return document.getElementById(id).value.trim();}
 function n(id){const x=parseFloat(document.getElementById(id).value);return isNaN(x)?null:x;}
 function err(m){const s=document.getElementById("status");s.textContent=m;s.className="status show err";}
 function fmt(x,suffix=""){return x==null?"—":x+suffix;}
+
+// ── Chart ────────────────────────────────────────────────────────
+const CHART_OPTS={
+  layout:{background:{type:"solid",color:"#FFFFFF"},textColor:"#5A6C77",fontSize:11,
+          fontFamily:'"JetBrains Mono",ui-monospace,Menlo,monospace'},
+  grid:{vertLines:{color:"#ECF2F5"},horzLines:{color:"#ECF2F5"}},
+  rightPriceScale:{borderColor:"#DCE4E8"},
+  timeScale:{borderColor:"#DCE4E8",timeVisible:false,fixLeftEdge:true,fixRightEdge:true},
+  crosshair:{mode:0},
+};
+function ensureChart(){
+  if(chart) return;
+  const el=document.getElementById("chart");
+  chart=LightweightCharts.createChart(el,Object.assign({},CHART_OPTS,{width:el.clientWidth,height:280}));
+  candles=chart.addCandlestickSeries({
+    upColor:"#1F9D6B",downColor:"#B64841",borderUpColor:"#1F9D6B",borderDownColor:"#B64841",
+    wickUpColor:"#1F9D6B",wickDownColor:"#B64841",
+  });
+  ma50Line=chart.addLineSeries({color:"#D77A1A",lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false});
+  ma200Line=chart.addLineSeries({color:"#1F5D74",lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false});
+  window.addEventListener("resize",()=>chart.applyOptions({width:el.clientWidth}));
+}
+function parseCsv(text){
+  return text.split(/\r?\n/).map(l=>l.trim())
+    .filter(l=>l && !l.startsWith("#") && !/^date/i.test(l))
+    .map(l=>{
+      const [d,o,h,lo,c]=l.split(",").map(s=>s.trim());
+      return {time:d,open:+o,high:+h,low:+lo,close:+c};
+    })
+    .filter(r=>r.time && !isNaN(r.close))
+    .sort((a,b)=>a.time<b.time?-1:a.time>b.time?1:0);
+}
+function sma(rows,win){
+  const out=[];let sum=0;
+  for(let i=0;i<rows.length;i++){
+    sum+=rows[i].close;
+    if(i>=win) sum-=rows[i-win].close;
+    if(i>=win-1) out.push({time:rows[i].time,value:sum/win});
+  }
+  return out;
+}
+function loadChart(){
+  const data=parseCsv(v("ohlcCsv"));
+  if(!data.length){err("Paste at least one row of OHLC CSV.");return;}
+  document.getElementById("status").className="status";
+  ensureChart();
+  currentOhlc=data;
+  candles.setData(data);
+  ma50Line.setData(data.length>=50?sma(data,50):[]);
+  ma200Line.setData(data.length>=200?sma(data,200):[]);
+  chart.timeScale().fitContent();
+
+  // Populate hand-entry fields if the advisor hasn't yet
+  const last=data[data.length-1];
+  if(!v("price")) document.getElementById("price").value=last.close.toFixed(2);
+  const highs=data.map(d=>d.high),lows=data.map(d=>d.low);
+  if(!v("high52")) document.getElementById("high52").value=Math.max(...highs).toFixed(2);
+  if(!v("low52"))  document.getElementById("low52").value=Math.min(...lows).toFixed(2);
+  if(!v("ret1y") && data.length>=2){
+    const first=data[0].close;
+    document.getElementById("ret1y").value=(((last.close-first)/first)*100).toFixed(1);
+  }
+}
+function clearChart(){
+  currentOhlc=[];
+  document.getElementById("ohlcCsv").value="";
+  if(candles) candles.setData([]);
+  if(ma50Line) ma50Line.setData([]);
+  if(ma200Line) ma200Line.setData([]);
+}
+function loadSampleChart(){
+  // Synthetic 260 trading days, mildly downtrending, MSFT-scale.
+  const rows=[];const start=new Date();start.setDate(start.getDate()-380);
+  let price=555,seed=0;
+  function rand(){seed=(seed*9301+49297)%233280;return seed/233280;}
+  for(let i=0;i<380 && rows.length<260;i++){
+    const d=new Date(start);d.setDate(d.getDate()+i);
+    if(d.getDay()===0||d.getDay()===6) continue;
+    const drift=-0.0009,vol=0.017*(rand()*2-1);
+    const open=price;price=open*(1+drift+vol);
+    const high=Math.max(open,price)*(1+Math.abs(vol)*0.4);
+    const low =Math.min(open,price)*(1-Math.abs(vol)*0.4);
+    rows.push({t:d.toISOString().slice(0,10),o:+open.toFixed(2),h:+high.toFixed(2),l:+low.toFixed(2),c:+price.toFixed(2)});
+  }
+  document.getElementById("ohlcCsv").value=rows.map(r=>`${r.t},${r.o},${r.h},${r.l},${r.c}`).join("\n");
+  loadChart();
+}
+// Live-data path — swap in when OpenBB MCP session is stable.
+// async function fetchLiveOhlc(ticker){
+//   const res = await fetch(`/openbb/equity/price/historical?symbol=${ticker}&provider=fmp&interval=1d`);
+//   const {results} = await res.json();
+//   return results.map(r=>`${r.date},${r.open},${r.high},${r.low},${r.close}`).join("\n");
+// }
 
 function generate(){
   const tk=v("ticker").toUpperCase(),co=v("company"),price=n("price"),pt=n("pt");
@@ -158,6 +300,13 @@ function generate(){
     fundamentals:{revenueB:n("revenue"),revenueGrowthPct:n("revgrowth"),netMarginPct:n("margin"),roePct:n("roe")},
     consensus:{rating:v("rating"),meanTarget:pt,analysts:n("nAnalysts"),impliedUpsidePct:upside!=null?+upside.toFixed(1):null},
     riskFlags:flags,
+    priceHistory:currentOhlc.length?{
+      source:"advisor-loaded",
+      rows:currentOhlc.length,
+      firstDate:currentOhlc[0].time,
+      lastDate:currentOhlc[currentOhlc.length-1].time,
+      ohlc:currentOhlc,
+    }:null,
   };
   lastSheet=sheet;
   render(sheet);
@@ -201,6 +350,10 @@ function render(s){
         <div class="kv"><span>Covering analysts</span><span class="v">${fmt(s.consensus.analysts)}</span></div>
       </div>
     </div>
+    ${s.priceHistory?`<div class="sheet-block full" style="margin-top:14px">
+      <h3>Price History · ${s.priceHistory.firstDate} → ${s.priceHistory.lastDate} (${s.priceHistory.rows} sessions)</h3>
+      <div id="tearsheetChart"></div>
+    </div>`:""}
     ${s.riskFlags.length?`<div class="flags"><h3 style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--risk-500);margin-bottom:5px">Risk Flags</h3>
       ${s.riskFlags.map(f=>`<span class="flag-item">${f.replace(/[<>]/g,"")}</span>`).join("")}</div>`:""}
     <div class="disclosure">
@@ -210,6 +363,27 @@ function render(s){
       Investing involves risk, including possible loss of principal.
     </div>`;
   el.classList.add("show");
+
+  // Render the mini price chart inside the tearsheet output.
+  if(s.priceHistory){
+    // Rebuild fresh — remove any prior instance so print/PDF captures cleanly.
+    if(tsChart){ tsChart.remove(); tsChart=tsLine=tsMa50=tsMa200=null; }
+    const container=document.getElementById("tearsheetChart");
+    if(container){
+      tsChart=LightweightCharts.createChart(container,Object.assign({},CHART_OPTS,{
+        width:container.clientWidth,height:200,
+      }));
+      tsLine=tsChart.addLineSeries({color:"#1F5D74",lineWidth:2,priceLineVisible:false,lastValueVisible:false});
+      tsMa50=tsChart.addLineSeries({color:"#D77A1A",lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false});
+      tsMa200=tsChart.addLineSeries({color:"#B64841",lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false});
+      const rows=s.priceHistory.ohlc;
+      tsLine.setData(rows.map(r=>({time:r.time,value:r.close})));
+      if(rows.length>=50)  tsMa50.setData(sma(rows,50));
+      if(rows.length>=200) tsMa200.setData(sma(rows,200));
+      tsChart.timeScale().fitContent();
+      window.addEventListener("resize",()=>tsChart && tsChart.applyOptions({width:container.clientWidth}));
+    }
+  }
 }
 
 function exportSheet(){

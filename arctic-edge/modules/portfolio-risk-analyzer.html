@@ -17,7 +17,9 @@
   - Portfolio variance uses a single average pairwise correlation assumption.
   - Parametric VaR = z * annual portfolio volatility (mean excluded), 1-year horizon.
   - Max drawdown is computed only when a value series is supplied.
+  - Charts: TradingView Lightweight Charts v4.2.3 (client-side, CDN).
 -->
+<script src="https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
 <style>
 :root{
   --arctic-800:#1C2B35;--glacier-700:#1F5D74;--glacier-500:#4494B0;
@@ -75,6 +77,17 @@ textarea{width:100%;font-family:var(--font-mono);font-size:11px;padding:7px 9px;
 .output{margin-top:14px;background:var(--ink-900);color:#C8D6DC;border-radius:6px;padding:14px;
   font-family:var(--font-mono);font-size:11px;white-space:pre;overflow-x:auto;display:none;}
 .output.show{display:block;}
+/* charts */
+.chart-panel{border:1px solid var(--border-1);border-radius:6px;background:var(--paper-0);
+  margin-top:8px;overflow:hidden;}
+.chart-panel-head{display:flex;justify-content:space-between;align-items:center;
+  padding:7px 12px;background:var(--paper-3);border-bottom:1px solid var(--border-1);}
+.chart-panel-title{font-size:11px;font-weight:600;color:var(--ink-700);letter-spacing:.02em;}
+.chart-legend{display:flex;gap:12px;font-size:10px;color:var(--ink-500);font-family:var(--font-mono);}
+.chart-legend .dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle;}
+#equityChart{width:100%;height:220px;}
+#drawdownChart{width:100%;height:150px;}
+.chart-empty{padding:22px;text-align:center;font-size:11px;color:var(--ink-400);font-family:var(--font-mono);}
 </style>
 </head>
 <body>
@@ -110,8 +123,16 @@ textarea{width:100%;font-family:var(--font-mono);font-size:11px;padding:7px 9px;
       </div>
     </div>
     <div style="margin-top:10px;">
-      <label>Portfolio value series for max drawdown (optional — comma/newline separated)</label>
-      <textarea id="series" placeholder="1000000, 1042000, 988000, 1011000, ..."></textarea>
+      <label>Portfolio value series for max drawdown &amp; equity chart (optional — numbers, or <code>date,value</code> per line)</label>
+      <textarea id="series" placeholder="1000000, 1042000, 988000, 1011000, ...
+or
+2026-01-02,1000000
+2026-01-03,1015400
+..."></textarea>
+      <div style="margin-top:6px">
+        <button class="btn" onclick="loadSampleSeries()">Load sample series (260 sessions)</button>
+        <span class="chart-hint" style="font-size:10px;color:var(--ink-400);font-family:var(--font-mono);margin-left:6px">Live pipe: firm custodian NAV / OpenBB /portfolio/*</span>
+      </div>
     </div>
 
     <div class="btn-row">
@@ -124,6 +145,28 @@ textarea{width:100%;font-family:var(--font-mono);font-size:11px;padding:7px 9px;
       <div class="group-title">Portfolio Metrics</div>
       <div class="metrics" id="metrics"></div>
       <div class="note" id="methodNote"></div>
+
+      <div class="group-title">Equity Curve &amp; Drawdown</div>
+      <div class="chart-panel">
+        <div class="chart-panel-head">
+          <span class="chart-panel-title">Portfolio value · running peak</span>
+          <div class="chart-legend">
+            <span><span class="dot" style="background:#1F5D74"></span>Portfolio value</span>
+            <span><span class="dot" style="background:#7D8D96"></span>Running peak</span>
+          </div>
+        </div>
+        <div id="equityChart"></div>
+      </div>
+      <div class="chart-panel" style="margin-top:8px">
+        <div class="chart-panel-head">
+          <span class="chart-panel-title">Drawdown from peak</span>
+          <div class="chart-legend">
+            <span><span class="dot" style="background:#B64841"></span>Drawdown (%)</span>
+          </div>
+        </div>
+        <div id="drawdownChart"></div>
+      </div>
+      <div class="note" id="chartNote"></div>
 
       <div class="group-title">Sector Concentration</div>
       <table><thead><tr><th>Sector</th><th class="num">Weight %</th></tr></thead><tbody id="sectorRows"></tbody></table>
@@ -198,6 +241,102 @@ function maxDrawdown(series){
 }
 
 let lastResult=null;
+let eqChart=null,eqValueLine=null,eqPeakLine=null;
+let ddChart=null,ddArea=null;
+
+const CHART_OPTS={
+  layout:{background:{type:"solid",color:"#FFFFFF"},textColor:"#5A6C77",fontSize:11,
+          fontFamily:'"JetBrains Mono",ui-monospace,Menlo,monospace'},
+  grid:{vertLines:{color:"#ECF2F5"},horzLines:{color:"#ECF2F5"}},
+  rightPriceScale:{borderColor:"#DCE4E8"},
+  timeScale:{borderColor:"#DCE4E8",timeVisible:false,fixLeftEdge:true,fixRightEdge:true},
+  crosshair:{mode:0},
+};
+
+// Attach synthetic business-day dates to a numeric series so lightweight-charts
+// can render it. If the paste is `date,value` per line, use those dates instead.
+function seriesToDated(raw){
+  const lines=raw.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  const dated=[];
+  const looksLikeCsv=lines.some(l=>/,/.test(l));
+  if(looksLikeCsv){
+    for(const l of lines){
+      const parts=l.split(",").map(s=>s.trim());
+      // date,value    OR    value,value,value (fallback: reject and use numeric path)
+      if(parts.length===2 && /^\d{4}-\d{2}-\d{2}$/.test(parts[0]) && !isNaN(+parts[1])){
+        dated.push({time:parts[0],value:+parts[1]});
+      }
+    }
+    if(dated.length) return dated.sort((a,b)=>a.time<b.time?-1:1);
+  }
+  // Fallback: pull numbers, generate synthetic sequential business days ending today.
+  const nums=raw.split(/[,\s]+/).map(Number).filter(x=>!isNaN(x));
+  if(!nums.length) return [];
+  const end=new Date();const days=[];let d=new Date(end);
+  while(days.length<nums.length){
+    if(d.getDay()!==0 && d.getDay()!==6) days.push(new Date(d));
+    d.setDate(d.getDate()-1);
+  }
+  days.reverse();
+  return nums.map((v,i)=>({time:days[i].toISOString().slice(0,10),value:v}));
+}
+
+function runningPeak(dated){
+  let peak=-Infinity;
+  return dated.map(p=>{if(p.value>peak) peak=p.value; return {time:p.time,value:peak};});
+}
+function drawdownSeries(dated){
+  let peak=-Infinity;
+  return dated.map(p=>{
+    if(p.value>peak) peak=p.value;
+    const dd=peak>0?((p.value-peak)/peak)*100:0;
+    return {time:p.time,value:+dd.toFixed(3)};
+  });
+}
+
+function renderCharts(rawSeries){
+  const dated=seriesToDated(rawSeries);
+  const note=document.getElementById("chartNote");
+  const eqEl=document.getElementById("equityChart");
+  const ddEl=document.getElementById("drawdownChart");
+
+  // Tear down prior instances so re-render is clean.
+  if(eqChart){eqChart.remove();eqChart=eqValueLine=eqPeakLine=null;}
+  if(ddChart){ddChart.remove();ddChart=ddArea=null;}
+  eqEl.innerHTML="";ddEl.innerHTML="";
+
+  if(dated.length<2){
+    eqEl.innerHTML='<div class="chart-empty">Paste at least 2 values in the series field above to render the equity curve and drawdown chart.</div>';
+    ddEl.innerHTML='<div class="chart-empty">No drawdown data yet.</div>';
+    note.textContent="";
+    return;
+  }
+
+  eqChart=LightweightCharts.createChart(eqEl,Object.assign({},CHART_OPTS,{width:eqEl.clientWidth,height:220}));
+  eqValueLine=eqChart.addLineSeries({color:"#1F5D74",lineWidth:2,priceFormat:{type:"volume"}});
+  eqPeakLine=eqChart.addLineSeries({color:"#7D8D96",lineWidth:1,lineStyle:2,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false,priceFormat:{type:"volume"}});
+  eqValueLine.setData(dated);
+  eqPeakLine.setData(runningPeak(dated));
+  eqChart.timeScale().fitContent();
+
+  ddChart=LightweightCharts.createChart(ddEl,Object.assign({},CHART_OPTS,{width:ddEl.clientWidth,height:150}));
+  ddArea=ddChart.addAreaSeries({
+    lineColor:"#B64841",topColor:"rgba(182,72,65,0.35)",bottomColor:"rgba(182,72,65,0.02)",
+    lineWidth:1,priceFormat:{type:"custom",formatter:v=>v.toFixed(1)+"%"},
+  });
+  ddArea.setData(drawdownSeries(dated));
+  ddChart.timeScale().fitContent();
+
+  const usedCsvDates=/,/.test(rawSeries) && /^\d{4}-\d{2}-\d{2}$/m.test(rawSeries);
+  note.textContent=usedCsvDates
+    ? `Dates parsed from the pasted CSV. ${dated.length} points.`
+    : `${dated.length} values plotted against synthetic sequential business days ending today. Paste \`date,value\` lines to use real dates.`;
+
+  window.addEventListener("resize",()=>{
+    if(eqChart) eqChart.applyOptions({width:eqEl.clientWidth});
+    if(ddChart) ddChart.applyOptions({width:ddEl.clientWidth});
+  });
+}
 
 function analyze(){
   const h=readHoldings();
@@ -325,6 +464,9 @@ function render(R){
   document.getElementById("output").textContent=JSON.stringify(R,null,2);
   document.getElementById("results").classList.add("show");
   document.getElementById("output").classList.add("show");
+
+  // Charts are driven directly by the pasted series (same source as max drawdown).
+  renderCharts(document.getElementById("series").value);
 }
 
 function exportRisk(){
@@ -332,6 +474,23 @@ function exportRisk(){
   const blob=new Blob([JSON.stringify(lastResult,null,2)],{type:"application/json"});
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);a.download="portfolio-risk.json";a.click();
+}
+
+function loadSampleSeries(){
+  // 260 business days ending today, ~10% drawdown mid-series, recovers.
+  const rows=[];const end=new Date();const days=[];let d=new Date(end);
+  while(days.length<260){if(d.getDay()!==0 && d.getDay()!==6) days.push(new Date(d)); d.setDate(d.getDate()-1);}
+  days.reverse();
+  let v=1000000,seed=17;
+  function rand(){seed=(seed*9301+49297)%233280;return seed/233280;}
+  days.forEach((day,i)=>{
+    const drift=0.00035;                    // ~9% annualized
+    const shock=(i>90 && i<150)?-0.006:0;   // pain in the middle third
+    const noise=0.008*(rand()*2-1);
+    v=v*(1+drift+shock+noise);
+    rows.push(`${day.toISOString().slice(0,10)},${Math.round(v)}`);
+  });
+  document.getElementById("series").value=rows.join("\n");
 }
 
 DEFAULT.forEach(r=>addRow(...r));
